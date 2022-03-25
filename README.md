@@ -1,8 +1,8 @@
-# @randajan/jetpack
-
-[![NPM](https://img.shields.io/npm/v/@randajan/jet-core.svg)](https://www.npmjs.com/package/@randajan/jet-core) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+# @randajan/jet-core
 
 Goal is to create ecosystem for javascript types with possibility to define custom types. This package provide easy and deep objects map and comparing, generic creating, filtering by types, content & other stuff
+
+[![NPM](https://img.shields.io/npm/v/@randajan/jet-core.svg)](https://www.npmjs.com/package/@randajan/jet-core) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
