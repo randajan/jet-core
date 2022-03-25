@@ -1,8 +1,8 @@
 {
   "name": "@randajan/jet-core",
   "version": "1.0.3",
-  "description": "",
-  "repository": "randajan/simple-lib",
+  "description": "Ecosystem of types and related usefull tools.",
+  "repository": "randajan/jet-core",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
