@@ -1,24 +1,40 @@
 {
-  "name": "jet-core",
+  "name": "@randajan/jet-core",
   "version": "1.0.0",
   "description": "",
+  "repository": "randajan/simple-lib",
   "type": "module",
-  "main": "dist/index.cjs.js",
+  "main": "dist/index.js",
   "module": "dist/index.js",
-  "browser": "dist/index.umd.js",
   "scripts": {
-    "start": "set NODE_ENV=dev&& node ./esbuild.js",
-    "build": "set NODE_ENV=prod&& node ./esbuild.js"
+    "start": "set NODE_ENV=dev&& node ./index.js",
+    "build": "set NODE_ENV=prod&& node ./index.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "@randajan/simple-lib": "^1.0.4",
     "chokidar": "^3.5.3",
     "esbuild": "^0.14.27",
     "eslint": "^8.11.0",
     "fs-extra": "^10.0.1",
     "live-server": "^1.2.1"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "types",
+    "tool"
+  ],
+  "homepage": "https://github.com/randajan/jet-core",
+  "bugs": {
+    "url": "https://github.com/randajan/jet-core/issues"
+  },
+  "author": {
+    "name": "Jan Randa",
+    "email": "jnranda@gmail.com",
+    "url": "https://www.linkedin.com/in/randajan/"
   }
 }

@@ -19,7 +19,12 @@ import ComplexConstructor from "./Complex";
 
 //CUSTOM
 const type = jet.type;
-const Complex = jet.type.define("Complex", ComplexConstructor);
+const Complex = jet.type.define("Complex", ComplexConstructor, {
+    copy:x=>Object.defineProperties({}, Object.getOwnPropertyDescriptors(x)),
+    keys:x=>Object.keys(x),
+    vals:x=>Object.values(x),
+    pairs:x=>Object.entries(x)
+});
 
 export default jet;
 export {
