@@ -127,7 +127,7 @@ export const prop = {
                 prop.add(obj, n ? f : i, n ? val : f, writable, enumerable, overwrite)
             });
         } else if (!obj[property] || overwrite) {
-            Object.defineProperty(obj, property, { value:val, writable, configurable, enumerable });
+            Object.defineProperty(obj, property, { value:val, writable, configurable:writable, enumerable });
         }
         return obj;
     },
