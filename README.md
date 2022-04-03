@@ -17,29 +17,30 @@ yarn add @randajan/jet-core
 ```
 
 
-## Main content
+## Main methods
+_These methods, are exclusive for default jet export_
 
-### __jet.type__
-_Reserved function-structure for main jet functionality_
+### __jet(any, all=false)__
+_will return jet type name of variable any_
 
 * Arguments
   * any: _any variable_
   * all: _boolean (return all types?)_
 * Return
-  * all=false || undefined: _top type of variable_
-  * all=true: _array with all types of variable sorted by its priority_
+  * all=false: _top type of variable_
+  * all=true: _array with all types of variable_
 * Example
-  * jet.type([], true) === ["arr", "object"];
-  * jet.type(RegExp()) === "regex";
+  * jet.type([]) === "Array";
+  * jet.type(NaN, true) === ["NaN", "Number"];
 
-### __jet.type.define__
+### __jet.define(name, constructor, options={})__
 _Defining custom types for detecting, creating and copying_
+_Same jet methods and plugins will be attached to jet.*[name](), to constructor.jet.*() and to prototype.jet.*()_
 
 * Arguments
   * name: _string (name of the type)_
   * constructor: _class_
-  * opt: _object_
-    * rank: _number (>= 0)_
+  * options: _object_
     * create: _function (creating new instance)_
     * is: _function (verify type of variable)_
     * full: _function (check if variable is full)_
@@ -51,25 +52,17 @@ _Defining custom types for detecting, creating and copying_
     * get: _function (get key for mapable types)_
     * set: _function (set key for mapable types)_
     * rem: _function (rem key for mapable types)_
-  * custom: _object (functions that should be appended to jet.*)_
+    * plugins: _object (functions that will be appended to constructor and prototype)_
+    * extend: _boolean (false=turn off extension of constructor and prototype)
+    * extendConstructor: _boolean (false=turn off extension of constructor)
+    * extendPrototype: _boolean (false=turn off extension of prototype)
 * Return
-  * _true when successfully defined_
+  * _constructor_
 * Example
-  * jet.type.define("Arr", Array, { rank:-1, create:x=>new Array(x), copy:x=>Array.from(x) } );
-  * jet.type.define("Ele", Element, { rank:-1 }, { find:query=>document.querySelector(query) });
+  * jet.type.define("Arr", Array, { create:x=>new Array(x), copy:x=>Array.from(x) } );
+  * jet.type.define("Ele", Element, { plugins:{ find:query=>document.querySelector(query) } });
 
-### __jet.type.isFull__
-_Catching empty mapable objects and NaN_
-
-* Arguments
-  * any: _any variable_
-* Return
-  * _true when variable is full_
-* Example
-  * jet.is.full([]) === false;
-  * jet.is.full({foo:bar}) === true;
-
-### __jet.type.isMapable__
+### __jet.isMapable(any)__
 _Return true on any type of variable that has mapable=true on its type definition_
 
 * Arguments
@@ -77,40 +70,23 @@ _Return true on any type of variable that has mapable=true on its type definitio
 * Return
   * _true when variable is mapable_
 * Example
-  * jet.is.map([]) === true
-  * jet.is.map({}) === true;
-  * jet.is.map("foo") === false;
+  * jet.isMapable([]) === true
+  * jet.isMapable({}) === true;
+  * jet.isMapable("foo") === false;
 
-### __jet.\*__
-_Will create instance requested * type (use without "new")_
-
-* Arguments
-  * ...args: _will be passed to the creating function_
-* Return
-  * _new instance_
-* Example
-  * jet.arr("foo", "bar") == ["foo", "bar"];
-  * jet.obj() == {};
-  * jet.ele() == <div></div>;
-
-### __jet.\*.is__
-_Check the passed type with result from instanceof compare || jet.type_
+### __jet.isRunnable(any)__
+_Return true if any typeof === function_
 
 * Arguments
   * any: _any variable_
-  * inclusive: _boolean_
 * Return
-  * inclusive=true: _true when the type is included in result of jet.type all=true_
+  * _true when variable is runnable_
 * Example
-  * jet.Arr.is([]) === true;
-  * jet.Obj.is([]) === false;
-  * jet.Obj.is([], true) === true;
-  * jet.RegExp.is(RegExp()) === true;
+  * jet.isRunnable([]) === false
+  * jet.isRunnable({}) === false;
+  * jet.isRunnable(()=>{}) === true;
 
-### __jet.\*.isFull__
-_Same as jet.type.isFull but without type detection_
-
-### __jet.\*.copy__
+### __jet.copy(any)__
 _Will create copy of instance_
 
 * Arguments
@@ -118,28 +94,85 @@ _Will create copy of instance_
 * Return
   * _new instance or the old if there isn't defined copy function_
 * Example
-  * jet.obj.copy({a:1}) == Object.assign({}, {a:1});
-  * jet.arr.copy(["foo", "bar"]) == Array.from(["foo", "bar"]);
+  * jet.copy({a:1}) == Object.assign({}, {a:1});
+  * jet.copy(["foo", "bar"]) == Array.from(["foo", "bar"]);
 
-### __jet.\*.only / .tap / .full / .pull__
+## Constructor/Prototype methods
+_These methods acumulate main funcstionality._
+_After 'jet.define(**name**, **consturctor**)' is called, those methods are attached to 4 different endpoints._
+
+ 1. Global dynamic: _jet.**method**(**name**, ...args)_
+ 2. Global static: __jet.**method**.**name**(...args)_
+ 3. Constructor: _**constructor**.jet.**method**(...args)_
+ 4. Prototype: _**instance**.jet.**method**(...args)_
+
+### __jet.is(name, any, inclusive=false)__
+_Check the passed type with result. Endpoint 'jet.is(name, ...a)' also work like typeof and instanceof_
+
+* Arguments
+  * name: _string (name of the type)_
+  * any: _any variable_
+  * inclusive: _boolean_
+* Return
+  * inclusive=true: _true when the type is included in result of jet.type all=true_
+* Example
+  * jet.is.Array([]) === true;
+  * jet.is.Object([]) === false;
+  * jet.is.Array([], true) === true;
+  * jet.is.RegExp(RegExp()) === true;
+
+### __jet.isFull(any)__
+_Catching empty mapable objects and NaN_
+
+* Arguments
+  * any: _any variable_
+* Return
+  * _true when variable is full_
+* Example
+  * jet.isFull([]) === false;
+  * jet.isFull({foo:bar}) === true;
+
+### __jet.create(name, ...args)__
+_Will create instance requested constructor (use without "new")_
+
+* Arguments
+  * name: _string (name of the type)_
+  * ...args: _will be passed to the creating function_
+* Return
+  * _new instance_
+* Example
+  * jet.create.Array("foo", "bar") == ["foo", "bar"];
+  * jet.create.Object() == {};
+
+### __jet.rnd(name, ...args)__
+_Will create instance with random value_
+
+* Arguments
+  * name: _string (name of the type)_
+  * ...args: _will be passed to the defined rnd method_
+* Return
+  * _new instance with random value_
+
+### __jet.full(...any) / .only(name, ...any) / .tap(name, ...any) / .pull(name, ...any)__
 _Used for selecting, filtering, creating or copying variables_
 
 * Arguments
-  * ...args: _any variable (will be tested in order until the type will match)_
+  * name: _string (name of the type)_
+  * ...any: _any variables (will be tested in order until the type will match)_
 * Return
   * only: _undefined when there is no match_
   * full: _same as only but variable must be full_
   * tap: _same as only but try to create the type when there is no match_
   * pull: _same as tap but try to copy variable if there is match_
 * Example
-  * jet.str.only(1, "foo", [], ["bar"], {foo:"bar"}) == "foo";
-  * jet.arr.tap(1, "foo", [], ["bar"], {foo:"bar"}) == [];
-  * jet.arr.full(1, "foo", [], ["bar"], {foo:"bar"}) == ["bar"];
-  * jet.regex.only(1, "foo", [], ["bar"], {foo:"bar"}) == null;
-  * jet.regex.tap(1, "foo", [], ["bar"], {foo:"bar"}) == RegExp();
-  * jet.obj.pull(1, "foo", [], ["bar"], {foo:"bar"}) == {foo:"bar"}
+  * jet.only.Sring(1, "foo", [], ["bar"], {foo:"bar"}) == "foo";
+  * jet.tap.Array(1, "foo", [], ["bar"], {foo:"bar"}) == [];
+  * jet.full.Array(1, "foo", [], ["bar"], {foo:"bar"}) == ["bar"];
+  * jet.only.RegExp(1, "foo", [], ["bar"], {foo:"bar"}) == null;
+  * jet.tap.RegExp(1, "foo", [], ["bar"], {foo:"bar"}) == RegExp();
+  * jet.pull.Object(1, "foo", [], ["bar"], {foo:"bar"}) == {foo:"bar"}
 
-### __jet.Map.vals / .keys / .pairs / .get / .set / .rem__
+### __jet.vals(any) / .keys(any) / .pairs(any) / .get(any, key) / .set(any, key, val) / .rem(any, key)__
 _Handle mapable objects (it requires defined type)_
 
 * Arguments
@@ -149,10 +182,15 @@ _Handle mapable objects (it requires defined type)_
 * Return
   * result from perform operation against the defined type_
 * Example
-  * jet.map.get({foo:"bar"}, "bar") === "bar";
+  * jet.vals({foo:"bar"}) === ["bar"];
+  * jet.keys({foo:"bar"}) === ["foo"];
+  * jet.entries({foo:"bar"}) === [["foo"], ["bar"]];
+  * jet.get({foo:"bar"}, "foo") === "bar";
 
-### __jet.Map.dig__
-_Return value from deep nested object_
+## Extra methods
+
+### __jet.dig(any, path, def)__
+_Return  value from deep nested object_
 
 * Arguments
   * any: _any mapable variable_ 
@@ -161,25 +199,39 @@ _Return value from deep nested object_
 * Return
   * find value or def when no value was found
 * Example
-  * jet.map.dig({foo:["bar"]}, "foo.0") == "bar";
-  * jet.map.dig({foo:["bar"]}, ["foo", 1], "foo") == "foo";
+  * jet.dig({foo:["bar"]}, "foo.0") == "bar";
+  * jet.dig({foo:["bar"]}, ["foo", 1], "foo") == "foo";
 
-### __jet.Map.it / .of__
+### __jet.put(any, path, val, force=true)__
+_Return value from deep nested object_
+
+* Arguments
+  * any: _any mapable variable_ 
+  * path: _string or Array (even nested Array)_
+  * val: _any_
+  * force: _boolean (create path if not exist)_
+* Return
+  * any
+* Example
+  * jet.put({}, "foo.0", "bar", true) == {foo:["bar"]};
+
+### __jet.forEach(any, fce, deep, path) / .map(any, fce, deep, path)__
 _Map any mapable object by default: Object, Array, Set, Map, Pool_
 
 * Arguments
   * any: _any mapable variable_ 
-  * fce: _function(val, key, path) (handler)_
+  * fce: _function(val, path+key, parent, parentpath) (handler)_
+  * deep: _boolean or function (true=recursive maping; function=custom recursive maping)_
   * deep: _boolean (recursive maping)_
 * Return
-  * it: _count items in structure_
-  * of: _copy of structure with result from handler function_
+  * forEach: _flat array with result from handler function_
+  * map: _copy of structure with result from handler function_
 * Example
-  * jet.map.it({foo:"bar"}, _=>_) == 1;
-  * jet.map.of({foo:"bar"}, _=>"foo"+_) == {foo:"foobar"};
+  * jet.forEach({foo:"bar"}, _=>_) == ["bar"];
+  * jet.map({foo:"bar"}, _=>_) == {foo:"bar"};
 
 
-### __jet.Fce.run__
+### __jet.run(any, ...args)__
 _Will run every function that will discover without collecting results_
 
 * Arguments

@@ -1,47 +1,41 @@
 
 import jet from "./jet";
-import Obj from "./types/Obj.js";
-import Bol from "./types/Bol.js";
-import Num from "./types/Num.js";
-import Str from "./types/Str.js";
-import Symbol from "./types/Symbol";
-import Fce from "./types/Fce.js";
-import RegExp from "./types/RegExp.js";
-import Date from "./types/Date.js";
-import NaN from"./types/NaN.js";
-import Err from "./types/Err.js";
-import Prom from "./types/Prom.js";
-import Arr from "./types/Arr.js";
-import Set from "./types/Set.js";
-import Map from "./types/Map.js";
+import Object from "./native/Object.js";
+import Boolean from "./native/Boolean.js";
+import Number from "./native/Number.js";
+import String from "./native/String.js";
+import Symbol from "./native/Symbol";
+import Function from "./native/Function";
+import RegExp from "./native/RegExp.js";
+import Date from "./native/Date.js";
+import NaN from"./native/NaN.js";
+import Error from "./native/Error.js";
+import Promise from "./native/Promise.js";
+import Array from "./native/Array.js";
+import Set from "./native/Set.js";
+import Map from "./native/Map.js";
 
-import ComplexConstructor from "./Complex";
-
-//CUSTOM
-const type = jet.type;
-const Complex = jet.type.define("Complex", ComplexConstructor, {
-    copy:x=>Object.defineProperties({}, Object.getOwnPropertyDescriptors(x)),
-    keys:x=>Object.keys(x),
-    vals:x=>Object.values(x),
-    pairs:x=>Object.entries(x)
-});
+import Pool from "./custom/Pool.js";
+import RunPool from "./custom/RunPool.js";
 
 export default jet;
+export const Plex = jet.types.Plex;
+
 export {
-    type,
-    Obj,
-    Bol,
-    Num,
-    Str,
+    Object,
+    Boolean,
+    Number,
+    String,
     Symbol,
-    Fce,
+    Function,
     RegExp,
     Date,
     NaN,
-    Err,
-    Prom,
-    Arr,
+    Error,
+    Promise,
+    Array,
     Set,
     Map,
-    Complex,
+    Pool,
+    RunPool
 }
