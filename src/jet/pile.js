@@ -1,6 +1,5 @@
 import jet, { getDefByInst } from "./defs.js";
 
-const _forKey = (any, key)=>jet.isMapable(any) ? any : String.jet.isNumeric(key) ? [] : {};
 const _each = (any, fce, deep, flat, path)=>{
     const def = getDefByInst(any);
     flat = flat ? Array.jet.tap(flat) : null;
@@ -22,16 +21,69 @@ const _each = (any, fce, deep, flat, path)=>{
     return res;
 }
 
+const _forKey = (any, key)=>jet.isMapable(any) ? any : String.jet.isNumeric(key) ? [] : {};
+export const dig = (path, fce)=>{
+    const pa = String.jet.to(path, ".").split(".");
+
+    let i = 0;
+    const next = (...a)=>{
+        const k = i++;
+        return k < pa.length ? fce(pa[k], k, next) : null;
+    };
+
+    return next();
+}
+const _digStep = (any, parr, lvl, entryFce, exitFce, force=true)=>{
+    // const pa = String.jet.to(path, ".").split(".");
+    const key = parr[lvl];
+    fce(any[key]);
+    
+    // for (let [i, p] of pa.entries()) {
+
+        if (val == null) { pb[pa.length-1-i] = [any, p]; } //backpath
+        if (!force && any[p] != null && !jet.isMapable(any[p])) { return r; }
+        else if (i !== pa.length-1) { any = jet.set(any, p, _forKey(any[p], pa[i+1]));}
+        else if (val == null) { jet.rem(any, p);}
+        else { jet.set(any, p, val);}
+
+    // };
+
+    // for (let [any, p] of pb) {
+    //     if (jet.isFull(any[p])) { break; }
+    //     else { jet.rem(any, p); }
+    // };
+    // return r;
+};
+export const _dig = (any, path, val, force=true)=>{
+    const pa = String.jet.to(path, ".").split(".");
+
+    any = _forKey(any, pa[0]);
+
+    for (let [i, p] of pa.entries()) {
+        if (val == null) { pb[pa.length-1-i] = [any, p]; } //backpath
+        if (!force && any[p] != null && !jet.isMapable(any[p])) { return r; }
+        else if (i !== pa.length-1) { any = jet.set(any, p, _forKey(any[p], pa[i+1]));}
+        else if (val == null) { jet.rem(any, p);}
+        else { jet.set(any, p, val);}
+    };
+
+    for (let [any, p] of pb) {
+        if (jet.isFull(any[p])) { break; }
+        else { jet.rem(any, p); }
+    };
+    return r;
+};
+
 export const forEach = (any, fce, deep, path)=>_each(any, fce, deep, true, path);
 export const map = (any, fce, deep, path)=>_each(any, fce, deep, false, path);
 
-export const dig = (any, path, def)=>{
+export const digOut = (any, path, def)=>{
     const pa = String.jet.to(path, ".").split(".");
     for (let p of pa) { if (null == (any = jet.get(any, p))) { return def; }}
     return any;
 };
 
-export const put = (any, path, val, force=true)=>{
+export const digIn = (any, path, val, force=true)=>{
     const pa = String.jet.to(path, ".").split("."), pb = [];
     const r = any = _forKey(any, pa[0]);
 
@@ -62,7 +114,7 @@ export const inflate = (flat, includeMapable=true)=>{
     const r = {};
     for (const e of jet.keys(flat).sort()) {
         if (!includeMapable && jet.isMapable(flat[e])) { continue; }
-        put(r, "to."+e, flat[e], true);
+        digIn(r, "to."+e, flat[e], true);
     }
     return r.to;
 };
@@ -70,7 +122,7 @@ export const inflate = (flat, includeMapable=true)=>{
  const _assign = (overwriteArray, to, ...any)=>{
     const r = {to};
     const flat = deflate(r.to, true);
-    const add = (v,p)=>{ r.to = put(r.to, p, v); }
+    const add = (v,p)=>{ r.to = digIn(r.to, p, v); }
     const acumulate = (v,p)=>{
         if (!flat[p]) { add(flat[p] = getDefByInst(v).create(), p); }
         if (Array.isArray(v) && Array.isArray(flat[p])) { flat[p].push(...v); }
