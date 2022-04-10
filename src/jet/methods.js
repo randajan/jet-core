@@ -27,16 +27,16 @@ export const isFull = (any, vals)=>{
     return false;
 }
 
-export const touch = (name, op, ...args)=>{
+export const touch = (name, op, err, ...args)=>{
     const def = getDefByName(name);
-    if (!def) { throwError(`unable execute '${op}' - type unknown`, name); }
-    if (!def[op]) { throwError(`undefined operation '${op}' - unavailable for this type`, name); }
+    if (!def) { if (err) { throwError(`unable execute '${op}' - type unknown`, name); } return; }
+    if (!def[op]) { if (err) { throwError(`undefined operation '${op}' - unavailable for this type`, name); } return; }
     return def[op](...args);
 }
-export const touchBy = (any, op, ...args)=>{
+export const touchBy = (any, op, err, ...args)=>{
     const name = getNameByInst(any);
-    if (!name) { throwError(`unable execute '${op}' - missing type of '${any}'`); }
-    return touch(name, op, any, ...args);
+    if (!name) { if (err) { throwError(`unable execute '${op}' - missing type of '${any}'`); } return; }
+    return touch(name, op, err, any, ...args);
 }
 
 //0 = only, 1 = full, 2 = tap, 3 = pull

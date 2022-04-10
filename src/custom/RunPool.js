@@ -28,17 +28,14 @@ class RunPool extends Pool {
         if (this.fit._current) { throw "RunPool.fit maximum call stack size exceeded"; }
         this.fit._current = true;
 
-        let i = 0; args = [...this.with._current, ...args];
-
-        const next = (...a)=>{
-            const k = i++, l = a.length; 
-            a = a.concat(args); a.splice(l, l);
-            return this[k] ? this[k](next, ...a) : a[0];
-        };
+        const w = this.with._current;
+        const result = jet.reducer((next, i, ...a)=>
+            this[i] ? this[i](next, ...w, ...a) : a[0]
+        )(...w, ...args);
 
         delete this.fit._current;
 
-        return next();
+        return result;
     }
 }
 

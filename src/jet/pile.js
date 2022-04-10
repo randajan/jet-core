@@ -1,106 +1,80 @@
 import jet, { getDefByInst } from "./defs.js";
 
-const _each = (any, fce, deep, flat, path)=>{
-    const def = getDefByInst(any);
-    flat = flat ? Array.jet.tap(flat) : null;
-    if (!def || !def.entries) { return flat || any; }
+const _each = (any, fce, deep, dprun, dir, flat)=>{
+    const df = getDefByInst(any);
+    if (!df || !df.entries) { return flat || any; }
 
-    fce = Function.jet.tap(fce);
-    path = String.jet.to(path, ".");
-    const deeprun = jet.isRunnable(deep);
-    const res = flat || def.create();
+    const res = flat || df.create();
     
-    for (let [key, val] of def.entries(any)) {
-        const pkey = (path ? path+"." : "")+key;
+    for (let [key, val] of df.entries(any)) {
+        const path = (dir ? dir+"." : "")+key;
         const dp = deep && jet.isMapable(val);
-        val = !dp ? fce(val, pkey, any, path) : deeprun ? deep(val, pkey, any, path) : _each(val, fce, deep, flat, pkey);
+
+        if (!dp) { val = fce(val, path, dir, key); }
+        else if (dprun) { val = deep(val, path, dir, key); }
+        else { val =_each(val, fce, deep, dprun, path, flat); }
+
         if (val === undefined) { continue; }
-        if (!flat) { def.set(res, key, val); } else if (!dp) { flat.push(val); } //aftermath
+        if (!flat) { df.set(res, key, val); } else if (!dp) { flat.push(val); } //aftermath
     };
     
     return res;
 }
+const _eachInit = (any, fce, deep, dir, flat)=>_each(
+    any,
+    Function.jet.tap(fce),
+    deep,
+    jet.isRunnable(deep),
+    String.jet.to(dir, "."),
+    flat
+);
 
-const _forKey = (any, key)=>jet.isMapable(any) ? any : String.jet.isNumeric(key) ? [] : {};
-export const dig = (path, fce)=>{
-    const pa = String.jet.to(path, ".").split(".");
+export const forEach = (any, fce, deep, dir)=>_eachInit(any, fce, deep, dir, []);
+export const map = (any, fce, deep, dir)=>_eachInit(any, fce, deep, dir);
 
-    let i = 0;
-    const next = (...a)=>{
-        const k = i++;
-        return k < pa.length ? fce(pa[k], k, next) : null;
-    };
-
-    return next();
+export const reducer = reductor=>{
+    let i=0, next;
+    return next = (...input)=>reductor(next, i++, ...input);
 }
-const _digStep = (any, parr, lvl, entryFce, exitFce, force=true)=>{
-    // const pa = String.jet.to(path, ".").split(".");
-    const key = parr[lvl];
-    fce(any[key]);
-    
-    // for (let [i, p] of pa.entries()) {
 
-        if (val == null) { pb[pa.length-1-i] = [any, p]; } //backpath
-        if (!force && any[p] != null && !jet.isMapable(any[p])) { return r; }
-        else if (i !== pa.length-1) { any = jet.set(any, p, _forKey(any[p], pa[i+1]));}
-        else if (val == null) { jet.rem(any, p);}
-        else { jet.set(any, p, val);}
-
-    // };
-
-    // for (let [any, p] of pb) {
-    //     if (jet.isFull(any[p])) { break; }
-    //     else { jet.rem(any, p); }
-    // };
-    // return r;
-};
-export const _dig = (any, path, val, force=true)=>{
+export const dig = (any, path, fce)=>{
     const pa = String.jet.to(path, ".").split(".");
-
-    any = _forKey(any, pa[0]);
-
-    for (let [i, p] of pa.entries()) {
-        if (val == null) { pb[pa.length-1-i] = [any, p]; } //backpath
-        if (!force && any[p] != null && !jet.isMapable(any[p])) { return r; }
-        else if (i !== pa.length-1) { any = jet.set(any, p, _forKey(any[p], pa[i+1]));}
-        else if (val == null) { jet.rem(any, p);}
-        else { jet.set(any, p, val);}
-    };
-
-    for (let [any, p] of pb) {
-        if (jet.isFull(any[p])) { break; }
-        else { jet.rem(any, p); }
-    };
-    return r;
-};
-
-export const forEach = (any, fce, deep, path)=>_each(any, fce, deep, true, path);
-export const map = (any, fce, deep, path)=>_each(any, fce, deep, false, path);
+    const end = pa.length-1;
+    return reducer((next, index, parent)=>{
+        const dir = pa.slice(0, index).join(".");
+        return fce(next, parent, (dir ? dir+"." : "") + pa[index], dir, pa[index], index === end);
+    })(any);
+}
 
 export const digOut = (any, path, def)=>{
     const pa = String.jet.to(path, ".").split(".");
-    for (let p of pa) { if (null == (any = jet.get(any, p))) { return def; }}
+    for (let p of pa) { if (null == (any = jet.get(any, p, false))) { return def; }}
     return any;
 };
 
-export const digIn = (any, path, val, force=true)=>{
-    const pa = String.jet.to(path, ".").split("."), pb = [];
-    const r = any = _forKey(any, pa[0]);
+export const digIn = (any, path, val, force=true, reductor=undefined)=>{
 
-    for (let [i, p] of pa.entries()) {
-        if (val == null) { pb[pa.length-1-i] = [any, p]; } //backpath
-        if (!force && any[p] != null && !jet.isMapable(any[p])) { return r; }
-        else if (i !== pa.length-1) { any = jet.set(any, p, _forKey(any[p], pa[i+1]));}
-        else if (val == null) { jet.rem(any, p);}
-        else { jet.set(any, p, val);}
+    const step = (next, parent, path, dir, key, isEnd)=>{
+        let df = getDefByInst(parent);
+        if (!df || !df.entries) {
+            if (!force) { return parent; }
+            parent = String.jet.isNumeric(key) ? [] : {};
+            df = getDefByInst(parent);
+        }
+        const v = isEnd ? val : next(df.get(parent, key, false));
+        if (v != null) { df.set(parent, key, v, false); return parent; }
+        df.rem(parent, key);
+        if (df.full(parent)) { return parent; }
     };
 
-    for (let [any, p] of pb) {
-        if (jet.isFull(any[p])) { break; }
-        else { jet.rem(any, p); }
-    };
-    return r;
-};
+    return dig(any, path, !jet.isRunnable(reductor) ? step : 
+        (next, parent, path, dir, key, isEnd)=>reductor(
+            parent=>step(next, parent, path, dir, key, isEnd),
+            parent, path, dir, key, isEnd
+        )
+    );
+
+}
 
 export const deflate = (any, includeMapable=false)=>{
     const flat = {};
@@ -136,33 +110,6 @@ export const assign = (to, from, overwriteArray=true)=>_assign(overwriteArray, t
 export const merge = (...any)=>_assign(false, {}, ...any);
 
 export const clone = (any, deep)=>map(any, _=>_, deep);
-
-// const _audit = (includeMapable, ...any)=>{
-//     const audit = new Set();
-//     any.map(a=>forEach(a, (v,p)=>audit.add(p), includeMapable ? (v,p)=>audit.add(p) : true));
-//     return Array.from(audit).sort((a,b)=>b.localeCompare(a));
-// }
-// export const auditKeys = (...any)=>_audit(true, ...any);
-// export const auditVals = (...any)=>_audit(false, ...any);
-
-// export const match = (to, from, fce)=>{
-//     fce = Function.jet.tap(fce);
-//     auditVals(to, from).map(path=>{
-//         put(to, path, fce(dig(to, path), dig(from, path), path), true);
-//     });
-//     return to;
-// };
-
-// export const compare = (...any)=>{
-//     const res = new Set();
-//     auditKeys(...any).map(path=>{
-//         if (new Set(any.map(a=>dig(a, path))).size > 1) {
-//             const parr = path.split(".");
-//             parr.map((v,k)=>res.add(parr.slice(0, k+1).join(".")));
-//         }
-//     })
-//     return Array.from(res);
-// };
 
 export const melt = (any, comma)=>{
     let j = "", c = String.jet.to(comma);
