@@ -189,7 +189,31 @@ _Handle mapable objects (it requires defined type)_
 
 ## Extra methods
 
-### __jet.dig(any, path, def)__
+### __jet.dig(any, path, reductor)__
+_Exploring nested structure by path_
+
+* Arguments
+  * any: _any mapable variable_ 
+  * path: _string or Array (even nested Array)_
+  * reductor: _function(next, parent, dir+key, dir, key, isEnd)_
+* Return
+  * result of first iteration of reductor
+
+### __jet.digIn(any, path, val, force=true, reductor)__
+_Return value from deep nested object_
+
+* Arguments
+  * any: _any mapable variable_ 
+  * path: _string or Array (even nested Array)_
+  * val: _any_
+  * force: _boolean (create path if not exist)_
+  * reductor: _function(next, parent, dir+key, dir, key, isEnd)_
+* Return
+  * any
+* Example
+  * jet.digIn({}, "foo.0", "bar", true) == {foo:["bar"]};
+
+### __jet.digOut(any, path, def)__
 _Return  value from deep nested object_
 
 * Arguments
@@ -199,30 +223,17 @@ _Return  value from deep nested object_
 * Return
   * find value or def when no value was found
 * Example
-  * jet.dig({foo:["bar"]}, "foo.0") == "bar";
-  * jet.dig({foo:["bar"]}, ["foo", 1], "foo") == "foo";
+  * jet.digOut({foo:["bar"]}, "foo.0") == "bar";
+  * jet.digOut({foo:["bar"]}, ["foo", 1], "foo") == "foo";
 
-### __jet.put(any, path, val, force=true)__
-_Return value from deep nested object_
-
-* Arguments
-  * any: _any mapable variable_ 
-  * path: _string or Array (even nested Array)_
-  * val: _any_
-  * force: _boolean (create path if not exist)_
-* Return
-  * any
-* Example
-  * jet.put({}, "foo.0", "bar", true) == {foo:["bar"]};
-
-### __jet.forEach(any, fce, deep, path) / .map(any, fce, deep, path)__
+### __jet.forEach(any, fce, deep, dir) / .map(any, fce, deep, dir)__
 _Map any mapable object by default: Object, Array, Set, Map, Pool_
 
 * Arguments
   * any: _any mapable variable_ 
-  * fce: _function(val, path+key, parent, parentpath) (handler)_
+  * fce: _function(val, dir+key, dir, key) (handler)_
   * deep: _boolean or function (true=recursive maping; function=custom recursive maping)_
-  * deep: _boolean (recursive maping)_
+  * dir: _string (base dir of structure)_
 * Return
   * forEach: _flat array with result from handler function_
   * map: _copy of structure with result from handler function_

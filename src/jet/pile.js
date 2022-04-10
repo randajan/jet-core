@@ -37,12 +37,12 @@ export const reducer = reductor=>{
     return next = (...input)=>reductor(next, i++, ...input);
 }
 
-export const dig = (any, path, fce)=>{
+export const dig = (any, path, reductor)=>{
     const pa = String.jet.to(path, ".").split(".");
     const end = pa.length-1;
     return reducer((next, index, parent)=>{
         const dir = pa.slice(0, index).join(".");
-        return fce(next, parent, (dir ? dir+"." : "") + pa[index], dir, pa[index], index === end);
+        return reductor(next, parent, (dir ? dir+"." : "") + pa[index], dir, pa[index], index === end);
     })(any);
 }
 
