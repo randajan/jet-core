@@ -12,14 +12,10 @@ class Pool extends Array {
 
     add(...items) {
         this.splice(-1, 0, ...items);
-        return this;
+        return _=>this.remove(...items);
     }
     remove(...items) {
-        for (const item of items) {
-            const index = this.indexOf(item);
-            if (index >= 0) { super.splice(index, 1); } //remove only
-        }
-        return this;
+        return this.filter(v=>!items.includes(v));
     }
 
     push(...items) {
@@ -58,13 +54,15 @@ class Pool extends Array {
     passFrom(from, start, length=1) { return Pool.pass(from, this, start, length); }
 
     flush() {
-        return this.splice(0, this.length);
+        return super.splice(0, this.length);
     }
 
     filter(fce) {
-        for (let i=this.length-1; i>=0; i--) {
-            if (!fce(this[i], i, this)) { super.splice(i, 1); } //remove only
+        let k = 0;
+        for (let i=0; i<this.length; i++) {
+            if (fce(this[i], i, this)) { this[k++] = this[i]; }
         }
+        this.length = k;
         return this;
     }
 
