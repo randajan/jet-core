@@ -1,6 +1,7 @@
 import jet from "../jet";
 
 export default jet.define("Set", Set, {
+    copy:x=>new Set(x),
     keys:x=>x.keys(),
     vals:x=>x.values(),
     entries:x=>x.entries(),

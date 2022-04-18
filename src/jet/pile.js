@@ -1,36 +1,44 @@
 import jet, { getDefByInst } from "./defs.js";
 
-const _each = (any, fce, deep, dprun, dir, flat)=>{
-    const df = getDefByInst(any);
-    if (!df || !df.entries) { return flat || any; }
-
-    const res = flat || df.create();
+const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat)=>{
+    const res = flat || create();
     
-    for (let [key, val] of df.entries(any)) {
+    for (let [key, val] of entries(any)) {
         const path = (dir ? dir+"." : "")+key;
-        const dp = deep && jet.isMapable(val);
-
-        if (!dp) { val = fce(val, path, dir, key); }
+        const def = (deep || !fce) ? getDefByInst(val) : null;
+        const dp = deep && def && def.entries;
+        
+        if (!dp) { val = fce ? fce(val, path, dir, key) : def ? def.copy(val) : val; }
         else if (dprun) { val = deep(val, path, dir, key); }
-        else { val =_each(val, fce, deep, dprun, path, flat); }
+        else { val = _each(def, val, fce, deep, dprun, path, flat); }
 
         if (val === undefined) { continue; }
-        if (!flat) { df.set(res, key, val); } else if (!dp) { flat.push(val); } //aftermath
+
+        if (!flat) { set(res, key, val); } else if (!dp) { flat.push(val); } 
     };
     
     return res;
 }
-const _eachInit = (any, fce, deep, dir, flat)=>_each(
-    any,
-    Function.jet.tap(fce),
-    deep,
-    jet.isRunnable(deep),
-    String.jet.to(dir, "."),
-    flat
-);
+const _eachInit = (any, fce, deep, dir, flat)=>{
+    const df = getDefByInst(any);
+    
+    if (df && df.entries) {return _each(
+        df,
+        any,
+        fce,
+        deep,
+        jet.isRunnable(deep),
+        String.jet.to(dir, "."),
+        flat
+    )};
 
-export const forEach = (any, fce, deep, dir)=>_eachInit(any, fce, deep, dir, []);
-export const map = (any, fce, deep, dir)=>_eachInit(any, fce, deep, dir);
+    const val = fce ? fce(any, "", "", "") : df.copy ? df.copy(any) : any;
+    if (flat && val !== undefined) { flat.push(val); }
+    return flat || val;
+};
+
+export const forEach = (any, fce, deep=false, dir="")=>_eachInit(any, fce, deep, dir, []);
+export const map = (any, fce, deep=false, dir="")=>_eachInit(any, fce, deep, dir);
 
 export const reducer = reductor=>{
     let i=0, next;
@@ -108,8 +116,6 @@ export const inflate = (flat, includeMapable=true)=>{
 
 export const assign = (to, from, overwriteArray=true)=>_assign(overwriteArray, to, from);
 export const merge = (...any)=>_assign(false, {}, ...any);
-
-export const clone = (any, deep)=>map(any, _=>_, deep);
 
 export const melt = (any, comma)=>{
     let j = "", c = String.jet.to(comma);

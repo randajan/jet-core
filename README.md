@@ -86,13 +86,14 @@ _Return true if any typeof === function_
   * jet.isRunnable({}) === false;
   * jet.isRunnable(()=>{}) === true;
 
-### __jet.copy(any)__
+### __jet.copy(any, deep=false)__
 _Will create copy of instance_
 
 * Arguments
   * any: _any variable_
+  * deep: _boolean (deep copy of mapable objects)_
 * Return
-  * _new instance or the old if there isn't defined copy function_
+  * _new instance or the old if there wasn't defined copy function_
 * Example
   * jet.copy({a:1}) == Object.assign({}, {a:1});
   * jet.copy(["foo", "bar"]) == Array.from(["foo", "bar"]);

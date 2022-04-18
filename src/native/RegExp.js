@@ -2,7 +2,7 @@ import jet from "../jet";
 
 export default jet.define("RegExp", RegExp, {
     create:RegExp,
-    copy:_=>RegExp(_.source),
+    copy:x=>RegExp(x.source),
     extendPrototype:false,
     plugins:{
         lib:{
@@ -17,6 +17,6 @@ export default jet.define("RegExp", RegExp, {
         }
     },
     to:{
-        String:regex=>regex.toString().slice(1, -1)
+        String:regex=>regex.source
     }
 });

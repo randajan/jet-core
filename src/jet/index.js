@@ -16,7 +16,7 @@ Plex.extend(jet, {
     pull:(name, ...a)=>_.factory(name, 3, ...a),
     create:(name, ...a)=>_.touch(name, "create", true, ...a),
     rnd:(name, ...a)=>_.touch(name, "rnd", true, ...a),
-    copy:any=>_.touchBy(any, "copy"),
+    copy:(any, deep=false)=>deep ? jet.map(any, undefined, true) : _.touchBy(any, "copy"),
     keys:(any, throwError=false)=>_.touchBy(any, "keys", throwError) || [],
     vals:(any, throwError=false)=>_.touchBy(any, "vals", throwError) || [],
     entries:(any, throwError=false)=>_.touchBy(any, "entries", throwError) || [],
