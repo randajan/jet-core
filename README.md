@@ -92,11 +92,13 @@ _Will create copy of instance_
 * Arguments
   * any: _any variable_
   * deep: _boolean (deep copy of mapable objects)_
+  * copyUnmapable: _boolean (copy even unmapable values in the deep nested structure)_
 * Return
   * _new instance or the old if there wasn't defined copy function_
 * Example
-  * jet.copy({a:1}) == Object.assign({}, {a:1});
-  * jet.copy(["foo", "bar"]) == Array.from(["foo", "bar"]);
+  * x = [{a:Symbol("test")}]; y = jet.copy(x);              console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false true  true
+  * x = [{a:Symbol("test")}]; y = jet.copy(x, true);        console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false false true
+  * x = [{a:Symbol("test")}]; y = jet.copy(x, true, true);  console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false false false
 
 ## Constructor/Prototype methods
 _These methods acumulate main funcstionality._

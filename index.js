@@ -1,6 +1,10 @@
 import slib from "@randajan/simple-lib";
 
-slib({
-    start:process.env.NODE_ENV === "dev",
-    entries:["index.js"]
-})
+
+slib(
+    process.env.NODE_ENV !== "dev",
+    {
+        minify:false,
+        entries:["index.js"]
+    }
+)

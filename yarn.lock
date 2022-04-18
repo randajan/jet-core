@@ -31,10 +31,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@randajan/simple-lib@^1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@randajan/simple-lib/-/simple-lib-1.1.3.tgz#1538400a5d3a1aeec58dde25701249eed1bec6a0"
-  integrity sha512-PnYxAOMUAu230hz910CgM6SDVrx2O4sz6wfxRPpKCvr130mRaCJw4SVAj+5fnChAssZTy5UCPBVTsMkLhYUF9Q==
+"@randajan/simple-lib@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@randajan/simple-lib/-/simple-lib-1.2.0.tgz#4fc2247c2301cb80114832fe69d0fa0213c1b986"
+  integrity sha512-CuOqxcmNdjGGRDVyKv5cU0bitlqyZ6uaYBcSdklPXCSDud3VWRJ6FcgxqB8Bcx8bj+TyP+I+jXXx5eJ82bnfkw==
 
 accepts@~1.3.4:
   version "1.3.8"
