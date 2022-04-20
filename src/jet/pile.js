@@ -21,6 +21,7 @@ const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat)=>{
 }
 const _eachInit = (any, fce, deep, dir, flat)=>{
     const df = getDefByInst(any);
+    dir = String.jet.to(dir, ".");
     
     if (df && df.entries) {return _each(
         df,
@@ -28,11 +29,11 @@ const _eachInit = (any, fce, deep, dir, flat)=>{
         fce,
         deep,
         jet.isRunnable(deep),
-        String.jet.to(dir, "."),
+        dir,
         flat
     )};
 
-    const val = fce ? fce(any, "", "", "") : df.copy ? df.copy(any) : any;
+    const val = fce ? fce(any, dir, "", dir) : df.copy ? df.copy(any) : any;
     if (flat && val !== undefined) { flat.push(val); }
     return flat || val;
 };
@@ -55,8 +56,8 @@ export const dig = (any, path, reductor)=>{
 }
 
 export const digOut = (any, path, def)=>{
-    const pa = String.jet.to(path, ".").split(".");
-    for (let p of pa) { if (null == (any = jet.get(any, p, false))) { return def; }}
+    path = String.jet.to(path, "."); if (!path) { return any; }
+    for (let p of path.split(".")) { if (null == (any = jet.get(any, p, false))) { return def; }}
     return any;
 };
 
