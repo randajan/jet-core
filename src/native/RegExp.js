@@ -4,7 +4,7 @@ export default jet.define("RegExp", RegExp, {
     create:RegExp,
     copy:x=>RegExp(x.source),
     extendPrototype:false,
-    plugins:{
+    extendConstructor:{
         lib:{
             line:/[^\n\r]+/g, 
             number:/-?[0-9]+(\s+[0-9]+)*([,.][0-9]+)?/, 

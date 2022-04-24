@@ -35,7 +35,7 @@ _will return jet type name of variable any_
 
 ### __jet.define(name, constructor, options={})__
 _Defining custom types for detecting, creating and copying_
-_Same jet methods and plugins will be attached to jet.*[name](), to constructor.jet.*() and to prototype.jet.*()_
+_Same jet methods will be attached to jet.*[name](), to constructor.jet.*() and to prototype.jet.*()_
 
 * Arguments
   * name: _string (name of the type)_
@@ -52,15 +52,14 @@ _Same jet methods and plugins will be attached to jet.*[name](), to constructor.
     * get: _function (get key for mapable types)_
     * set: _function (set key for mapable types)_
     * rem: _function (rem key for mapable types)_
-    * plugins: _object (functions that will be appended to constructor and prototype)_
     * extend: _boolean (false=turn off extension of constructor and prototype)
-    * extendConstructor: _boolean (false=turn off extension of constructor)
-    * extendPrototype: _boolean (false=turn off extension of prototype)
+    * extendConstructor: _boolean or object (false=turn off extension of constructor)
+    * extendPrototype: _boolean or object (false=turn off extension of prototype)
 * Return
   * _constructor_
 * Example
-  * jet.type.define("Arr", Array, { create:x=>new Array(x), copy:x=>Array.from(x) } );
-  * jet.type.define("Ele", Element, { plugins:{ find:query=>document.querySelector(query) } });
+  * jet.type.define("Array", Array, { create:x=>new Array(x), copy:x=>Array.from(x) } );
+  * jet.type.define("Element", Element, { extendConstructor:{ find:query=>document.querySelector(query) } });
 
 ### __jet.isMapable(any)__
 _Return true on any type of variable that has mapable=true on its type definition_

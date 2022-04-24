@@ -15,7 +15,7 @@ export default jet.define("Number", Number, {
         Promise:async num=>num,
         String:num=>String(num)
     },
-    plugins:{
+    extendPrototype:{
         x: (num1, symbol, num2)=>{
             const s = symbol, nums = Number.jet.zoomIn(num1, num2), [n, m] = nums;
             if (s === "/") { return n/m; }
