@@ -1,4 +1,4 @@
-import jet, { throwError, throwWarn, register, getDefByConst, getDefByName } from "./defs.js";
+import jet, { throwError, throwWarn, register, getDefByProto, getDefByName } from "./defs.js";
 import * as _ from "./methods.js";
 
 const enumerable = true;
@@ -19,7 +19,7 @@ const define = (name, constructor, options={})=>{
     let jc, jp;
 
     if (extend !== false) {
-        const ancestor = getDefByConst(constructor);
+        const ancestor = getDefByProto(prototype);
         if (ancestor) {
             throwWarn(`constructor allready extended as '${ancestor}'. Use option 'extend=false'`, name);
         } else {
@@ -35,7 +35,7 @@ const define = (name, constructor, options={})=>{
     }
 
     ex(0, "create", create);
-    ex(0, "is", (any, inclusive=false)=>_.is(name, any, inclusive));
+    ex(0, "is", (any, strict=true)=>_.is(name, any, strict));
     ex(0, "to", (any, ...a)=>_.to(name, any, ...a));
     ex(0, "only", (...a)=>_.factory(name, 0, ...a));
     ex(0, "full", (...a)=>_.factory(name, 1, ...a));

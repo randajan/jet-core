@@ -1,7 +1,7 @@
 import Plex from "./Plex";
 
 const byName = {};
-const byConstructor = new Map();
+const byPrototype = new Map();
 const constructorByName = {};
 
 const defaultThrow = (msg, name)=>`jet${name ? ` type '${name}'` : ""} ${msg}`;
@@ -9,33 +9,45 @@ export const throwError = (msg, name)=>{ throw defaultThrow(msg, name); }
 export const throwWarn = (msg, name)=>{ console.warn(defaultThrow(msg, name)); }
 
 export const getDefByName = name=>byName[name];
-export const getDefByConst = constructor=>{
-    const list = byConstructor.get(constructor);
+export const getDefByProto = prototype=>{
+    const list = byPrototype.get(prototype);
     return list ? list[0] : undefined;
 }
 
-const getByInst = (any, all=false, withDefinition=false)=>{
-    const r = all ? [] : undefined;
-    if (any == null) { return r; }
-    const list = byConstructor.get(any.constructor);
-    if (!list) { return r; }
+const getByInst = (any, def, withDef=true)=>{
+    if (!def.is || def.is(any)) { return withDef ? def : def.name; }
+}
+
+const findByProto = (any, proto, withDef=true)=>{
+    const list = byPrototype.get(proto);
+    if (!list) { return; }
+    if (list.length === 1) { return getByInst(any, list[0], withDef); }
     for (const def of list) {
-        if (def.is && !def.is(any)) { continue; }
-        const e = withDefinition ? def : def.name;
-        if (r) { r.push(e) } else { return e; }
+        const r = getByInst(any, def, withDef);
+        if (r) { return r; }
     }
+}
+
+const findByInst = (any, strict, withDef=true)=>{
+    if (any == null) { return; }
+    if (strict) { return findByProto(any, any.__proto__, withDef); }
+    let r, p = any;
+    do { r = findByProto(any, p = p.__proto__, withDef); }
+    while (p && r === undefined);
     return r;
 }
 
-export const getDefByInst = (any, all=false)=>getByInst(any, all, true);
-export const getNameByInst = (any, all=false)=>getByInst(any, all, false);
+export const getDefByInst = (any, strict=true)=>findByInst(any, strict, true);
+
+const getNameByInst = (any, strict=true)=>findByInst(any, strict, false);
+
 
 export const register = def=>{
     byName[def.name] = def;
     Object.defineProperty(constructorByName, def.name, {enumerable:true, value:def.constructor});
-    const list = byConstructor.get(def.constructor);
+    const list = byPrototype.get(def.prototype);
     if (list) { list.unshift(def); }
-    else { byConstructor.set(def.constructor, [def]); }
+    else { byPrototype.set(def.prototype, [def]); }
 }
 
 //jet init

@@ -1,5 +1,5 @@
 import Plex from "./Plex";
-import jet, { getDefByInst, getDefByName, throwError } from "./defs.js";
+import jet, { getDefByInst } from "./defs.js";
 import * as _ from "./methods.js";
 import define from "./define.js";
 import * as pile from "./pile.js";
@@ -7,8 +7,8 @@ import * as pile from "./pile.js";
 Plex.extend(jet, {
     is:_.is,
     to:_.to,
-    isFull:any=>{ const def = getDefByInst(any); return def ? def.full(any) : _.isFull(any); },
-    isMapable:any=>{ const def = getDefByInst(any); return def ? !!def.entries : false; },
+    isFull:any=>{ const def = getDefByInst(any, false); return def ? def.full(any) : _.isFull(any); },
+    isMapable:(any, strict=true)=>{ const def = getDefByInst(any, strict); return def ? !!def.entries : false; },
     isRunnable:any=>typeof any === "function",
     full:(...a)=>_.factory(null, 1, ...a),
     only:(name, ...a)=>_.factory(name, 0, ...a),
@@ -25,8 +25,8 @@ Plex.extend(jet, {
     rem:(any, key, throwError=true)=>_.touchBy(any, "rem", throwError, key),
     getRND:(any, min, max, sqr)=>{
         const def = getDefByInst(any);
-        if (def.vals) { any = def.vals(any); } else if (typeof any !== "string") { return; }
-        return _.getRND(any, min, max, sqr);
+        if (def && def.vals) { any = def.vals(any); }
+        else if (typeof any === "string") { return _.getRND(any, min, max, sqr); }
     },
     run:(any, ...args)=>{
         if (jet.isRunnable(any)) { return [any(...args)]; }

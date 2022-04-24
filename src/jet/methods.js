@@ -1,4 +1,4 @@
-import { throwError, getDefByName, getDefByInst, getNameByInst } from "./defs.js";
+import { throwError, getDefByName, getDefByInst } from "./defs.js";
 
 const magic = ["only", "full", "tap", "pull", "is", "to", "copy", "rnd"];
 
@@ -8,17 +8,19 @@ export const isInstance = any=>{
 }
 export const isInstanceOf = (constructor, any)=>any instanceof constructor; //is instance comparing
 
-export const is = (name, any, inclusive=false)=>{
+export const is = (name, any, strict=true)=>{
     if (!name) { return false; }
     const def = getDefByName(name);
     if (def) {
-        if (any == null || any.constructor !== def.constructor) { return false; }
-        return inclusive || name === getNameByInst(any);
+        if (any == null) { return false; }
+        if (strict && any.__proto__ !== def.prototype) { return false; }
+        if (!strict && !(any instanceof def.constructor)) { return false; }
+        return !def.is || def.is(any);
     }
     const nt = typeof name;
     if (nt === "string") { return typeof any === name; }
     if (any == null || (nt !== "function" && nt !== "object")) { return false; }
-    return inclusive ? any instanceof name : any.constructor === name;
+    return strict ? any.constructor === name : any instanceof name;
 }
 
 export const isFull = (any, vals)=>{
@@ -27,16 +29,20 @@ export const isFull = (any, vals)=>{
     return false;
 }
 
+
+const _touch = (def, op, err, ...args)=>{
+    if (def[op]) { return def[op](...args); }
+    if (err) { throwError(`undefined operation '${op}' - unavailable for this type`, def.name); }
+}
 export const touch = (name, op, err, ...args)=>{
     const def = getDefByName(name);
-    if (!def) { if (err) { throwError(`unable execute '${op}' - type unknown`, name); } return; }
-    if (!def[op]) { if (err) { throwError(`undefined operation '${op}' - unavailable for this type`, name); } return; }
-    return def[op](...args);
+    if (def) { return _touch(def, op, err, any, ...args); }
+    if (err) { throwError(`unable execute '${op}' - type unknown`, name); }
 }
 export const touchBy = (any, op, err, ...args)=>{
-    const name = getNameByInst(any);
-    if (!name) { if (err) { throwError(`unable execute '${op}' - missing type of '${any}'`); } return; }
-    return touch(name, op, err, any, ...args);
+    const def = getDefByInst(any, false);
+    if (def) { return _touch(def, op, err, any, ...args); }
+    if (err) { throwError(`unable execute '${op}' - missing type of '${any}'`); }
 }
 
 //0 = only, 1 = full, 2 = tap, 3 = pull
@@ -63,7 +69,7 @@ export const factory = (name, mm, ...args)=>{
 export const to = (name, any, ...args)=>{
     const def = getDefByName(name);
     if (!def) { throwError(`unable execute 'to' - type unknown`, name); }
-    const at = getDefByInst(any);
+    const at = getDefByInst(any, false);
     if (!at) { return def.create(); }
     if (def.name === at.name) { return any; }
     const exe = at.to[name] || at.to["*"]; 

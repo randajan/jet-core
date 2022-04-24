@@ -20,18 +20,19 @@ yarn add @randajan/jet-core
 ## Main methods
 _These methods, are exclusive for default jet export_
 
-### __jet(any, all=false)__
+### __jet(any, strict=true)__
 _will return jet type name of variable any_
 
 * Arguments
   * any: _any variable_
-  * all: _boolean (return all types?)_
+  * strict: _boolean (true = return closest type)_
 * Return
   * all=false: _top type of variable_
   * all=true: _array with all types of variable_
 * Example
   * jet.type([]) === "Array";
-  * jet.type(NaN, true) === ["NaN", "Number"];
+  * jet(new (class {})(), true) === undefined;
+  * jet(new (class {})(), false) === "Object";
 
 ### __jet.define(name, constructor, options={})__
 _Defining custom types for detecting, creating and copying_
@@ -61,11 +62,12 @@ _Same jet methods will be attached to jet.*[name](), to constructor.jet.*() and 
   * jet.type.define("Array", Array, { create:x=>new Array(x), copy:x=>Array.from(x) } );
   * jet.type.define("Element", Element, { extendConstructor:{ find:query=>document.querySelector(query) } });
 
-### __jet.isMapable(any)__
+### __jet.isMapable(any, strict=true)__
 _Return true on any type of variable that has mapable=true on its type definition_
 
 * Arguments
   * any: _any variable_
+  * strict: _boolean (true = is closest type mapable)_
 * Return
   * _true when variable is mapable_
 * Example
@@ -108,19 +110,17 @@ _After 'jet.define(**name**, **consturctor**)' is called, those methods are atta
  3. Constructor: _**constructor**.jet.**method**(...args)_
  4. Prototype: _**instance**.jet.**method**(...args)_
 
-### __jet.is(name, any, inclusive=false)__
+### __jet.is(name, any, strict=true)__
 _Check the passed type with result. Endpoint 'jet.is(name, ...a)' also work like typeof and instanceof_
 
 * Arguments
   * name: _string (name of the type)_
   * any: _any variable_
-  * inclusive: _boolean_
-* Return
-  * inclusive=true: _true when the type is included in result of jet.type all=true_
+  * strict: _boolean (true = is instanceof)_
 * Example
   * jet.is.Array([]) === true;
   * jet.is.Object([]) === false;
-  * jet.is.Array([], true) === true;
+  * jet.is.Object([], true) === true;
   * jet.is.RegExp(RegExp()) === true;
 
 ### __jet.isFull(any)__
