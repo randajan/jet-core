@@ -36,7 +36,7 @@ const _touch = (def, op, err, ...args)=>{
 }
 export const touch = (name, op, err, ...args)=>{
     const def = getDefByName(name);
-    if (def) { return _touch(def, op, err, any, ...args); }
+    if (def) { return _touch(def, op, err, ...args); }
     if (err) { throwError(`unable execute '${op}' - type unknown`, name); }
 }
 export const touchBy = (any, op, err, ...args)=>{
