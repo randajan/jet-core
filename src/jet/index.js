@@ -28,10 +28,7 @@ Plex.extend(jet, {
         if (def && def.vals) { any = def.vals(any); }
         else if (typeof any === "string") { return _.getRND(any, min, max, sqr); }
     },
-    run:(any, ...args)=>{
-        if (jet.isRunnable(any)) { return [any(...args)]; }
-        return jet.map(any, f=>jet.run(f, ...args));
-    },
+    run:(any, ...args)=>jet.forEach(any, f=>{if (jet.isRunnable(f)) { return f(...args); }}),
     ...pile,
     define:new Plex(define, {to:_.toDefine})
 });
