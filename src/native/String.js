@@ -14,7 +14,7 @@ export default jet.define("String", String, {
         const c = ["bcdfghjklmnpqrstvwxz", "aeiouy"], p = c[0].length/(c[0].length+c[1].length);
         const l = Number.jet.rnd(Math.max(min, 2), max, sqr);
         let s = Boolean.jet.rnd(p), r = "";
-        while (r.length < l) {r += jet.childRnd(c[+(s = !s)]);}
+        while (r.length < l) {r += jet.getRND(c[+(s = !s)]);}
         return r;
     },
     to:{
@@ -62,7 +62,7 @@ export default jet.define("String", String, {
         },
         hide: (str, pat, whitespace)=>{
             if (!str) { return str; } var r = "", s = str, p = hidePats[pat] || pat || "•", w = (whitespace === false);
-            for (var i = 0; i < str.length; i++) { r += (w && (s[i] === "\n" || s[i] === " ")) ? s[i] : p.length - 1 ? jet.childRnd(p) : p; }
+            for (var i = 0; i < str.length; i++) { r += (w && (s[i] === "\n" || s[i] === " ")) ? s[i] : p.length - 1 ? jet.getRND(p) : p; }
             return r;
         },
         levenshtein: (s0, s1, blend)=>{
