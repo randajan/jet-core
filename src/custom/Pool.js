@@ -89,6 +89,10 @@ class Pool extends Array {
         }
         return this;
     }
+
+    toString(separator=" ") {
+        return jet.melt(this, String.jet.to(separator, this));
+    }
 }
 
 export default jet.define("Pool", Pool, {
