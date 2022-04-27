@@ -1,6 +1,6 @@
 import jet, { getDefByInst } from "./defs.js";
 
-const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat)=>{
+const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat, stop, isStop)=>{
     const res = flat || create();
     
     for (let [key, val] of entries(any)) {
@@ -8,13 +8,13 @@ const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat)=>{
         const def = (deep || !fce) ? getDefByInst(val) : null;
         const dp = deep && def && def.entries;
         
-        if (!dp) { val = fce ? fce(val, path, dir, key) : def ? def.copy(val) : val; }
-        else if (dprun) { val = deep(val, path, dir, key); }
-        else { val = _each(def, val, fce, deep, dprun, path, flat); }
+        if (!dp) { val = fce ? fce(val, path, dir, key, stop) : def ? def.copy(val) : val; }
+        else if (dprun) { val = deep(val, path, dir, key, stop); }
+        else { val = _each(def, val, fce, deep, dprun, path, flat, stop, isStop); }
 
-        if (val === undefined) { continue; }
+        if (val !== undefined) { if (!flat) { set(res, key, val); } else if (!dp) { flat.push(val); } }
 
-        if (!flat) { set(res, key, val); } else if (!dp) { flat.push(val); } 
+        if (isStop()) { break; }
     };
     
     return res;
@@ -22,6 +22,7 @@ const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat)=>{
 const _eachInit = (any, fce, deep, dir, flat)=>{
     const df = getDefByInst(any);
     dir = String.jet.to(dir, ".");
+    let _stop, stop=_=>_stop=true;
     
     if (df && df.entries) {return _each(
         df,
@@ -30,10 +31,12 @@ const _eachInit = (any, fce, deep, dir, flat)=>{
         deep,
         jet.isRunnable(deep),
         dir,
-        flat
+        flat,
+        stop,
+        _=>_stop
     )};
 
-    const val = fce ? fce(any, dir, "", dir) : df.copy ? df.copy(any) : any;
+    const val = fce ? fce(any, dir, "", dir, stop) : df.copy ? df.copy(any) : any;
     if (flat && val !== undefined) { flat.push(val); }
     return flat || val;
 };
@@ -85,11 +88,13 @@ export const digIn = (any, path, val, force=true, reductor=undefined)=>{
 
 }
 
+
 export const deflate = (any, includeMapable=false)=>{
     const flat = {};
     const add = (v,p)=>{ flat[p] = v; };
     const deep = (v,p)=>{ add(v,p); forEach(v, add, deep, p); };
     forEach(any, add, includeMapable ? deep : true);
+    if (includeMapable) { flat[""] = any; }
     return flat;
 }
 
@@ -117,6 +122,20 @@ export const inflate = (flat, includeMapable=true)=>{
 
 export const assign = (to, from, overwriteArray=true)=>_assign(overwriteArray, to, from);
 export const merge = (...any)=>_assign(false, {}, ...any);
+
+export const compare = (a, b, changeList=false)=>{
+    const res = [];
+    if (!changeList && a === b) { return true; }
+
+    const flat = deflate(a);
+
+    forEach(b, (v,p,d,k,stop)=>{
+        if (flat[p] !== v) { res.push(p); }
+        if (res.length && !changeList) { stop(); }
+    }, true);
+
+    return changeList ? res : !res.length;
+}
 
 export const melt = (any, comma)=>{
     let j = "", c = String.jet.to(comma);
