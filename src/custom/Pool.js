@@ -8,6 +8,23 @@ class Pool extends Array {
         return to.push(...from.splice(start, length)) >= 0;
     }
 
+    constructor(...items) {
+        super(...items);
+        const _p = {};
+
+        Object.defineProperties(this, {
+            _autoFilter:{ get:_=>_p.autoFilter, set:fce=>{
+                if (!jet.isRunnable(fce)) { delete _p.autoFilter; }
+                else { this.filter(_p.autoFilter = fce); }
+            }},
+            _autoSort:{ get:_=>_p.autoSort, set:fce=>{
+                if (!jet.isRunnable(fce)) { delete _p.autoSort; }
+                else { this.sort(_p.autoSort = fce); }
+            }}
+        });
+
+    }
+
     has(item) { return this.includes(item); }
 
     add(...items) {
@@ -37,13 +54,12 @@ class Pool extends Array {
         if (length < 0) { length = 0; }
         if (start < 0) { start = Math.max(0, this.length+start+1-length); }
         if (items.length) {
-            const autoFilter = this.autoFilter._current, autoSort = this.autoSort._current;
             items = items.flat();
-            if (autoFilter) { items = items.filter(autoFilter); }
+            if (this._autoFilter) { items = items.filter(this._autoFilter); }
             if (start === this.length) { super.push(...items); }
             else if (start === 0) { super.unshift(...items); }
             else { result = super.splice(start, length, ...items); }
-            if (autoSort) { this.sort(autoSort); }
+            if (this._autoSort) { this.sort(this._autoSort); }
         }
         else if (length > 0) { result = super.splice(start, length); } //remove only
 
@@ -75,18 +91,12 @@ class Pool extends Array {
     }
 
     autoFilter(fce) {
-        if (!jet.isRunnable(fce)) { delete this.autoFilter._current; } else {
-            this.autoFilter._current = fce;
-            this.filter(fce);
-        }
+        this._autoFilter = fce;
         return this;
     }
 
     autoSort(fce) {
-        if (!jet.isRunnable(fce)) { delete this.autoSort._current; } else {
-            this.autoSort._current = fce;
-            this.sort(fce);
-        }
+        this._autoSort = fce;
         return this;
     }
 
@@ -96,7 +106,7 @@ class Pool extends Array {
 }
 
 export default jet.define("Pool", Pool, {
-    copy:x=>(new Pool(...x)).autoFilter(x.autoFilter._current).autoSort(x.autoSort._current),
+    copy:x=>(new Pool(...x)).autoFilter(x._autoFilter).autoSort(x._autoSort),
     keys:x=>x.keys(),
     vals:x=>x.values(),
     entries:x=>x.entries(),

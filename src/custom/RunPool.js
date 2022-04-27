@@ -2,45 +2,47 @@ import jet from "../jet";
 import Pool from "./Pool";
 
 class RunPool extends Pool {
-    constructor(...a) {
-        super(...a);
-        this.autoFilter(Function.jet.is).with();
+    constructor(...items) {
+        const _p = {with:[]};
+        super(...items);
+        this.autoFilter(jet.isRunnable);
+        Object.defineProperty(this, "_with", { get:_=>_p.with, set:v=>_p.with=Array.jet.to(v)});
     }
 
     with(...args) {
-        this.with._current = args;
+        this._with = args;
         return this;
     }
 
     run(...args) {
-        const r = this.run, first = !r._current;
-        let rc = r._current = [];
+        const first = !this._run;
+        let r = this._run = [];
         for (const fce of this) {
-            rc.push(fce(...this.with._current, ...args));
-            if (rc !== r._current) { break; }
+            r.push(fce(...this._with, ...args));
+            if (r !== this._run) { break; }
         }
-        rc = r._current;
-        if (first) { delete r._current; }
-        return rc;
+        r = this._run;
+        if (first) { delete this._run; }
+        return r;
     }
 
     fit(...args) {
-        if (this.fit._current) { throw "RunPool.fit maximum call stack size exceeded"; }
-        this.fit._current = true;
+        if (this._fit) { throw "RunPool.fit maximum call stack size exceeded"; }
+        this._fit = true;
 
-        const w = this.with._current;
+        const w = this._with;
         const result = jet.reducer((next, i, ...a)=>
             this[i] ? this[i](next, ...w, ...a) : a[0]
         )(...w, ...args);
 
-        delete this.fit._current;
+        delete this._fit;
 
         return result;
     }
 }
 
 export default jet.define("RunPool", RunPool, {
-    copy:x=>(new RunPool(...x)).autoFilter(x.autoFilter._current).autoSort(x.autoSort._current),
+    copy:x=>(new RunPool(...x)).autoFilter(x._autoFilter).autoSort(x._autoSort),
     keys:x=>x.keys(),
     vals:x=>x.values(),
     entries:x=>x.entries(),
