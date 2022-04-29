@@ -131,8 +131,14 @@ export const compare = (a, b, changeList=false)=>{
 
     forEach(b, (v,p,d,k,stop)=>{
         if (flat[p] !== v) { res.push(p); }
+        delete flat[p];
         if (res.length && !changeList) { stop(); }
     }, true);
+
+    for (let p in flat) {
+        if (res.length && !changeList) { break }
+        res.push(p);
+    }
 
     return changeList ? res : !res.length;
 }
