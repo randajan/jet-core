@@ -1,6 +1,6 @@
 {
   "name": "@randajan/jet-core",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "Ecosystem of types and related usefull tools.",
   "repository": "randajan/jet-core",
   "type": "module",
