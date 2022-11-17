@@ -8,4 +8,7 @@ export default jet.define("Map", Map, {
     get:(x,k)=>x.get(k),
     set:(x,k,v)=>x.set(k,v),
     rem:(x,k)=>x.delete(k),
+    to:{
+        Function:map=>_=>map
+    }
 });

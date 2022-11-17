@@ -6,5 +6,7 @@ export default jet.define("Symbol", Symbol, {
     create:Symbol,
     copy:x=>Symbol(to(x)),
     rnd:(...a)=>Symbol(jet.rnd.String(...a)),
-    to
+    to:{
+        Function:sym=>_=>sym
+    }
 });

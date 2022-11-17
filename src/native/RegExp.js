@@ -17,6 +17,7 @@ export default jet.define("RegExp", RegExp, {
         }
     },
     to:{
+        Function:regex=>_=>regex,
         String:regex=>regex.source
     }
 });
