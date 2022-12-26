@@ -13,7 +13,7 @@ export default jet.define("Object", Object, {
         Boolean:obj=>jet.isFull.Object(obj),
         Number:obj=>Object.values(obj),
         Array:obj=>Object.values(obj),
-        String:obj=>jet.json.to(obj),
+        String:obj=>obj.toString ? obj.toString() : jet.json.to(obj),
         Promise:async obj=>obj,
         Error:obj=>jet.json.to(obj),
         RegExp:(obj, comma)=>jet.melt(obj, comma != null ? comma : "|")
