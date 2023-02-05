@@ -39,7 +39,7 @@ export default jet.define("Number", Number, {
         fromRatio: (num, min, max)=>{ const m = max - min; return num * m + min; },
         zoomIn: (...nums)=>{
             const zoom = Math.pow(10, Math.max(...nums.map(num => Number.jet.len(num, false))));
-            return jet.prop.add(nums.map(num => Math.round(num * zoom)), "zoom", zoom);
+            return jet.prop.solid(nums.map(num => Math.round(num * zoom)), "zoom", zoom);
         },
         zoomOut: (...nums)=>nums.map(num => num / nums.zoom),
         diffusion: (num, min, max, diffusion)=>{

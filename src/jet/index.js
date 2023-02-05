@@ -3,6 +3,7 @@ import jet, { getDefByInst } from "./defs.js";
 import * as _ from "./methods.js";
 import define from "./define.js";
 import * as pile from "./pile.js";
+import * as prop from "./props.js";
 
 Plex.extend(jet, {
     is:_.is,
@@ -33,6 +34,7 @@ Plex.extend(jet, {
         if (!jet.isMapable(any)) { return undefined; }
         return jet.forEach(any, f=>jet.isRunnable(f) ? f(...args) : undefined, true);
     },
+    prop,
     ...pile,
     define:new Plex(define, {to:_.toDefine})
 });

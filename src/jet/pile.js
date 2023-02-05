@@ -150,27 +150,6 @@ export const melt = (any, comma)=>{
     return j;
 }
 
-export const prop = {
-    add: (obj, property, val, writable=false, enumerable=false, overwrite=true)=>{ 
-        if (jet.isMapable(property)) {
-            forEach(property, (f, i)=>{
-                const n = String.jet.isNumeric(i);
-                prop.add(obj, n ? f : i, n ? val : f, writable, enumerable, overwrite)
-            });
-        } else if (!obj[property] || overwrite) {
-            Object.defineProperty(obj, property, { value:val, writable, configurable:writable, enumerable });
-        }
-        return obj;
-    },
-    get: (obj, property)=>{
-        if (!property) { property = Array.from(Object.getOwnPropertyNames(obj)); }
-        if (!jet.isMapable(property)) { return obj[property]; }
-        const props = {};
-        forEach(property, k=>props[k]=obj[k]);
-        return props;
-    }
-}
-
 export const json = {
     from: (json, throwErr=false)=>{
         if (jet.isMapable(json)) { return json; }
