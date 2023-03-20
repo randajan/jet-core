@@ -18,11 +18,11 @@ export default jet.define("Array", Array, {
     },
     plugins:{
         swap:(arr, to, from)=>{//swap position of two items in array
-            arr[to] = arr.splice(from, 1, arr[to])[0]; 
+            [arr[to], arr[from]] = [arr[from], arr[to]];
             return arr;
         },
         shuffle:(arr)=>{//shuffle whole array
-            for (var i = arr.length - 1; i > 0; i--) {arr.jet.swap(Math.floor(Math.random() * (i + 1)), i);}
+            for (let i = arr.length - 1; i > 0; i--) {arr.jet.swap(Math.floor(Math.random() * (i + 1)), i);}
             return arr;
         },
         clean:(arr, rekey, handler)=>{

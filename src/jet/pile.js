@@ -150,6 +150,19 @@ export const melt = (any, comma)=>{
     return j;
 }
 
+export const vault = name=>{
+    const vault = {};
+    let keyNext = 1;
+    return {
+        set:data=>{
+            const key = Symbol(`$$`+(name || "vault")+(keyNext++));
+            return [ key, vault[key] = data ];
+        },
+        get:(key, path, def)=>path ? digOut(vault[key], path, def) : vault[key],
+        end:key=>delete vault[key]
+    }
+};
+
 export const json = {
     from: (json, throwErr=false)=>{
         if (jet.isMapable(json)) { return json; }
