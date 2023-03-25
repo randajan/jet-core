@@ -5,8 +5,9 @@ export default jet.define("Number", Number, {
     create:Number,
     rnd:(min, max, sqr)=>{
         let r = Math.random();
-        if (sqr) { r = Math.pow(r, 2); } else if (sqr === false) { r = Math.sqrt(r); }
-        return r.jet.fromRatio(min||0, max||min*2||1);
+        sqr = sqr === true ? 2 : sqr === false ? -2 : Number.jet.is(sqr) ? sqr : 0;
+        if (sqr) { r = Math.pow(r, sqr < 0 ? -sqr : 1/sqr); }
+        return Number.jet.fromRatio(r, min||0, max||min*2||1);
     },
     to:{
         Function:num=>_=>num,

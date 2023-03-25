@@ -24,6 +24,11 @@ Plex.extend(jet, {
     get:(any, key, throwError=false)=>_.touchBy(any, "get", throwError, key),
     set:(any, key, val, throwError=false)=>_.touchBy(any, "set", throwError, key, val),
     rem:(any, key, throwError=true)=>_.touchBy(any, "rem", throwError, key),
+    uid:(length=12, pattern="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")=>{
+        let r = ""; pattern = String.jet.to(pattern) || "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        while (r.length < length) { r += jet.getRND(pattern); }
+        return r;
+    },
     getRND:(any, min, max, sqr)=>{
         const def = getDefByInst(any);
         if (def && def.vals) { any = def.vals(any); }
