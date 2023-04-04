@@ -163,10 +163,10 @@ export const vault = name=>{
     }
 };
 
-export const enumFactory = (enums, {before, after, def}={})=>raw=>{
-    const input = before ? before(raw) : raw;
+export const enumFactory = (enums, {before, after, def}={})=>(raw, ...args)=>{
+    const input = before ? before(raw, ...args) : raw;
     const output = enums.includes(input) ? input : def;
-    return after ? after(output, input) : output;
+    return after ? after(output, input, raw, ...args) : output;
 }
 
 export const json = {
