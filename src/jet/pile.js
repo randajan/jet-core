@@ -163,6 +163,12 @@ export const vault = name=>{
     }
 };
 
+export const enumFactory = (enums, {before, after, def}={})=>raw=>{
+    const input = before ? before(raw) : raw;
+    const output = enums.includes(input) ? input : def;
+    return after ? after(output, input) : output;
+}
+
 export const json = {
     from: (json, throwErr=false)=>{
         if (jet.isMapable(json)) { return json; }
