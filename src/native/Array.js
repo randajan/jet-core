@@ -30,25 +30,32 @@ export default jet.define("Array", Array, {
             return rekey !== false ? arr.filter(handler) : arr.map(v=>handler(v) ? v : undefined);
         },
         remapAsync: async (arr, mapper, ...orderBy)=>{
-            const obs = orderBy.map(ob=>Array.isArray(ob) ? ob : [ob, true]);
+            let result, stopped;
+            const stop = _=>stopped = true;
+            const remap = (val, key)=>stopped ? undefined : mapper ? mapper(val, key, stop) : val;
 
-            const expand = await Promise.all(arr.map(async val=>([
-                val, await Promise.all(obs.map(ob=>ob[0](val)))
-            ])));
+            if (!orderBy.length) { result = arr.map(remap); } else {
+                const obs = orderBy.map(ob=>Array.isArray(ob) ? ob : [ob, true]);
 
-            const sorted = expand.sort(([aV, aO], [bV, bO]) => {
-                for (const k in obs) {
-                    const asc = obs[k][1];
-                    const aS = aO[k], bS = bO[k];
-                    if (aS === bS) { continue; }
-                    const dir = (typeof aS !== "string" && typeof bS !== "string") ? aS < bS : String.jet.fight(aS, bS) === aS;
-                    return (dir !== asc) * 2 - 1;
-                }
-                return 0;
-            });
+                const expand = await Promise.all(arr.map(async val=>([
+                    val, await Promise.all(obs.map(ob=>ob[0](val)))
+                ])));
+    
+                const sorted = expand.sort(([aV, aO], [bV, bO]) => {
+                    for (const k in obs) {
+                        const asc = obs[k][1];
+                        const aS = aO[k], bS = bO[k];
+                        if (aS === bS) { continue; }
+                        const dir = (typeof aS !== "string" && typeof bS !== "string") ? aS < bS : String.jet.fight(aS, bS) === aS;
+                        return (dir !== asc) * 2 - 1;
+                    }
+                    return 0;
+                });
 
-            const result = await Promise.all(sorted.map(([val], key)=>mapper(val, key)));
-            return result.filter(v=>v!==undefined);
+                result = sorted.map(([val], key)=>remap(val, key));
+            }
+
+            return (await Promise.all(result)).filter(v=>v!==undefined);
         }
     }
 });
