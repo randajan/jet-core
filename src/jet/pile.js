@@ -76,7 +76,7 @@ export const digIn = (any, path, val, force=true, reductor=undefined)=>{
         const v = isEnd ? val : next(df.get(parent, key, false));
         if (v != null) { df.set(parent, key, v, false); return parent; }
         df.rem(parent, key);
-        if (df.full(parent)) { return parent; }
+        if (df.isFull(parent)) { return parent; }
     };
 
     return dig(any, path, !jet.isRunnable(reductor) ? step : 

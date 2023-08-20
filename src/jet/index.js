@@ -4,11 +4,12 @@ import * as _ from "./methods.js";
 import define from "./define.js";
 import * as pile from "./pile.js";
 import * as prop from "./props.js";
+import { defineExtend } from "./extend";
 
 Plex.extend(jet, {
     is:_.is,
     to:_.to,
-    isFull:any=>{ const def = getDefByInst(any, false); return def ? def.full(any) : _.isFull(any); },
+    isFull:any=>{ const def = getDefByInst(any, false); return def ? def.isFull(any) : _.isFull(any); },
     isMapable:(any, strict=true)=>{ const def = getDefByInst(any, strict); return def ? !!def.entries : false; },
     isRunnable:any=>typeof any === "function",
     full:(...a)=>_.factory(null, 1, ...a),
@@ -41,7 +42,7 @@ Plex.extend(jet, {
     },
     prop,
     ...pile,
-    define:new Plex(define, {to:_.toDefine})
+    define:new Plex(define, {to:_.defineTo, extend:defineExtend})
 });
 
 jet.define("Plex", Plex, {

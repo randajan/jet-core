@@ -7,7 +7,7 @@ export default jet.define("Number", Number, {
         let r = Math.random();
         sqr = sqr === true ? 2 : sqr === false ? -2 : Number.jet.is(sqr) ? sqr : 0;
         if (sqr) { r = Math.pow(r, sqr < 0 ? -sqr : 1/sqr); }
-        return Number.jet.fromRatio(r, min||0, max||min*2||1);
+        return Number.jet.fromRatio(r, min||0, max||min||1);
     },
     to:{
         Function:num=>_=>num,

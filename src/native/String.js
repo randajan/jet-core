@@ -8,6 +8,24 @@ const hidePats = {
     dots:"⠀⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡊⡋⡌⡍⡎⡏⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡚⡛⡜⡝⡞⡟⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡪⡫⡬⡭⡮⡯⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⡺⡻⡼⡽⡾⡿⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢊⢋⢌⢍⢎⢏⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙⢚⢛⢜⢝⢞⢟⢠⢡⢢⢣⢤⢥⢦⢧⢨⢩⢪⢫⢬⢭⢮⢯⢰⢱⢲⢳⢴⢵⢶⢷⢸⢹⢺⢻⢼⢽⢾⢿⣀⣁⣂⣃⣄⣅⣆⣇⣈⣉⣊⣋⣌⣍⣎⣏⣐⣑⣒⣓⣔⣕⣖⣗⣘⣙⣚⣛⣜⣝⣞⣟⣠⣡⣢⣣⣤⣥⣦⣧⣨⣩⣪⣫⣬⣭⣮⣯⣰⣱⣲⣳⣴⣵⣶⣷⣸⣹⣺⣻⣼⣽⣾⣿"
 }
 
+const deloneMap = {
+    to:"aaccdeeillnooorstuuuyrzzAACCDEEILLNOOORSTUUUYRZZ",
+    from:"áäčćďéěíĺľňóôöŕšťúůüýřžźÁÄČĆĎÉĚÍĹĽŇÓÔÖŔŠŤÚŮÜÝŘŽŹ"
+};
+
+const fight = (str1, str2)=>{
+    str1 = str1 == null ? "" : String(str1), str2 = str2 == null ? "" : String(str2);
+    for (let i=0; true; i++) {
+        const s1 = str1[i], s2 = str2[i];
+        if (!s1 || !s2) { return !s1; } else if (s1 === s2) { continue; }
+        const d1 = String.jet.delone(s1), d2 = String.jet.delone(s2);
+        if (d1 === d2) { return (s1.charCodeAt(0) || 0) < (s2.charCodeAt(0) || 0); }
+        const l1 = d1.toLowerCase(), l2 = d2.toLowerCase();
+        if (l1 === l2) { return (d1.charCodeAt(0) || 0) < (d2.charCodeAt(0) || 0); }
+        return (l1.charCodeAt(0) || 0) < (l2.charCodeAt(0) || 0);
+    }
+}
+
 export default jet.define("String", String, {
     create:any=>any == null ? "" : String(any),
     rnd:(min, max, sqr)=>{ //HOW TO GENERATE GREAT RANDOM STRING???
@@ -34,30 +52,18 @@ export default jet.define("String", String, {
         isNumeric: str=>!isNaN(Number(str)),
         lower: str=>str.toLowerCase(),
         upper: str=>str.toUpperCase(),
-        capitalize: str=>str.charAt(0).jet.upper() + str.slice(1),
+        capitalize: str=>str.charAt(0).toUpperCase() + str.slice(1),
         delone: str=>{
-            let r = "", to = "aaccdeeillnooorstuuuyrzzAACCDEEILLNOOORSTUUUYRZZ", from = "áäčćďéěíĺľňóôöŕšťúůüýřžźÁÄČĆĎÉĚÍĹĽŇÓÔÖŔŠŤÚŮÜÝŘŽŹ";
-            for (let v of str) { let x = from.indexOf(v); r += (x >= 0 ? to[x] : v); }
+            let r = "";
+            for (let v of str) { let x = deloneMap.from.indexOf(v); r += (x >= 0 ? deloneMap.to[x] : v); }
             return r;
         },
         efface: (str, remove)=>str.replaceAll(remove, "").replace(/[\s\n\r]+/g, " ").trim(),
-        simplify: (str, remove)=>str.jet.efface(remove).jet.delone().jet.lower(),
-        sort: (...strs)=>
-            strs.map(v => { const s = String.jet.to(v), d = s.jet.delone(), l = d.jet.lower(); return {l, d, s} })
-            .sort((m1, m2) => {
-                for (let i=0; true; i++) {
-                    for (let k in m1) {
-                        let c1 = m1[k].charCodeAt(i) || 0, c2 = m2[k].charCodeAt(i) || 0;
-                        if (c1 !== c2 || !c1) { return c1 - c2; }
-                    }
-                }
-            })
-            .map(m=>m.s)
-        ,
-        fight: (...strs)=>String.jet.sort(...strs)[0],
+        simplify: (str, remove)=>String.jet.delone(String.jet.efface(str, remove)).toLowerCase(),
+        fight: (str1, str2, asc=true)=>(fight(str1, str2) === asc) ? str1 : str2,
         carret: (str, pos)=>Number.jet.tap(pos, str.length).frame(0, str.length),
         splice: (str, index, howmany, ...strs)=>{
-            const s = str.jet.carret(index), m = Number.jet.frame(howmany, 0, str.length-s); 
+            const s = String.jet.carret(str, index), m = Number.jet.frame(howmany, 0, str.length-s); 
             return str.slice(0, s) + String.jet.to(strs, "") + str.slice(s+m);
         },
         hide: (str, pat, whitespace)=>{
@@ -66,7 +72,7 @@ export default jet.define("String", String, {
             return r;
         },
         levenshtein: (s0, s1, blend)=>{
-            var s = ((blend === false) ? [s0, s1] : [s0.jet.simplify(blend), String.jet.simplify(s1, blend)]);
+            var s = ((blend === false) ? [s0, s1] : [String.jet.simplify(s0, blend), String.jet.simplify(s1, blend)]);
             if (s[0] === s[1]) { return 1; } else if (!s[0] || !s[1]) { return 0; }
             var l = [s[0].length, s[1].length], c = []; if (l[1] > l[0]) { l.reverse(); s.reverse(); }
             for (var i = 0; i <= l[0]; i++) {
@@ -81,7 +87,7 @@ export default jet.define("String", String, {
         },
         mutate: (str, factor)=>{
             var r = [], n = str.length / 2, m = str.length * 2, f = Math.abs(1000 * (factor || 1));
-            while (r.length < f) { var s = String.jet.rnd(n, m); r.push([s, s.jet.levenshtein(str)]); }
+            while (r.length < f) { var s = String.jet.rnd(n, m); r.push([s, String.jet.levenshtein(s, str)]); }
             return r.sort((a, b)=>b[1] - a[1])[0][0];
         }
     }

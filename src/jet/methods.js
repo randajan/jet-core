@@ -1,6 +1,6 @@
 import { throwError, getDefByName, getDefByInst } from "./defs.js";
 
-const magic = ["only", "full", "tap", "pull", "is", "to", "copy", "rnd"];
+const _magic = ["only", "full", "tap", "pull", "is", "to", "copy", "rnd"];
 
 export const isInstance = any=>{
     const t = typeof any;
@@ -50,14 +50,14 @@ export const factory = (name, mm, ...args)=>{
     const def = getDefByName(name);
     const n = isInstance(name);
 
-    if (n && mm > 0) { throwError(`unable execute '${magic[mm]}' - unavailable for plain constructors`); }
-    if (name && !n && !def) { throwError(`unable execute '${magic[mm]}' - type unknown`, name); }
-    if (!name && mm !== 1) { throwError(`unable execute '${magic[mm]}' - type missing`); }
+    if (n && mm > 0) { throwError(`unable execute '${_magic[mm]}' - unavailable for plain constructors`); }
+    if (name && !n && !def) { throwError(`unable execute '${_magic[mm]}' - type unknown`, name); }
+    if (!name && mm !== 1) { throwError(`unable execute '${_magic[mm]}' - type missing`); }
 
     for (const a of args) {
         if (!n) {
             const at = getDefByInst(a);
-            if ((!name || (at && at.name === name)) && (mm !== 1 || (at && at.full(a) || (!at && isFull(a))))) {
+            if ((!name || (at && at.name === name)) && (mm !== 1 || (at && at.isFull(a) || (!at && isFull(a))))) {
                 return mm === 3 ? at.copy(a) : a;
             }
         }
@@ -76,7 +76,7 @@ export const to = (name, any, ...args)=>{
     return exe ? to(name, exe(any, ...args), ...args) : def.create(any);
 }
 
-export const toDefine = (from, to, exe)=>{
+export const defineTo = (from, to, exe)=>{
     const tt = typeof to;
     const def = getDefByName(from);
     if (!def) { throwError(`unable define 'to' - type unknown`, from); }

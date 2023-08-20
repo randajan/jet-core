@@ -11,7 +11,7 @@ export default jet.define("Set", Set, {
     to:{
         "*":set=>Array.from(set),
         Function:set=>_=>set,
-        Boolean:set=>set.jet.isFull(),
+        Boolean:set=>Set.jet.isFull(set),
         Object:set=>jet.merge(set),
         Promise:async set=>set,
     }
