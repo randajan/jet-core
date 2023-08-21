@@ -35,7 +35,7 @@ const define = (name, constructor, options={})=>{
         if (ancestor) {
             throwWarn(`constructor allready extended as '${ancestor.name}'. Use option 'extend:false'`, name);
         } else {
-            Object.defineProperty(constructor, "jet", { value:jc={}, writable:true });
+            Object.defineProperty(constructor, "jet", { value:{}, writable:true });
             
             const ecn = {
                 create,
