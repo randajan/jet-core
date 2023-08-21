@@ -43,10 +43,10 @@ export default jet.define("Array", Array, {
     
                 const sorted = expand.sort(([aV, aO], [bV, bO]) => {
                     for (const k in obs) {
-                        const asc = obs[k][1];
                         const aS = aO[k], bS = bO[k];
                         if (aS === bS) { continue; }
                         const dir = (typeof aS !== "string" && typeof bS !== "string") ? aS < bS : String.jet.fight(aS, bS) === aS;
+                        const asc = obs[k][1];
                         return (dir !== asc) * 2 - 1;
                     }
                     return 0;
