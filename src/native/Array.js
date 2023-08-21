@@ -29,6 +29,31 @@ export default jet.define("Array", Array, {
             handler = Function.jet.tap(handler, v=>v!=null);
             return rekey !== false ? arr.filter(handler) : arr.map(v=>handler(v) ? v : undefined);
         },
+        remap: (arr, mapper, ...orderBy)=>{
+            let result, stopped;
+            const stop = _=>stopped = true;
+            const remap = (val, key)=>stopped ? undefined : mapper ? mapper(val, key, stop) : val;
+
+            if (!orderBy.length) { result = arr.map(remap); } else {
+                const obs = orderBy.map(ob=>Array.isArray(ob) ? ob : [ob, true]);
+                const expand = arr.map(val=>([ val, obs.map(ob=>ob[0](val)) ]));
+    
+                const sorted = expand.sort(([aV, aO], [bV, bO]) => {
+                    for (const k in obs) {
+                        const aS = aO[k], bS = bO[k];
+                        if (aS === bS) { continue; }
+                        const dir = (typeof aS !== "string" && typeof bS !== "string") ? aS < bS : String.jet.fight(aS, bS) === aS;
+                        const asc = obs[k][1];
+                        return (dir !== asc) * 2 - 1;
+                    }
+                    return 0;
+                });
+
+                result = sorted.map(([val], key)=>remap(val, key));
+            }
+
+            return result.filter(v=>v!==undefined);
+        },
         remapAsync: async (arr, mapper, ...orderBy)=>{
             let result, stopped;
             const stop = _=>stopped = true;
@@ -36,10 +61,7 @@ export default jet.define("Array", Array, {
 
             if (!orderBy.length) { result = arr.map(remap); } else {
                 const obs = orderBy.map(ob=>Array.isArray(ob) ? ob : [ob, true]);
-
-                const expand = await Promise.all(arr.map(async val=>([
-                    val, await Promise.all(obs.map(ob=>ob[0](val)))
-                ])));
+                const expand = await Promise.all(arr.map(async val=>([ val, await Promise.all(obs.map(ob=>ob[0](val))) ])));
     
                 const sorted = expand.sort(([aV, aO], [bV, bO]) => {
                     for (const k in obs) {
