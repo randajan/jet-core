@@ -31,7 +31,7 @@ export default jet.define("Array", Array, {
         },
         remap: (arr, mapper, ...orderBy)=>{
             let result, stopped;
-            const stop = _=>stopped = true;
+            const stop = res=>{ stopped = true; return res; };
             const remap = (val, key)=>stopped ? undefined : mapper ? mapper(val, key, stop) : val;
 
             if (!orderBy.length) { result = arr.map(remap); } else {
@@ -56,7 +56,7 @@ export default jet.define("Array", Array, {
         },
         remapAsync: async (arr, mapper, ...orderBy)=>{
             let result, stopped;
-            const stop = _=>stopped = true;
+            const stop = res=>{ stopped = true; return res; };
             const remap = (val, key)=>stopped ? undefined : mapper ? mapper(val, key, stop) : val;
 
             if (!orderBy.length) { result = arr.map(remap); } else {
