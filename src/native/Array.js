@@ -1,5 +1,13 @@
 import jet from "../jet";
 
+const fight = (a, b)=>{
+    if (a == b) { return; }
+    if (a == null) { return false; } else if (b == null) { return true; }
+    if (typeof a === "string" || typeof b === "string") { return a === String.jet.fight(a, b); }
+    if (isNaN(a)) { return false; } else if (isNaN(b)) { return true; }
+    return a < b;
+}
+
 export default jet.define("Array", Array, {
     create:Array,
     copy:x=>Array.from(x),
@@ -40,11 +48,10 @@ export default jet.define("Array", Array, {
     
                 const sorted = expand.sort(([aV, aO], [bV, bO]) => {
                     for (const k in obs) {
-                        const aS = aO[k], bS = bO[k];
-                        if (aS === bS) { continue; }
-                        const dir = (typeof aS !== "string" && typeof bS !== "string") ? aS < bS : String.jet.fight(aS, bS) === aS;
+                        const dir = fight(aO[k], bO[k]);
+                        if (dir == null) { continue; }
                         const asc = obs[k][1];
-                        return (dir !== asc) * 2 - 1;
+                        return (asc == null ? !dir : dir != asc) * 2 - 1;
                     }
                     return 0;
                 });
@@ -65,11 +72,10 @@ export default jet.define("Array", Array, {
     
                 const sorted = expand.sort(([aV, aO], [bV, bO]) => {
                     for (const k in obs) {
-                        const aS = aO[k], bS = bO[k];
-                        if (aS === bS) { continue; }
-                        const dir = (typeof aS !== "string" && typeof bS !== "string") ? aS < bS : String.jet.fight(aS, bS) === aS;
+                        const dir = fight(aO[k], bO[k]);
+                        if (dir == null) { continue; }
                         const asc = obs[k][1];
-                        return (dir !== asc) * 2 - 1;
+                        return (asc == null ? !dir : dir != asc) * 2 - 1;
                     }
                     return 0;
                 });
