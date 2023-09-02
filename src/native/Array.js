@@ -2,9 +2,9 @@ import jet from "../jet";
 
 const fight = (a, b)=>{
     if (a == b) { return; }
-    if (a == null) { return false; } else if (b == null) { return true; }
+    if (a == null) { return true; } else if (b == null) { return false; }
     if (typeof a === "string" || typeof b === "string") { return a === String.jet.fight(a, b); }
-    if (isNaN(a)) { return false; } else if (isNaN(b)) { return true; }
+    if (isNaN(a)) { return true; } else if (isNaN(b)) { return false; }
     return a < b;
 }
 
