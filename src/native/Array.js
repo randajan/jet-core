@@ -37,6 +37,23 @@ export default jet.define("Array", Array, {
             handler = Function.jet.tap(handler, v=>v!=null);
             return rekey !== false ? arr.filter(handler) : arr.map(v=>handler(v) ? v : undefined);
         },
+        compare:(a, b, sameIndex=false)=>{
+            if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) { return false; }
+            const m = new Map();
+            const wr = (v, dir)=>{
+                const c = (m.get(v) || 0) + dir;
+                if (!c) { m.delete(v); } else { m.set(v, c); }
+            }
+        
+            for (let i=0; i < a.length; i++) {
+                if (a[i] === b[i]) { continue; }
+                if (sameIndex) { return false; }
+                wr(a[i], 1);
+                wr(b[i], -1);
+            }
+        
+            return !m.size;
+        },
         remap: (arr, mapper, ...orderBy)=>{
             let result, stopped;
             const stop = res=>{ stopped = true; return res; };
