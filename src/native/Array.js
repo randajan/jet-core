@@ -54,6 +54,14 @@ export default jet.define("Array", Array, {
         
             return !m.size;
         },
+        sliceMap:(arr, size, callback)=>{
+            if (!jet.isRunnable(callback)) { callback = _=>_; }
+            size = Math.max(1, size) || 1;
+            const r = [];
+            if (!Array.isArray(arr)) { return r; }
+            for (let k = 0; k < arr.length; k += size) { r.push(callback(arr.slice(k, k + size), r.length, size, arr.length)); }
+            return r;
+        },
         remap: (arr, mapper, ...orderBy)=>{
             let result, stopped;
             const stop = res=>{ stopped = true; return res; };
