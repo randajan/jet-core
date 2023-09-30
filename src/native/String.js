@@ -72,6 +72,10 @@ export default jet.define("String", String, {
             for (var i = 0; i < str.length; i++) { r += (w && (s[i] === "\n" || s[i] === " ")) ? s[i] : p.length - 1 ? jet.getRND(p) : p; }
             return r;
         },
+        bite: (str, separator)=>{
+            const x = str.indexOf(separator);
+            return x <= 0 ? ["", str] : [str.slice(0, x), str.slice(x + 1)];
+        },
         levenshtein: (s0, s1, blend)=>{
             var s = ((blend === false) ? [s0, s1] : [String.jet.simplify(s0, blend), String.jet.simplify(s1, blend)]);
             if (s[0] === s[1]) { return 1; } else if (!s[0] || !s[1]) { return 0; }
