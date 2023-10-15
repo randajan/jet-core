@@ -53,6 +53,9 @@ export default jet.define("String", String, {
         lower: str=>str.toLowerCase(),
         upper: str=>str.toUpperCase(),
         capitalize: str=>str.charAt(0).toUpperCase() + str.slice(1),
+        camelCase: str=>str.replace(/[^a-zA-Z0-9]+/g, " ").trim().split(" ").map((s, i)=>i ? String.jet.capitalize(s) : s).join(""),
+        pascalCase: str=>str.replace(/[^a-zA-Z0-9]+/g, " ").trim().split(" ").map(s=>String.jet.capitalize(s)).join(""),
+        snakeCase:str=>str.replace(/[^a-zA-Z0-9]+/g, " ").trim().replaceAll(" ", "_"),
         delone: str=>{
             let r = "";
             for (let v of str) { let x = deloneMap.from.indexOf(v); r += (x >= 0 ? deloneMap.to[x] : v); }
