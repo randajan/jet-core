@@ -77,7 +77,7 @@ export default jet.define("String", String, {
         },
         bite: (str, separator)=>{
             const x = str.indexOf(separator);
-            return x <= 0 ? ["", str] : [str.slice(0, x), str.slice(x + 1)];
+            return x <= 0 ? ["", str] : [str.slice(0, x), str.slice(x + separator.length)];
         },
         levenshtein: (s0, s1, blend)=>{
             var s = ((blend === false) ? [s0, s1] : [String.jet.simplify(s0, blend), String.jet.simplify(s1, blend)]);
