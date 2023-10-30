@@ -7,6 +7,11 @@ export default jet.define("Object", Object, {
     vals:x=>Object.values(x),
     entries:x=>Object.entries(x),
     extendPrototype:false,
+    extendConstructor:{
+        filter:(obj, callback)=>jet.map(obj, (v, ...a)=>callback(v, ...a) ? v : undefined),
+        exclude:(obj, mask=[])=>jet.map(obj, (v, k)=>mask.includes(k) ? undefined : v),
+        extract:(obj, mask=[], )=>jet.map(obj, (v, k)=>mask.includes(k) ? v : undefined),
+    },
     to:{
         Function:obj=>_=>obj,
         Symbol:obj=>Symbol(jet.json.to(obj)),
