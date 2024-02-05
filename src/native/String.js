@@ -38,7 +38,7 @@ export default jet.define("String", String, {
     to:{
         Function:str=>_=>str,
         Boolean:str=>!["0", "false", "null", "undefined", "NaN"].includes(str.toLowerCase()),
-        Array:(str, comma)=>str.split(comma),
+        Array:(str, comma)=>str ? str.split(comma) : [],
         Object:str=>jet.json.from(str),
         Promise:async str=>str,
         Number:(str, strict)=>{
