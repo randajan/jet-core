@@ -151,6 +151,7 @@ export const melt = (any, comma)=>{
 }
 
 export const vault = name=>{
+    console.warn(`jet.vault("${name}") being deprecated use native WeakMap instead`);
     const vault = {};
     let keyNext = 1;
     return {

@@ -4,6 +4,7 @@ import * as _ from "./methods.js";
 import define from "./define.js";
 import * as pile from "./pile.js";
 import * as prop from "./props.js";
+import { buffer } from "./buffer.js";
 import { defineExtend } from "./extend";
 
 Plex.extend(jet, {
@@ -41,6 +42,7 @@ Plex.extend(jet, {
         return jet.forEach(any, f=>jet.isRunnable(f) ? f(...args) : undefined, true);
     },
     prop,
+    buffer,
     ...pile,
     define:new Plex(define, {to:_.defineTo, extend:defineExtend})
 });
