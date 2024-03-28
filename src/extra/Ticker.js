@@ -8,7 +8,7 @@ class Ticker {
         return new Ticker(cfg);
     }
 
-    constructor({ onTick, onInit, onStart, onStop }) {
+    constructor({ onTick, onInit, onStart, onStop, interval }) {
 
         onInit = jet.isRunnable(onInit) ? onInit : _=>{};
         onTick = jet.isRunnable(onTick) ? onTick : _=>{};
@@ -17,7 +17,7 @@ class Ticker {
 
         const _p = {
             state:false,
-            interval:1000,
+            interval:0,
             count:0,
             intervalId:null
         };
@@ -25,7 +25,7 @@ class Ticker {
         const tick = async _=>{
             if (!_p.state) { return; }
             _p.count ++;
-            await onTick(this);
+            try { await onTick(this); } catch(err) {}
             _p.intervalId = setTimeout(tick, _p.interval);
         }
 
@@ -54,6 +54,8 @@ class Ticker {
         solid(this, "resetCounter", _=>{ _p.count = 0; return this; });
 
         virtual(this, "count", _=>_p.count);
+
+        this.setInterval(interval);
 
     }
 
