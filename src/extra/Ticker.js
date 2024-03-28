@@ -46,7 +46,7 @@ class Ticker {
         safe(this, _p, "interval", (t, f)=>{
             t = Math.max(0, Number.jet.to(t));
             if (t === f) { return f; }
-            clearInterval(_p.intervalId);
+            clearTimeout(_p.intervalId);
             setTimeout(tick, t);
             return t;
         });
