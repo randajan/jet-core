@@ -7,7 +7,10 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./pool":"./dist/extra/Pool.js",
+    "./runpool":"./dist/extra/RunPool.js",
+    "./ticker":"./dist/extra/Ticker.js"
   },
   "scripts": {
     "start": "set NODE_ENV=dev&& node ./index.js",

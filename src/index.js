@@ -15,9 +15,6 @@ import Array from "./native/Array.js";
 import Set from "./native/Set.js";
 import Map from "./native/Map.js";
 
-import Pool from "./custom/Pool.js";
-import RunPool from "./custom/RunPool.js";
-
 export default jet;
 export const Plex = jet.types.Plex;
 
@@ -37,6 +34,4 @@ export {
     Array,
     Set,
     Map,
-    Pool,
-    RunPool
 }

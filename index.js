@@ -5,6 +5,6 @@ slib(
     process.env.NODE_ENV !== "dev",
     {
         minify:false,
-        entries:["index.js"]
+        entries:["index.js", "extra/Ticker.js", "extra/RunPool.js", "extra/Pool.js"]
     }
 )
