@@ -6,7 +6,6 @@ import * as pile from "./pile.js";
 import * as each from "./each.js";
 import * as prop from "./props.js";
 import { buffer } from "./buffer.js";
-import { defineExtend } from "./extend";
 
 Plex.extend(jet, {
     is:_.is,
@@ -46,7 +45,7 @@ Plex.extend(jet, {
     buffer,
     ...pile,
     ...each,
-    define:new Plex(define, {to:_.defineTo, extend:defineExtend})
+    define:new Plex(define, {to:_.defineTo, extend:_.defineExtend})
 });
 
 jet.define("Plex", Plex, {

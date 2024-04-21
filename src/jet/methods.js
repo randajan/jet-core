@@ -1,5 +1,6 @@
-import { throwError, getDefByName, getDefByInst } from "./defs.js";
+import jet, { throwError, getDefByName, getDefByInst } from "./defs.js";
 
+const enumerable = true;
 const _magic = ["only", "full", "tap", "pull", "is", "to", "copy", "rnd"];
 
 export const isInstance = any=>{
@@ -93,3 +94,27 @@ export const getRND = (arr, min, max, sqr)=>{ //get random element from array or
     const l = arr.length;
     return arr[Math.floor(Number.jet.rnd(Number.jet.frame(min||0, 0, l), Number.jet.frame(max||l, 0, l), sqr))];
 };
+
+
+export const extend = (def, extender, isNative=false)=>{
+    const { name, constructor } = def;
+
+    for (const key in extender) {
+        const value = extender[key];
+        Object.defineProperty(constructor.jet, key, {enumerable, value});
+
+        if (isNative && jet[key]) { Object.defineProperty(jet[key], name, {enumerable, value}); }
+    }
+
+    return true;
+}
+
+export const defineExtend = (name, extender={})=>{
+    const def = getDefByName(name);
+    if (!def) { throwError(`unable define 'extend' - type unknown`, name); }
+    if (typeof extender !== "object") { throwError(`unable define 'extend' - require object`, name); }
+
+    if (!def.constructor.jet) { Object.defineProperty(def.constructor, "jet", {value:{}, writable:true }); }
+
+    return extend(def, extender, false);
+}

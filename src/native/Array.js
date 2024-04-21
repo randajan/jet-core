@@ -24,7 +24,7 @@ export default jet.define("Array", Array, {
         Error:(arr, comma)=>jet.melt(arr, comma != null ? comma : " "),
         RegExp:(arr, comma)=>jet.melt(arr, comma != null ? comma : "|")
     },
-    extendPrototype:{
+    extend:{
         swap:(arr, to, from)=>{//swap position of two items in array
             [arr[to], arr[from]] = [arr[from], arr[to]];
             return arr;

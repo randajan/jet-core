@@ -48,7 +48,7 @@ export default jet.define("String", String, {
             return Number(match[0].replaceAll(" ", "").replace(",", ".")) || 0;
         }
     },
-    extendPrototype:{
+    extend:{
         isNumeric: str=>!isNaN(Number(str)),
         lower: str=>str.toLowerCase(),
         upper: str=>str.toUpperCase(),

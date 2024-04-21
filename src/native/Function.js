@@ -3,8 +3,7 @@ import jet from "../jet";
 export default jet.define("Function", Function, {
     create: Function,
     copy: x => Object.defineProperties(({ [x.name]: (...a) => x(...a) })[x.name], Object.getOwnPropertyDescriptors(x)),
-    extendPrototype: false,
-    extendConstructor: {
+    extend: {
         benchmark: (fces, inputs, iterations=100) => {
             const results = [];
             const args = [];

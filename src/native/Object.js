@@ -6,8 +6,7 @@ export default jet.define("Object", Object, {
     keys:x=>Object.keys(x),
     vals:x=>Object.values(x),
     entries:x=>Object.entries(x),
-    extendPrototype:false,
-    extendConstructor:{
+    extend:{
         filter:(obj, callback)=>jet.map(obj, (v, ...a)=>callback(v, ...a) ? v : undefined),
         exclude:(obj, mask=[])=>jet.map(obj, (v, k)=>mask.includes(k) ? undefined : v),
         extract:(obj, mask=[], )=>jet.map(obj, (v, k)=>mask.includes(k) ? v : undefined),

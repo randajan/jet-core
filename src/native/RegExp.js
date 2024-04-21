@@ -3,8 +3,7 @@ import jet from "../jet";
 export default jet.define("RegExp", RegExp, {
     create:RegExp,
     copy:x=>RegExp(x.source),
-    extendPrototype:false,
-    extendConstructor:{
+    extend:{
         lib:{
             line:/[^\n\r]+/g, 
             number:/-?(\d+(\s+\d+)*)*[,.]?\d+/, 
