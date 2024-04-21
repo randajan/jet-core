@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@randajan/simple-lib": "^2.0.0",
+    "@randajan/simple-lib": "^2.3.1",
     "chokidar": "^3.5.3",
     "esbuild": "^0.14.27",
     "eslint": "^8.11.0",

@@ -17,10 +17,8 @@ import Map from "./native/Map.js";
 import Pool from "./extra/Pool.js";
 import RunPool from "./extra/RunPool.js";
 
-
 export default jet;
 export const Plex = jet.types.Plex;
-
 
 export {
     Object,
