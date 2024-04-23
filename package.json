@@ -8,6 +8,9 @@
   "module": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
+    "./eachSync": "./dist/jet/pile/eachSync.js",
+    "./eachAsync": "./dist/jet/pile/eachAsync.js",
+    "./plex": "./dist/extra/Plex.js",
     "./pool": "./dist/extra/Pool.js",
     "./runpool": "./dist/extra/RunPool.js",
     "./ticker": "./dist/extra/Ticker.js"
@@ -22,6 +25,7 @@
     "@randajan/simple-lib": "^2.3.1",
     "chokidar": "^3.5.3",
     "esbuild": "^0.14.27",
+    "esbuild-plugin-import-glob": "^0.1.1",
     "eslint": "^8.11.0",
     "fs-extra": "^10.0.1",
     "live-server": "^1.2.1"

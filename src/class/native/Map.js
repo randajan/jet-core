@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("Map", Map, {
+jet.define("Map", Map, {
     copy:x=>new Map(x),
     keys:x=>x.keys(),
     vals:x=>x.values(),

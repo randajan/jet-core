@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("NaN", Number, {
+jet.define("NaN", Number, {
     create:_=>NaN,
     is:isNaN,
     extend:false,

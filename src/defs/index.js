@@ -1,13 +1,11 @@
-import Plex from "./Plex";
-import jet, { getDefByInst } from "./defs.js";
+import Plex from "../class/extra/Plex.js";
+import jet, { getDefByInst } from "./base.js";
 import * as _ from "./methods.js";
 import define from "./define.js";
-import * as pile from "./pile.js";
-import * as each from "./each.js";
 import * as prop from "./props.js";
-import { buffer } from "./buffer.js";
+import * as pile from "../each/pile.js";
 
-Plex.extend(jet, {
+export default Plex.extend(jet, {
     is:_.is,
     to:_.to,
     isFull:any=>{ const def = getDefByInst(any, false); return def ? def.isFull(any) : _.isFull(any); },
@@ -42,17 +40,13 @@ Plex.extend(jet, {
         return jet.forEach(any, f=>jet.isRunnable(f) ? f(...args) : undefined, true);
     },
     prop,
-    buffer,
     ...pile,
-    ...each,
     define:new Plex(define, {to:_.defineTo, extend:_.defineExtend})
 });
 
-jet.define("Plex", Plex, {
+define("Plex", Plex, {
     copy:x=>Object.defineProperties({}, Object.getOwnPropertyDescriptors(x)),
     keys:x=>Object.keys(x),
     vals:x=>Object.values(x),
     entries:x=>Object.entries(x)
 });
-
-export default jet;

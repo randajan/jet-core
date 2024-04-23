@@ -1,4 +1,3 @@
-
 class Plex extends Function {
 
     static extend(self, props={}) {

@@ -1,4 +1,4 @@
-import jet from "../jet";
+import jet from "../../defs";
 
 const fight = (a, b)=>{
     if (a == b) { return; }
@@ -8,7 +8,7 @@ const fight = (a, b)=>{
     return a < b;
 }
 
-export default jet.define("Array", Array, {
+jet.define("Array", Array, {
     create:Array,
     copy:x=>Array.from(x),
     keys:x=>x.keys(),

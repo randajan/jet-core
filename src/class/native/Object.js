@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("Object", Object, {
+jet.define("Object", Object, {
     create:Object,
     copy:x=>Object.defineProperties({}, Object.getOwnPropertyDescriptors(x)),
     keys:x=>Object.keys(x),

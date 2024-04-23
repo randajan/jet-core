@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("Boolean", Boolean, {
+jet.define("Boolean", Boolean, {
     create:Boolean,
     rnd:(trueRatio=.5)=>Math.random() < trueRatio,
     to:{

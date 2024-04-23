@@ -1,4 +1,5 @@
-import jet, { getDefByInst } from "./defs.js";
+import { getDefByInst } from "../defs/base.js";
+import jet from "../defs";
 
 const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat, stop, isStop)=>{
     const res = flat || create();

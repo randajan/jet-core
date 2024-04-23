@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("Function", Function, {
+jet.define("Function", Function, {
     create: Function,
     copy: x => Object.defineProperties(({ [x.name]: (...a) => x(...a) })[x.name], Object.getOwnPropertyDescriptors(x)),
     extend: {

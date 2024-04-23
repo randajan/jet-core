@@ -1,7 +1,7 @@
 
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("Number", Number, {
+jet.define("Number", Number, {
     create:Number,
     rnd:(min, max, sqr)=>{
         let r = Math.random();

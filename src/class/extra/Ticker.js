@@ -1,4 +1,4 @@
-import jet from "../jet";
+import jet from "../../defs";
 
 const { virtual, solid, safe } = jet.prop;
 

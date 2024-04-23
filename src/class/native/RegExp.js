@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("RegExp", RegExp, {
+jet.define("RegExp", RegExp, {
     create:RegExp,
     copy:x=>RegExp(x.source),
     extend:{

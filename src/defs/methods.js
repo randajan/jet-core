@@ -1,4 +1,4 @@
-import jet, { throwError, getDefByName, getDefByInst } from "./defs.js";
+import jet, { throwError, getDefByName, getDefByInst } from "./base.js";
 
 const enumerable = true;
 const _magic = ["only", "full", "tap", "pull", "is", "to", "copy", "rnd"];

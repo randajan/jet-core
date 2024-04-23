@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("Error", Error, {
+jet.define("Error", Error, {
     create:Error,
     rnd:(...a)=>new Error(jet.rnd.String(...a)),
     to:{

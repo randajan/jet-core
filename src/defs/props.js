@@ -1,4 +1,4 @@
-import Plex from "./Plex";
+import Plex from "../class/extra/Plex";
 
 
 export const add = (obj, property, val, writable=false, enumerable=false, overwrite=true)=>{ 

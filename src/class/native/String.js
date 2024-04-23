@@ -1,5 +1,4 @@
-
-import jet from "../jet";
+import jet from "../../defs";
 
 const hidePats = {
     point:"•", cross:"×", flake:"☀", draft:"⌭", power:"⚡", star:"★", skull:"☠", card:"♠♥♦♣", notes:"♩♪♫♬♭♮♯", chess:"♔♕♖♗♘♙♚♛♜♝♞♟",
@@ -26,7 +25,7 @@ const fight = (str1, str2)=>{
     }
 }
 
-export default jet.define("String", String, {
+jet.define("String", String, {
     create:any=>any == null ? "" : String(any),
     rnd:(min, max, sqr)=>{ //HOW TO GENERATE GREAT RANDOM STRING???
         const c = ["bcdfghjklmnpqrstvwxz", "aeiouy"], p = c[0].length/(c[0].length+c[1].length);

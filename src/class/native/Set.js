@@ -1,6 +1,6 @@
-import jet from "../jet";
+import jet from "../../defs";
 
-export default jet.define("Set", Set, {
+jet.define("Set", Set, {
     copy:x=>new Set(x),
     keys:x=>x.keys(),
     vals:x=>x.values(),

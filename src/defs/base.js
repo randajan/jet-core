@@ -1,4 +1,4 @@
-import Plex from "./Plex";
+import Plex from "../class/extra/Plex";
 
 const byName = {};
 const byPrototype = new Map();
@@ -39,7 +39,7 @@ const findByInst = (any, strict, withDef=true)=>{
 
 export const getDefByInst = (any, strict=true)=>findByInst(any, strict, true);
 
-const getNameByInst = (any, strict=true)=>findByInst(any, strict, false);
+export const getNameByInst = (any, strict=true)=>findByInst(any, strict, false);
 
 
 export const register = def=>{
@@ -50,7 +50,6 @@ export const register = def=>{
     else { byPrototype.set(def.prototype, [def]); }
 }
 
-//jet init
 export default new Plex(getNameByInst, {
-    types:constructorByName
-})
+    types:constructorByName,
+});

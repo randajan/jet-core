@@ -1,4 +1,4 @@
-import { throwError, register, getDefByName, throwWarn, getDefByProto } from "./defs.js";
+import { throwError, register, getDefByName, throwWarn, getDefByProto } from "./base.js";
 import * as _ from "./methods.js";
 
 

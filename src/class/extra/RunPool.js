@@ -1,4 +1,4 @@
-import jet from "../jet";
+import jet from "../../defs";
 import Pool from "./Pool";
 
 class RunPool extends Pool {

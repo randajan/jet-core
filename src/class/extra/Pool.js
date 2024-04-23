@@ -1,4 +1,4 @@
-import jet from "../jet";
+import jet from "../../defs";
 
 class Pool extends Array {
 
