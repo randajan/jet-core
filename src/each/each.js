@@ -2,28 +2,8 @@ import { getDefByInst } from "../defs/base.js";
 import jet from "../";
 
 const enumerable = true;
-export const initContext = (value, root)=>{
-    let def, brk;
 
-    if (root == null) { root = []; }
-    else if (!Array.isArray(root)) { throw new Error(`argument root expect an Array`); }
-
-    const ctx = Object.defineProperties({}, {
-        isRoot:{enumerable, value:true},
-        root:{get:_=>ctx},
-        value:{enumerable, value},
-        depth:{enumerable, get:_=>root.length},
-        pending:{enumerable, get:_=>!brk},
-        stop:{enumerable, value:_=>brk ? false : (brk = true)},
-        path:{enumerable, get:_=>!root.length ? [] : [...root] },
-        fullpath:{enumerable, get:_=>ctx.path },
-        def:{enumerable, get:_=>def || (def = getDefByInst(value))},
-    });
-
-    return ctx;
-}
-
-export const collectPath = parent=>{
+const collectPath = parent=>{
     let rpath = [], p = parent;
     while (true) {
         if (!p.parent) {
@@ -34,6 +14,40 @@ export const collectPath = parent=>{
         p = p.parent;
     }
 }
+
+export const initContext = (value, {root, stopable, init})=>{
+    let def, brk, onStop;
+
+    if (root && !Array.isArray(root)) { throw new Error(`argument root expect an Array`); }
+
+    const ctx = Object.defineProperties({}, {
+        isRoot:{enumerable, value:true},
+        root:{get:_=>ctx},
+        value:{enumerable, value},
+        depth:{enumerable, value:!root ? 0 : root.length},
+        pending:{enumerable, get:_=>!brk},
+        path:{enumerable, get:_=>!root ? [] : [...root] },
+        fullpath:{enumerable, get:_=>ctx.path },
+        def:{enumerable, get:_=>def || (def = getDefByInst(value))}
+    });
+
+    ctx.result = init;
+
+    return !stopable ? ctx : Object.defineProperties(ctx, {
+        stop:{ value:_=>{
+            if (brk) { return false; }
+            brk = true;
+            if (onStop) { for (const f of onStop) { f(ctx); } }
+            return true;
+        }},
+        onStop:{ value:cb=>{
+            if (!onStop) { onStop = [cb]; }
+            else { onStop.push(cb); }
+        } }
+    });
+
+}
+
 
 export const createContext = (parent, key, value)=>{
     let def, path, fullpath;

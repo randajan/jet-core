@@ -1,6 +1,14 @@
 import jet from "../";
 import { createContext, fight, formatOrderBy, initContext } from "./each";
 
+//options:
+//init | any | this will be set as context.result at initialization, useful for reducers
+//root | array | root path of the iteration if exist
+//strictArray | true/false | true = keeps undefined/empty values at result arrays;
+//paralelAwait | true/false | true = async iteration will proceed as paralel;
+//stopable | true/false | true = iteration can be stopped via context.stop();
+//deep | true/false/function | true = when reach the iterable property it will iterate it too or place here a function to do custom deep-iteration
+
 
 const _filter = async (entries, fce)=>{
     const res = [];
@@ -33,7 +41,7 @@ const _refine = async (entries, { filter, orderBy })=>{
 
 }
 
-const _each = async (parent, exe, options)=>{
+const _eachSerial = async (parent, exe, options)=>{
     const entries = parent.def.entries(parent.value);
     const refined = !parent.isRoot ? entries : await _refine(entries, options);
 
@@ -44,19 +52,34 @@ const _each = async (parent, exe, options)=>{
     };
 }
 
+const _eachParalel = async (parent, exe, options, prom)=>{
+    const entries = parent.def.entries(parent.value);
+    const refined = !parent.isRoot ? entries : await _refine(entries, options);
+
+    await Promise.race([
+        Promise.all(refined.map(async ([key, val])=>{
+            const ctx = createContext(parent, key, val);
+            if (ctx.pending) { await exe(ctx); }
+        })),
+        prom
+    ]);
+}
+
 export const each = (any, fce, options={})=>{
     if (!jet.isRunnable(fce)) { throw new Error(`fce expect an Function`); }
-    const root = initContext(any, options.root);
+    const root = initContext(any, options);
     
     const deep = options.deep;
     const dprun = jet.isRunnable(deep);
-    root.result = options.init;
+
+    const _each = !options.paralelAwait ? _eachSerial : _eachParalel;
+    const prom = !options.paralelAwait ? undefined : new Promise(res=>{ root.onStop(res); });
 
     const exe = async (ctx, skipDeep=false)=>{
         const de = ctx.def.entries;
         if (!de || (!deep && !ctx.isRoot)) { await fce(ctx.value, ctx); }
         else if (dprun && !skipDeep) { await deep(ctx.value, ctx, (...a)=>{ exe(ctx.update(...a), true) }); }
-        else { await _each(ctx, exe, options); }
+        else { await _each(ctx, exe, options, prom); }
         return ctx.result;
     }
     
@@ -69,7 +92,10 @@ export const each = (any, fce, options={})=>{
 export const find = (any, fce, options={})=>{
     return each(any, async (val, ctx)=>{
         val = await fce(val, ctx);
-        if (val !== undefined && ctx.stop()) { ctx.root.result = val; }
+        if (val !== undefined && ctx.pending) {
+            ctx.root.result = val;
+            ctx.stop();
+        }
     }, options);
 };
 
@@ -78,12 +104,13 @@ export const flat = (any, fce, options={})=>{
 
     return each(any, async (val, ctx)=>{
         val = await fce(val, ctx);
-        if (val !== undefined) { ctx.root.result.push(val); }
+        if (val !== undefined && ctx.pending) { ctx.root.result.push(val); }
     }, options);
 };
 
 export const map = (any, fce, options={})=>{
     delete options.init;
+    options.stopable = true;
 
     const set = (ctx, key, val)=>{
         if (!ctx) { return; }
@@ -95,6 +122,6 @@ export const map = (any, fce, options={})=>{
 
     return each(any, async (val, ctx)=>{
         val = await fce(val, ctx);
-        if (val !== undefined) { set(ctx.parent, ctx.key, val); }
+        if (val !== undefined && ctx.pending) { set(ctx.parent, ctx.key, val); }
     }, options);
 };

@@ -7,14 +7,14 @@ window.jet = jet;
 
 (async ()=>{
 
-    const result = flat({a:3, z:2, f:1, d:5, q:4}, async (v, ctx)=>{
-        console.log(ctx.key, v, ctx.pending);
-        return ctx.key;
+    const result = find({a:3, z:12, f:9, d:5, q:4}, async (v, ctx)=>{
+        return new Promise((res, rej)=>{
+            setTimeout(_=>res(ctx.key), v*500);
+        })
     }, {
         strictArray:true,
-        orderBy:[async (v, k)=>new Promise((res, rej)=>{
-            setTimeout(_=>res(k), v*500)
-        }), true]
+        orderBy:[async (v, k)=>k, true],
+        stopable:true
     });
 
     console.log(await result);

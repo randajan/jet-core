@@ -61,54 +61,6 @@ jet.define("Array", Array, {
             if (!Array.isArray(arr)) { return r; }
             for (let k = 0; k < arr.length; k += size) { r.push(callback(arr.slice(k, k + size), r.length, size, arr.length)); }
             return r;
-        },
-        remap: (arr, mapper, ...orderBy)=>{
-            let result, stopped;
-            const stop = res=>{ stopped = true; return res; };
-            const remap = (val, key)=>stopped ? undefined : mapper ? mapper(val, key, stop) : val;
-
-            if (!orderBy.length) { result = arr.map(remap); } else {
-                const obs = orderBy.map(ob=>Array.isArray(ob) ? ob : [ob, true]);
-                const expand = arr.map(val=>([ val, obs.map(ob=>ob[0](val)) ]));
-    
-                const sorted = expand.sort(([aV, aO], [bV, bO]) => {
-                    for (const k in obs) {
-                        const dir = fight(aO[k], bO[k]);
-                        if (dir == null) { continue; }
-                        const asc = obs[k][1];
-                        return (asc == null ? !dir : dir != asc) * 2 - 1;
-                    }
-                    return 0;
-                });
-
-                result = sorted.map(([val], key)=>remap(val, key));
-            }
-
-            return result.filter(v=>v!==undefined);
-        },
-        remapAsync: async (arr, mapper, ...orderBy)=>{
-            let result, stopped;
-            const stop = res=>{ stopped = true; return res; };
-            const remap = (val, key)=>stopped ? undefined : mapper ? mapper(val, key, stop) : val;
-
-            if (!orderBy.length) { result = arr.map(remap); } else {
-                const obs = orderBy.map(ob=>Array.isArray(ob) ? ob : [ob, true]);
-                const expand = await Promise.all(arr.map(async val=>([ val, await Promise.all(obs.map(ob=>ob[0](val))) ])));
-    
-                const sorted = expand.sort(([aV, aO], [bV, bO]) => {
-                    for (const k in obs) {
-                        const dir = fight(aO[k], bO[k]);
-                        if (dir == null) { continue; }
-                        const asc = obs[k][1];
-                        return (asc == null ? !dir : dir != asc) * 2 - 1;
-                    }
-                    return 0;
-                });
-
-                result = sorted.map(([val], key)=>remap(val, key));
-            }
-
-            return (await Promise.all(result)).filter(v=>v!==undefined);
         }
     }
 });
