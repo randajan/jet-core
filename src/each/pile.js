@@ -1,49 +1,26 @@
 import { getDefByInst } from "../defs/base.js";
 import jet from "../defs";
 
-const _each = ({create, entries, set}, any, fce, deep, dprun, dir, flat, stop, isStop)=>{
-    const res = flat || create();
-    
-    for (let [key, val] of entries(any)) {
-        const path = (dir ? dir+"." : "")+key;
-        const def = (deep || !fce) ? getDefByInst(val) : null;
-        const dp = deep && def && def.entries;
-        
-        if (!dp) { val = fce ? fce(val, path, dir, key, stop) : def ? def.copy(val) : val; }
-        else if (dprun) { val = deep(val, path, dir, key, stop); }
-        else { val = _each(def, val, fce, deep, dprun, path, flat, stop, isStop); }
+export const each = (any, fce, deep)=>{
+    let isPending = true;
+    const stop = _=>{ isPending = false; }
 
-        if (val !== undefined) { if (!flat) { set(res, key, val); } else if (!dp) { flat.push(val); } }
+    const dprun = jet.isRunnable(deep);
 
-        if (isStop()) { break; }
-    };
-    
-    return res;
-}
-const _eachInit = (any, fce, deep, dir, flat)=>{
-    const df = getDefByInst(any);
-    dir = String.jet.to(dir, ".");
-    let _stop, stop=_=>_stop=true;
-    
-    if (df && df.entries) {return _each(
-        df,
-        any,
-        fce,
-        deep,
-        jet.isRunnable(deep),
-        dir,
-        flat,
-        stop,
-        _=>_stop
-    )};
+    const exe = (value, path, skipDeep=false, isRoot=false)=>{
+        const def = getDefByInst(value);
+        const de = def.entries;
+        if (!de || (!deep && !isRoot)) { return fce(value, path, def, stop); }
+        if (dprun && !skipDeep) { return deep(value, path, def, stop, value=>{ exe(value, path, true); }); }
 
-    const val = fce ? fce(any, dir, "", dir, stop) : df.copy ? df.copy(any) : any;
-    if (flat && val !== undefined) { flat.push(val); }
-    return flat || val;
+        for (let [key, child] of de(value)) {
+            if (isPending) { exe(child, (path ? path+"." : "") + String.jet.dotEscape(String(key))); }
+            if (!isPending) { break; }
+        };
+    }
+    
+    exe(any, "", true, true);
 };
-
-export const forEach = (any, fce, deep=false, dir="")=>_eachInit(any, fce, deep, dir, []);
-export const map = (any, fce, deep=false, dir="")=>_eachInit(any, fce, deep, dir);
 
 export const reducer = reductor=>{
     let i=0, next;
@@ -51,23 +28,25 @@ export const reducer = reductor=>{
 }
 
 export const dig = (any, path, reductor)=>{
-    const pa = String.jet.to(path, ".").split(".");
-    const end = pa.length-1;
+    if (!Array.isArray(path)) { path = String.jet.dotSplit(String.jet.to(path)); }
+
+    const end = path.length-1;
     return reducer((next, index, parent)=>{
-        const dir = pa.slice(0, index).join(".");
-        return reductor(next, parent, (dir ? dir+"." : "") + pa[index], dir, pa[index], index === end);
+        return reductor(next, parent, path[index], index === end);
     })(any);
 }
 
 export const digOut = (any, path, def)=>{
-    path = String.jet.to(path, "."); if (!path) { return any; }
-    for (let p of path.split(".")) { if (null == (any = jet.get(any, p, false))) { return def; }}
+    if (!Array.isArray(path)) { path = String.jet.dotSplit(String.jet.to(path)); }
+    if (!path.length) { return any; }
+
+    for (let p of path) { if (null == (any = jet.get(any, p, false))) { return def; }}
     return any;
 };
 
-export const digIn = (any, path, val, force=true, reductor=undefined)=>{
+export const digIn = (any, path, val, force=true)=>{
 
-    const step = (next, parent, path, dir, key, isEnd)=>{
+    const step = (next, parent, key, isEnd)=>{
         let df = getDefByInst(parent);
         if (!df || !df.entries) {
             if (!force) { return parent; }
@@ -80,28 +59,21 @@ export const digIn = (any, path, val, force=true, reductor=undefined)=>{
         if (df.isFull(parent)) { return parent; }
     };
 
-    return dig(any, path, !jet.isRunnable(reductor) ? step : 
-        (next, parent, path, dir, key, isEnd)=>reductor(
-            parent=>step(next, parent, path, dir, key, isEnd),
-            parent, path, dir, key, isEnd
-        )
-    );
-
+    return dig(any, path, step);
 }
-
 
 export const deflate = (any, includeMapable=false)=>{
     const flat = {};
-    const add = (v,p)=>{ flat[p] = v; };
-    const deep = (v,p)=>{ add(v,p); forEach(v, add, deep, p); };
-    forEach(any, add, includeMapable ? deep : true);
+    const add = (v, p)=>{ flat[p] = v; };
+    const deep = (v, p, def, stop, next)=>{ add(v, p); next(v); };
+    each(any, add, includeMapable ? deep : true);
     if (includeMapable) { flat[""] = any; }
     return flat;
 }
 
 export const inflate = (flat, includeMapable=true)=>{
     const r = {};
-    for (const e of jet.keys(flat).sort()) {
+    for (const e of Object.keys(flat).sort()) {
         if (!includeMapable && jet.isMapable(flat[e])) { continue; }
         digIn(r, "to."+e, flat[e], true);
     }
@@ -109,36 +81,38 @@ export const inflate = (flat, includeMapable=true)=>{
 };
 
  const _assign = (overwriteArray, to, ...any)=>{
-    const r = {to};
-    const flat = deflate(r.to, true);
-    const add = (v,p)=>{ r.to = digIn(r.to, p, v); }
-    const acumulate = (v,p)=>{
-        if (!flat[p]) { add(flat[p] = getDefByInst(v).create(), p); }
-        if (Array.isArray(v) && Array.isArray(flat[p])) { flat[p].push(...v); }
-        else { forEach(v, add, acumulate, p); }
+    const flat = deflate(to, true);
+
+    const add = (val, path)=>{ to = digIn(to, path, val); }
+    const acumulate = (val, path, def, stop, next)=>{
+        if (!flat[path]) { add(flat[path] = def.create(), path); }
+        if (Array.isArray(val) && Array.isArray(flat[path])) { flat[path].push(...val); }
+        else { next(val); }
     }
-    for (const a of any) { forEach(a, add, !!overwriteArray || acumulate); }
-    return r.to;
+
+    for (const a of any) { each(a, add, !!overwriteArray || acumulate); }
+
+    return to;
 };
 
 export const assign = (to, from, overwriteArray=true)=>_assign(overwriteArray, to, from);
 export const merge = (...any)=>_assign(false, {}, ...any);
 
 export const compare = (a, b, changeList=false)=>{
-    const res = [];
-    if (!changeList && a === b) { return true; }
+    if (a === b) { return changeList ? [] : true; }
 
+    const res = [];
     const flat = deflate(a);
 
-    forEach(b, (v,p,d,k,stop)=>{
-        if (flat[p] !== v) { res.push(p); }
-        delete flat[p];
-        if (res.length && !changeList) { stop(); }
+    each(b, (val, path, def, stop)=>{
+        if (flat[path] !== val) { res.push(path); }
+        delete flat[path];
+        if (!changeList && res.length) { stop(); }
     }, true);
 
-    for (let p in flat) {
-        if (res.length && !changeList) { break }
-        res.push(p);
+    for (let path in flat) {
+        if (!changeList && res.length) { break; }
+        res.push(path);
     }
 
     return changeList ? res : !res.length;
@@ -147,23 +121,17 @@ export const compare = (a, b, changeList=false)=>{
 export const melt = (any, comma)=>{
     let j = "", c = String.jet.to(comma);
     if (!jet.isMapable(any)) { return String.jet.to(any, c); }
-    forEach(any, v=>{ v = melt(v, c); j += v ? (j?c:"")+v : "";});
+    each(any, v=>{ j += v ? (j?c:"")+v : ""; }, true);
     return j;
 }
 
-export const vault = name=>{
-    console.warn(`jet.vault("${name}") being deprecated use native WeakMap instead`);
-    const vault = {};
-    let keyNext = 1;
-    return {
-        set:data=>{
-            const key = Symbol(`$$`+(name || "vault")+(keyNext++));
-            return [ key, vault[key] = data ];
-        },
-        get:(key, path, def)=>path ? digOut(vault[key], path, def) : vault[key],
-        end:key=>delete vault[key]
-    }
-};
+export const run = (any, ...args)=>{
+    if (jet.isRunnable(any)) { return any(...args); }
+    if (!jet.isMapable(any)) { return undefined; }
+    const res = [];
+    each(any, f=>{ res.push(jet.isRunnable(f) ? f(...args) : undefined); }, true);
+    return res;
+}
 
 export const enumFactory = (enums, {before, after, def}={})=>(raw, ...args)=>{
     const input = before ? before(raw, ...args) : raw;

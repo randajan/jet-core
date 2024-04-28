@@ -65,6 +65,9 @@ jet.define("String", String, {
         fight: (str1, str2, asc=true)=>(fight(str1, str2) === asc) ? str1 : str2,
         carret: (str, pos)=>Number.jet.tap(pos, str.length).frame(0, str.length),
         quote: (str, quoteLeft="'", quoteRight="'")=>str ? quoteLeft+str+quoteRight : "",
+        dotEscape: str=>str.replaceAll(".", "\\."),
+        dotUnescape: str=>str.replaceAll("\\.", "."),
+        dotSplit: str=>(str.match(/(?:\\.|[^.])+/g) || []).map(String.jet.dotUnescape),
         splice: (str, index, howmany, ...strs)=>{
             const s = String.jet.carret(str, index), m = Number.jet.frame(howmany, 0, str.length-s); 
             return str.slice(0, s) + String.jet.to(strs, "") + str.slice(s+m);

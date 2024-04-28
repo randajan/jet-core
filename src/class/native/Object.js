@@ -1,5 +1,11 @@
 import jet from "../../defs";
 
+const filter = (obj, callback)=>{
+    const r = {};
+    for (let i in obj) { if (callback(obj[i], i)) { r[i] = obj[i]; } }
+    return r;
+}
+
 jet.define("Object", Object, {
     create:Object,
     copy:x=>Object.defineProperties({}, Object.getOwnPropertyDescriptors(x)),
@@ -7,9 +13,9 @@ jet.define("Object", Object, {
     vals:x=>Object.values(x),
     entries:x=>Object.entries(x),
     extend:{
-        filter:(obj, callback)=>jet.map(obj, (v, ...a)=>callback(v, ...a) ? v : undefined),
-        exclude:(obj, mask=[])=>jet.map(obj, (v, k)=>mask.includes(k) ? undefined : v),
-        extract:(obj, mask=[], )=>jet.map(obj, (v, k)=>mask.includes(k) ? v : undefined),
+        filter,
+        exclude:(obj, mask=[])=>filter(obj, (v, k)=>!mask.includes(k)),
+        extract:(obj, mask=[])=>filter(obj, (v, k)=>mask.includes(k)),
     },
     to:{
         Function:obj=>_=>obj,

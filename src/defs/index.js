@@ -17,6 +17,7 @@ export default Plex.extend(jet, {
     pull:(name, ...a)=>_.factory(name, 3, ...a),
     create:(name, ...a)=>_.touch(name, "create", true, ...a),
     rnd:(name, ...a)=>_.touch(name, "rnd", true, ...a),
+    //TODO
     copy:(any, deep=false, copyUnmapable=false)=>deep ? jet.map(any, copyUnmapable ? undefined : _=>_, true) : _.touchBy(any, "copy"),
     keys:(any, throwError=false)=>_.touchBy(any, "keys", throwError) || [],
     vals:(any, throwError=false)=>_.touchBy(any, "vals", throwError) || [],
@@ -33,11 +34,6 @@ export default Plex.extend(jet, {
         const def = getDefByInst(any);
         if (def && def.vals) { any = def.vals(any); }
         else if (typeof any === "string") { return _.getRND(any, min, max, sqr); }
-    },
-    run:(any, ...args)=>{
-        if (jet.isRunnable(any)) { return any(...args); }
-        if (!jet.isMapable(any)) { return undefined; }
-        return jet.forEach(any, f=>jet.isRunnable(f) ? f(...args) : undefined, true);
     },
     prop,
     ...pile,

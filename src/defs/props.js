@@ -1,28 +1,7 @@
 import Plex from "../class/extra/Plex";
 
-
-export const add = (obj, property, val, writable=false, enumerable=false, overwrite=true)=>{ 
-    if (jet.isMapable(property)) {
-        jet.forEach(property, (f, i)=>{
-            const n = String.jet.isNumeric(i);
-            add(obj, n ? f : i, n ? val : f, writable, enumerable, overwrite)
-        });
-    } else if (!obj[property] || overwrite) {
-        Object.defineProperty(obj, property, { value:val, writable, configurable:writable, enumerable });
-    }
-    return obj;
-};
-
-export const get = (obj, property)=>{
-    if (!property) { property = Array.from(Object.getOwnPropertyNames(obj)); }
-    if (!jet.isMapable(property)) { return obj[property]; }
-    const props = {};
-    jet.forEach(property, k=>props[k]=obj[k]);
-    return props;
-};
-
 export const solid = new Plex(
-    (obj, name, value, enumerable=true)=>Object.defineProperty(obj, name, { enumerable, value}),
+    (obj, name, value, enumerable=true)=>Object.defineProperty(obj, name, { enumerable, value }),
     {
         all:(obj, namedValues, enumerable=true)=>{
             for (const [name, value] of Object.entries(namedValues)) {
@@ -34,7 +13,7 @@ export const solid = new Plex(
 );
 
 export const virtual = new Plex(
-    (obj, name, get, enumerable=true)=>Object.defineProperty(obj, name, { enumerable, get}),
+    (obj, name, get, enumerable=true)=>Object.defineProperty(obj, name, { enumerable, get }),
     {
         all:(obj, namedGets, enumerable=true)=>{
             for (const [name, get] of Object.entries(namedGets)) {
