@@ -19,7 +19,7 @@ window.jet = jet;
 
 })();
 
-console.log(jet.merge({
+console.log(jet.compare({
     name: "Objekt 1",
     age: 25,
     address: {

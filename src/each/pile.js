@@ -1,25 +1,35 @@
 import { getDefByInst } from "../defs/base.js";
 import jet from "../defs";
 
-export const each = (any, fce, deep)=>{
+
+export const each = (any, fce, deep, init)=>{
     let isPending = true;
     const stop = _=>{ isPending = false; }
 
     const dprun = jet.isRunnable(deep);
 
-    const exe = (value, path, skipDeep=false, isRoot=false)=>{
-        const def = getDefByInst(value);
+    const exe = (ctx, skipDeep=false)=>{
+        const { parent, path, def } = ctx;
         const de = def.entries;
-        if (!de || (!deep && !isRoot)) { return fce(value, path, def, stop); }
-        if (dprun && !skipDeep) { return deep(value, path, def, stop, value=>{ exe(value, path, true); }); }
 
-        for (let [key, child] of de(value)) {
-            if (isPending) { exe(child, (path ? path+"." : "") + String.jet.dotEscape(String(key))); }
-            if (!isPending) { break; }
-        };
+        if (!de || (!deep && parent)) { fce(ctx); }
+        else if (dprun && !skipDeep) { deep(ctx, _=>{ exe(ctx, true); }); }
+        else {
+            for (let [key, val] of de(ctx.val)) {
+                exe({
+                    parent:ctx, val, key, stop, def:getDefByInst(child),
+                    path:(path ? path+"." : "") + String.jet.dotEscape(String(key)),
+                });
+                if (!isPending) { break; }
+            };
+        }
+
+        return ctx.result;
     }
-    
-    exe(any, "", true, true);
+
+    const ctx = { val:any, stop, def:getDefByInst(any) };
+    if (init) { init(ctx); }
+    return exe(ctx, true);
 };
 
 export const reducer = reductor=>{
@@ -64,8 +74,8 @@ export const digIn = (any, path, val, force=true)=>{
 
 export const deflate = (any, includeMapable=false)=>{
     const flat = {};
-    const add = (v, p)=>{ flat[p] = v; };
-    const deep = (v, p, def, stop, next)=>{ add(v, p); next(v); };
+    const add = ({ val, path })=>{ flat[path] = val; };
+    const deep = ({ val, path }, next)=>{ add(val, path); next(); };
     each(any, add, includeMapable ? deep : true);
     if (includeMapable) { flat[""] = any; }
     return flat;
@@ -83,8 +93,8 @@ export const inflate = (flat, includeMapable=true)=>{
  const _assign = (overwriteArray, to, ...any)=>{
     const flat = deflate(to, true);
 
-    const add = (val, path)=>{ to = digIn(to, path, val); }
-    const acumulate = (val, path, def, stop, next)=>{
+    const add = ({ val, path })=>{ to = digIn(to, path, val); }
+    const acumulate = ({ val, path, def }, next)=>{
         if (!flat[path]) { add(flat[path] = def.create(), path); }
         if (Array.isArray(val) && Array.isArray(flat[path])) { flat[path].push(...val); }
         else { next(val); }
@@ -104,7 +114,7 @@ export const compare = (a, b, changeList=false)=>{
     const res = [];
     const flat = deflate(a);
 
-    each(b, (val, path, def, stop)=>{
+    each(b, ({ val, path, stop })=>{
         if (flat[path] !== val) { res.push(path); }
         delete flat[path];
         if (!changeList && res.length) { stop(); }
@@ -118,10 +128,25 @@ export const compare = (a, b, changeList=false)=>{
     return changeList ? res : !res.length;
 }
 
+export const copy = (any, deep=false, copyUnmapable=false)=>{
+    return each(any, ctx=>{
+        const { parent, val, key, def } = ctx;
+        if (!parent) { return; }
+        parent.def.set(parent.result, key, ctx.result = copyUnmapable ? def.copy(val) : val);
+    }, !deep ? false : (ctx, next)=>{
+        const { parent, key, def } = ctx;
+        parent.def.set(parent.result, key, ctx.result = def.create());
+        next();
+    }, ctx=>{
+        const { val, def } = ctx;
+        ctx.result = def.entries ? def.create() : def.copy(val);
+    });
+}
+
 export const melt = (any, comma)=>{
     let j = "", c = String.jet.to(comma);
     if (!jet.isMapable(any)) { return String.jet.to(any, c); }
-    each(any, v=>{ j += v ? (j?c:"")+v : ""; }, true);
+    each(any, ({ val })=>{ j += val ? (j?c:"")+val : ""; }, true);
     return j;
 }
 
@@ -129,7 +154,7 @@ export const run = (any, ...args)=>{
     if (jet.isRunnable(any)) { return any(...args); }
     if (!jet.isMapable(any)) { return undefined; }
     const res = [];
-    each(any, f=>{ res.push(jet.isRunnable(f) ? f(...args) : undefined); }, true);
+    each(any, ({val})=>{ res.push(jet.isRunnable(val) ? val(...args) : undefined); }, true);
     return res;
 }
 
