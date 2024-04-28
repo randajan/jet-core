@@ -1,5 +1,5 @@
 import jet from "../../dist/index.js";
-import { map, flat, find } from "../../dist/each/eachSync.js";
+import { map, list, find } from "../../dist/each/eachSync.js";
 
 import example from "./example.json";
 
@@ -7,7 +7,7 @@ window.jet = jet;
 
 (async ()=>{
 
-    const result = flat({a:3, z:12, f:9, d:5, q:4}, (v, ctx)=>{
+    const result = list({a:3, z:12, f:9, d:5, q:4}, (v, ctx)=>{
         return ctx.key
     }, {
         strictArray:true,

@@ -87,28 +87,13 @@ _Return true if any typeof === function_
   * jet.isRunnable({}) === false;
   * jet.isRunnable(()=>{}) === true;
 
-### __jet.copy(any, deep=false)__
-_Will create copy of instance_
-
-* Arguments
-  * any: _any variable_
-  * deep: _boolean (deep copy of mapable objects)_
-  * copyUnmapable: _boolean (copy even unmapable values in the deep nested structure)_
-* Return
-  * _new instance or the old if there wasn't defined copy function_
-* Example
-  * x = [{a:Symbol("test")}]; y = jet.copy(x);              console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false true  true
-  * x = [{a:Symbol("test")}]; y = jet.copy(x, true);        console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false false true
-  * x = [{a:Symbol("test")}]; y = jet.copy(x, true, true);  console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false false false
-
 ## Constructor/Prototype methods
 _These methods acumulate main funcstionality._
-_After 'jet.define(**name**, **consturctor**)' is called, those methods are attached to 4 different endpoints._
+_After 'jet.define(**name**, **consturctor**)' is called, those methods are attached to 3 different endpoints._
 
  1. Global dynamic: _jet.**method**(**name**, ...args)_
  2. Global static: __jet.**method**.**name**(...args)_
  3. Constructor: _**constructor**.jet.**method**(...args)_
- 4. Prototype: _**instance**.jet.**method**(...args)_
 
 ### __jet.is(name, any, strict=true)__
 _Check the passed type with result. Endpoint 'jet.is(name, ...a)' also work like typeof and instanceof_
@@ -191,6 +176,69 @@ _Handle mapable objects (it requires defined type)_
 
 ## Extra methods
 
+### __jet.uid(length, pattern)__
+* Arguments
+  * length: _number (desired length)_
+  * pattern: _string (list of characters)_
+* Return
+  * _string (pseudo random)_
+* Example
+  * jet.uid(8, "a") === "aaaaaaaa"
+
+### __jet.copy(any, deep=false, copyUnmapable=false)__
+_Will create copy of instance_
+
+* Arguments
+  * any: _any variable_
+  * deep: _boolean (deep copy of mapable objects)_
+  * copyUnmapable: _boolean (copy even unmapable values in the deep nested structure)_
+* Return
+  * _new instance or the old if there wasn't defined copy function_
+* Example
+  * x = [{a:Symbol("test")}]; y = jet.copy(x);              console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false true  true
+  * x = [{a:Symbol("test")}]; y = jet.copy(x, true);        console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false false true
+  * x = [{a:Symbol("test")}]; y = jet.copy(x, true, true);  console.log(x===y, x[0]===y[0], x[0].a===y[0].a) // false false false
+
+### __jet.deflate(any, includeMapable=false)__
+_Will deflate nested structure to the flat object where indexes are whole original dot-separated paths_
+
+* Arguments
+  * any: _any variable_
+  * includeMapable: _boolean_
+* Return
+  * includeMapable=false: _object (alle values exclude mapable values in original structure)_
+  * includeMapable=true: _object (all values include mapable values in original structure)_
+* Example
+  * jet.deflate({a:{b:["c"]}}) === {"a.b.0": "c"}
+  * jet.deflate({a:{b:["c"]}}, true) === {"a.b.0": "c"}
+  * jet.deflate({a:["c"]}, true) === { "a":["c"], "a.0":"c", "":{"a":["c"]} }
+
+### __jet.compare(anyA, anyB, diffList=false)__
+_Will compare two variables include deep nested objects_
+
+* Arguments
+  * anyA: _any variable_
+  * anyB: _any variable_
+  * diffList: _boolean_
+* Return
+  * diffList=false: _boolean (false if the content is same)_
+  * diffList=true: _boolean (list of differencies)_
+* Example
+  * jet.compare({a:{b:["c"]}}, {a:{b:["c"]}}) === true
+  * jet.compare({a:{b:["c"]}}, {a:{b:["d"]}}) === false
+  * jet.compare({a:{b:["c"]}}, {a:{b:["d"]}}, true) === ["a.b.0"];
+
+### __jet.melt(any, comma)__
+_Will join any values even values of deep nested structure_
+
+* Arguments
+  * any: _any variable_
+  * comma: _string ()_
+* Return
+  * _string (comma separated values)_
+* Example
+  * jet.melt({a:["b", "c"], d:"e"}, ", ") === "b, c, e"
+
 ### __jet.dig(any, path, reductor)__
 _Exploring nested structure by path_
 
@@ -228,6 +276,19 @@ _Return  value from deep nested object_
   * jet.digOut({foo:["bar"]}, "foo.0") == "bar";
   * jet.digOut({foo:["bar"]}, ["foo", 1], "foo") == "foo";
 
+### __jet.run(any, ...args)__
+_Will run every function that will discover_
+
+* Arguments
+  * any: _any (function || array/object with functions_
+  * ...args: _arguments will be passed to every call_
+* Return
+  * any=function: _result of function_
+  * any=array/object: _array of all results_
+* Example
+  * jet.run(_=>console.log("foo")) _console: "foo"_
+
+
 ### __jet.forEach(any, fce, deep, dir) / .map(any, fce, deep, dir)__
 _Map any mapable object by default: Object, Array, Set, Map, Pool_
 
@@ -242,20 +303,6 @@ _Map any mapable object by default: Object, Array, Set, Map, Pool_
 * Example
   * jet.forEach({foo:"bar"}, _=>_) == ["bar"];
   * jet.map({foo:"bar"}, _=>_) == {foo:"bar"};
-
-
-### __jet.run(any, ...args)__
-_Will run every function that will discover without collecting results_
-
-* Arguments
-  * any: _any (function || array/object with functions_
-  * ...args: _arguments will be passed to every call_
-* Return
-  * any=function: _true when it was run successfully_
-  * any=array/object: _count of succesfully runned functions_
-* Example
-  * jet.fce.run(_=>console.log(_)) === true _console: "foo"_
-
 
 ## License
 

@@ -84,7 +84,7 @@ export const find = (any, fce, options={})=>{
     }, options);
 };
 
-export const flat = (any, fce, options={})=>{
+export const list = (any, fce, options={})=>{
     if (!Array.isArray(options.init)) { options.init = []; }
 
     return each(any, (val, ctx)=>{

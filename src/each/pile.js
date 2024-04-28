@@ -2,7 +2,7 @@ import { getDefByInst } from "../defs/base.js";
 import jet from "../defs";
 
 
-export const each = (any, fce, deep, init)=>{
+const each = (any, fce, deep, init)=>{
     let isPending = true;
     const stop = _=>{ isPending = false; }
 
@@ -17,7 +17,7 @@ export const each = (any, fce, deep, init)=>{
         else {
             for (let [key, val] of de(ctx.val)) {
                 exe({
-                    parent:ctx, val, key, stop, def:getDefByInst(child),
+                    parent:ctx, val, key, stop, def:getDefByInst(val),
                     path:(path ? path+"." : "") + String.jet.dotEscape(String(key)),
                 });
                 if (!isPending) { break; }
@@ -74,9 +74,11 @@ export const digIn = (any, path, val, force=true)=>{
 
 export const deflate = (any, includeMapable=false)=>{
     const flat = {};
-    const add = ({ val, path })=>{ flat[path] = val; };
-    const deep = ({ val, path }, next)=>{ add(val, path); next(); };
-    each(any, add, includeMapable ? deep : true);
+    const add = ({ val, path }, next)=>{
+        flat[path] = val;
+        if (next) { next(); }
+    };
+    each(any, add, includeMapable ? add : true);
     if (includeMapable) { flat[""] = any; }
     return flat;
 }
@@ -108,7 +110,7 @@ export const inflate = (flat, includeMapable=true)=>{
 export const assign = (to, from, overwriteArray=true)=>_assign(overwriteArray, to, from);
 export const merge = (...any)=>_assign(false, {}, ...any);
 
-export const compare = (a, b, changeList=false)=>{
+export const compare = (a, b, diffList=false)=>{
     if (a === b) { return changeList ? [] : true; }
 
     const res = [];
@@ -117,15 +119,15 @@ export const compare = (a, b, changeList=false)=>{
     each(b, ({ val, path, stop })=>{
         if (flat[path] !== val) { res.push(path); }
         delete flat[path];
-        if (!changeList && res.length) { stop(); }
+        if (!diffList && res.length) { stop(); }
     }, true);
 
     for (let path in flat) {
-        if (!changeList && res.length) { break; }
+        if (!diffList && res.length) { break; }
         res.push(path);
     }
 
-    return changeList ? res : !res.length;
+    return diffList ? res : !res.length;
 }
 
 export const copy = (any, deep=false, copyUnmapable=false)=>{
@@ -146,7 +148,10 @@ export const copy = (any, deep=false, copyUnmapable=false)=>{
 export const melt = (any, comma)=>{
     let j = "", c = String.jet.to(comma);
     if (!jet.isMapable(any)) { return String.jet.to(any, c); }
-    each(any, ({ val })=>{ j += val ? (j?c:"")+val : ""; }, true);
+    each(any, ({ val })=>{
+        val = String.jet.to(val, c);
+        if (val) { j += (j?c:"")+val; }
+    }, true);
     return j;
 }
 
