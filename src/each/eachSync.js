@@ -61,7 +61,7 @@ export const each = (any, fce, options={})=>{
     const _each = _eachSerial;
 
     const exe = (ctx, skipDeep=false)=>{
-        const de = ctx.def.entries;
+        const de = ctx.def?.entries;
         if (!de || (!deep && !ctx.isRoot)) { fce(ctx.value, ctx); }
         else if (dprun && !skipDeep) { deep(ctx.value, ctx, (...a)=>{ exe(ctx.update(...a), true) }); }
         else { _each(ctx, exe, options); }

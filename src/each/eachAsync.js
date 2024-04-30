@@ -76,7 +76,7 @@ export const each = (any, fce, options={})=>{
     const prom = !options.paralelAwait ? undefined : new Promise(res=>{ root.onStop(res); });
 
     const exe = async (ctx, skipDeep=false)=>{
-        const de = ctx.def.entries;
+        const de = ctx.def?.entries;
         if (!de || (!deep && !ctx.isRoot)) { await fce(ctx.value, ctx); }
         else if (dprun && !skipDeep) { await deep(ctx.value, ctx, (...a)=>{ exe(ctx.update(...a), true) }); }
         else { await _each(ctx, exe, options, prom); }
