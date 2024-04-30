@@ -6,8 +6,6 @@ const enumerable = true;
 export const initContext = (value, {root, stopable, init})=>{
     let path, def, brk, onStop;
 
-    if (root && !Array.isArray(root)) { throw new Error(`argument root expect an Array`); }
-
     const ctx = Object.defineProperties({}, {
         isRoot:{enumerable, value:true},
         root:{get:_=>ctx},
