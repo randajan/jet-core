@@ -10,7 +10,7 @@ export const split = str=>(str.match(/(?:\\.|[^.])+/g) || []).map(unescape);
 export const bite = (str, direction, position)=>{
     const dir = direction !== false;
     const x = dir ? str.indexOf(".", position) : str.lastIndexOf(".", position);
-    if (x <= 0) { return [str]; }
+    if (x <= 0) { return [str, ""]; }
     if (x > 1 && str.charAt(x-1) === "\\") { return bite(str, dir, x+(dir*2-1)); }
     return direction ? [str.slice(0, x), str.slice(x + 1)] : [str.slice(x + 1), str.slice(0, x)];
 }
