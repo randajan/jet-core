@@ -1,5 +1,5 @@
 import jet from "../../dist/index.js";
-import { map, list, find } from "../../dist/each/eachSync.js";
+import { map, list, find } from "../../dist/each/eachAsync.js";
 
 import example from "./example.json";
 
@@ -7,15 +7,17 @@ window.jet = jet;
 
 (async ()=>{
 
-    const result = list({a:3, z:12, f:9, d:5, q:4}, (v, ctx)=>{
-        return ctx.key
+    const result = await list(example, (v, ctx)=>{
+        return [ctx.fullpath, v];
     }, {
         strictArray:true,
-        orderBy:[(v, k)=>k, true],
-        stopable:true
+        //orderBy:[(v, k)=>k, true],
+        stopable:true,
+        deep:true,
+        root:["XXX\\.b"]
     });
 
-    console.log(jet.deflate(example, true));
+    console.log(Object.fromEntries(result));
 
 })();
 

@@ -2,8 +2,9 @@ import Plex from "../class/extra/Plex.js";
 import jet, { getDefByInst } from "./base.js";
 import * as _ from "./methods.js";
 import define from "./define.js";
-import * as prop from "./props.js";
-import * as pile from "../each/pile.js";
+import * as prop from "./extra/props.js";
+import * as pile from "./extra/pile.js";
+import * as dot from "./extra/dot.js";
 
 export default Plex.extend(jet, {
     is:_.is,
@@ -35,6 +36,7 @@ export default Plex.extend(jet, {
     },
     prop,
     ...pile,
+    dot,
     define:new Plex(define, {to:_.defineTo, extend:_.defineExtend})
 });
 

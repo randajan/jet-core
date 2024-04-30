@@ -3,20 +3,8 @@ import jet from "../";
 
 const enumerable = true;
 
-const collectPath = parent=>{
-    let rpath = [], p = parent;
-    while (true) {
-        if (!p.parent) {
-            const path = rpath.reverse();
-            return !p.depth ? path : [...p.path, ...path];
-        }
-        rpath.push(p.key);
-        p = p.parent;
-    }
-}
-
 export const initContext = (value, {root, stopable, init})=>{
-    let def, brk, onStop;
+    let path, def, brk, onStop;
 
     if (root && !Array.isArray(root)) { throw new Error(`argument root expect an Array`); }
 
@@ -26,7 +14,7 @@ export const initContext = (value, {root, stopable, init})=>{
         value:{enumerable, value},
         depth:{enumerable, value:!root ? 0 : root.length},
         pending:{enumerable, get:_=>!brk},
-        path:{enumerable, get:_=>!root ? [] : [...root] },
+        path:{enumerable, get:_=>path != null ? path : (path = jet.dot.toString(root)) },
         fullpath:{enumerable, get:_=>ctx.path },
         def:{enumerable, get:_=>def || (def = getDefByInst(value))}
     });
@@ -50,7 +38,7 @@ export const initContext = (value, {root, stopable, init})=>{
 
 
 export const createContext = (parent, key, value)=>{
-    let def, path, fullpath;
+    let def, fullpath;
 
     const ctx = Object.defineProperties({}, {
         isRoot:{enumerable, value:false},
@@ -61,8 +49,8 @@ export const createContext = (parent, key, value)=>{
         depth:{enumerable, value:parent.depth+1},
         pending:{enumerable, get:_=>parent.pending},
         stop:{enumerable, value:parent.stop},
-        path:{enumerable, get:_=>[...(path || (path = collectPath(parent)))]},
-        fullpath:{enumerable, get:_=>fullpath || (fullpath = [...ctx.path, key]) },
+        path:{enumerable, get:_=>parent.fullpath},
+        fullpath:{enumerable, get:_=>fullpath || (fullpath = jet.dot.glue(ctx.path, key)) },
         def:{enumerable, get:_=>def || (def = getDefByInst(value))},
         update:{enumerable, value:(...a)=>{
             if (a.length > 0) { ctx.value = a[0]; }

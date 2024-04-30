@@ -1,5 +1,5 @@
-import { getDefByInst } from "../defs/base.js";
-import jet from "../defs";
+import jet, { getDefByInst } from "../base.js";
+import * as dot from "./dot.js";
 
 
 const each = (any, fce, deep, init)=>{
@@ -18,7 +18,7 @@ const each = (any, fce, deep, init)=>{
             for (let [key, val] of de(ctx.val)) {
                 exe({
                     parent:ctx, val, key, stop, def:getDefByInst(val),
-                    path:(path ? path+"." : "") + String.jet.dotEscape(String(key)),
+                    path:dot.glue(path, dot.escape(String(key)))
                 });
                 if (!isPending) { break; }
             };
@@ -38,7 +38,7 @@ export const reducer = reductor=>{
 }
 
 export const dig = (any, path, reductor)=>{
-    if (!Array.isArray(path)) { path = String.jet.dotSplit(String.jet.to(path)); }
+    path = dot.toArray(path);
 
     const end = path.length-1;
     return reducer((next, index, parent)=>{
@@ -47,8 +47,7 @@ export const dig = (any, path, reductor)=>{
 }
 
 export const digOut = (any, path, def)=>{
-    if (!Array.isArray(path)) { path = String.jet.dotSplit(String.jet.to(path)); }
-    if (!path.length) { return any; }
+    path = dot.toArray(path);
 
     for (let p of path) { if (null == (any = jet.get(any, p, false))) { return def; }}
     return any;
@@ -145,11 +144,15 @@ export const copy = (any, deep=false, copyUnmapable=false)=>{
     });
 }
 
-export const melt = (any, comma)=>{
+export const melt = (any, comma, trait)=>{
+    if (any == null) { return ""; }
+    if (typeof any === "string") { return any; }
+    
     let j = "", c = String.jet.to(comma);
     if (!jet.isMapable(any)) { return String.jet.to(any, c); }
+    if (!jet.isRunnable(trait)) { trait = String.jet.to; }
     each(any, ({ val })=>{
-        val = String.jet.to(val, c);
+        val = trait(val, c);
         if (val) { j += (j?c:"")+val; }
     }, true);
     return j;

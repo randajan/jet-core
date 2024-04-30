@@ -1,4 +1,4 @@
-import Plex from "../class/extra/Plex";
+import Plex from "../../class/extra/Plex";
 
 export const solid = new Plex(
     (obj, name, value, enumerable=true)=>Object.defineProperty(obj, name, { enumerable, value }),
