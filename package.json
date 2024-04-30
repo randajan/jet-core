@@ -8,12 +8,12 @@
   "module": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./eachSync": "./dist/jet/pile/eachSync.js",
-    "./eachAsync": "./dist/jet/pile/eachAsync.js",
-    "./plex": "./dist/extra/Plex.js",
-    "./pool": "./dist/extra/Pool.js",
-    "./runpool": "./dist/extra/RunPool.js",
-    "./ticker": "./dist/extra/Ticker.js"
+    "./eachSync": "./dist/each/eachSync.js",
+    "./eachAsync": "./dist/each/eachAsync.js",
+    "./plex": "./dist/class/extra/Plex.js",
+    "./pool": "./dist/class/extra/Pool.js",
+    "./runpool": "./dist/class/extra/RunPool.js",
+    "./ticker": "./dist/class/extra/Ticker.js"
   },
   "scripts": {
     "start": "set NODE_ENV=dev&& node ./index.js",
