@@ -10,7 +10,7 @@ const each = (any, fce, deep, init)=>{
 
     const exe = (ctx, skipDeep=false)=>{
         const { parent, path, def } = ctx;
-        const de = def.entries;
+        const de = def?.entries;
 
         if (!de || (!deep && parent)) { fce(ctx); }
         else if (dprun && !skipDeep) { deep(ctx, _=>{ exe(ctx, true); }); }
