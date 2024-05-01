@@ -73,7 +73,7 @@ export const each = (any, fce, options={})=>{
     const dprun = jet.isRunnable(deep);
 
     const _each = !options.paralelAwait ? _eachSerial : _eachParalel;
-    const prom = !options.paralelAwait ? undefined : new Promise(res=>{ root.onStop(res); });
+    const prom = (!options.paralelAwait || !options.stopable) ? undefined : new Promise(res=>{ root.onStop(res); });
 
     const exe = async (ctx, skipDeep=false)=>{
         const de = ctx.def?.entries;
@@ -90,6 +90,8 @@ export const each = (any, fce, options={})=>{
 //implementation of each iterator
 
 export const find = (any, fce, options={})=>{
+    options.stopable = true;
+    
     return each(any, async (val, ctx)=>{
         val = await fce(val, ctx);
         if (val !== undefined && ctx.pending) {
@@ -110,7 +112,6 @@ export const list = (any, fce, options={})=>{
 
 export const map = (any, fce, options={})=>{
     delete options.init;
-    options.stopable = true;
 
     const set = (ctx, key, val)=>{
         if (!ctx) { return; }

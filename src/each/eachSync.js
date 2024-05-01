@@ -75,6 +75,8 @@ export const each = (any, fce, options={})=>{
 //implementation of each iterator
 
 export const find = (any, fce, options={})=>{
+    options.stopable = true;
+    
     return each(any, (val, ctx)=>{
         val = fce(val, ctx);
         if (val !== undefined && ctx.pending) {
@@ -95,7 +97,6 @@ export const list = (any, fce, options={})=>{
 
 export const map = (any, fce, options={})=>{
     delete options.init;
-    options.stopable = true;
 
     const set = (ctx, key, val)=>{
         if (!ctx) { return; }
