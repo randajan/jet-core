@@ -52,17 +52,18 @@ const _eachSerial = async (parent, exe, options)=>{
     };
 }
 
-const _eachParalel = async (parent, exe, options, prom)=>{
+const _eachParalel = async (parent, exe, options, stopProm)=>{
     const entries = parent.def.entries(parent.value);
     const refined = !parent.isRoot ? entries : await _refine(entries, options);
 
-    await Promise.race([
-        Promise.all(refined.map(async ([key, val])=>{
-            const ctx = createContext(parent, key, val);
-            if (ctx.pending) { await exe(ctx); }
-        })),
-        prom
-    ]);
+    const result = Promise.all(refined.map(async ([key, val])=>{
+        const ctx = createContext(parent, key, val);
+        if (ctx.pending) { await exe(ctx); }
+    }));
+
+    if (!stopProm) { await result; }
+    else { await Promise.race([result, stopProm]); }
+
 }
 
 export const each = (any, fce, options={})=>{
@@ -73,13 +74,13 @@ export const each = (any, fce, options={})=>{
     const dprun = jet.isRunnable(deep);
 
     const _each = !options.paralelAwait ? _eachSerial : _eachParalel;
-    const prom = (!options.paralelAwait || !options.stopable) ? undefined : new Promise(res=>{ root.onStop(res); });
+    const stopProm = (!options.paralelAwait || !options.stopable) ? undefined : new Promise(res=>{ root.onStop(res); });
 
     const exe = async (ctx, skipDeep=false)=>{
         const de = ctx.def?.entries;
         if (!de || (!deep && !ctx.isRoot)) { await fce(ctx.value, ctx); }
         else if (dprun && !skipDeep) { await deep(ctx.value, ctx, (...a)=>{ exe(ctx.update(...a), true) }); }
-        else { await _each(ctx, exe, options, prom); }
+        else { await _each(ctx, exe, options, stopProm); }
         return ctx.result;
     }
     
@@ -91,7 +92,7 @@ export const each = (any, fce, options={})=>{
 
 export const find = (any, fce, options={})=>{
     options.stopable = true;
-    
+
     return each(any, async (val, ctx)=>{
         val = await fce(val, ctx);
         if (val !== undefined && ctx.pending) {
