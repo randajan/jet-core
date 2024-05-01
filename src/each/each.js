@@ -48,7 +48,7 @@ export const createContext = (parent, key, value)=>{
         pending:{enumerable, get:_=>parent.pending},
         stop:{enumerable, value:parent.stop},
         path:{enumerable, get:_=>parent.fullpath},
-        fullpath:{enumerable, get:_=>fullpath || (fullpath = jet.dot.glue(ctx.path, key)) },
+        fullpath:{enumerable, get:_=>fullpath || (fullpath = jet.dot.glue(ctx.path, jet.dot.escape(key))) },
         def:{enumerable, get:_=>def || (def = getDefByInst(value))},
         update:{enumerable, value:(...a)=>{
             if (a.length > 0) { ctx.value = a[0]; }
