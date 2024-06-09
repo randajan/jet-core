@@ -11,9 +11,9 @@ const fight = (a, b)=>{
 jet.define("Array", Array, {
     create:Array,
     copy:x=>Array.from(x),
-    keys:x=>x.keys(),
-    vals:x=>x.values(),
-    entries:x=>x.entries(),
+    keys:x=>[...x.keys()],
+    vals:x=>[...x.values()],
+    entries:x=>[...x.entries()],
     to:{
         Function:arr=>_=>arr,
         Boolean:arr=>Array.jet.isFull(arr),

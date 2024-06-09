@@ -3,8 +3,8 @@ import jet from "../base";
 const isBlank = str=>str == null || str === "";
 const noBlank = str=>isBlank(str) ? "" : str;
 
-export const escape = str=>str.replaceAll(".", "\\.");
-export const unescape = str=>str.replaceAll("\\.", ".");
+export const escape = str=>typeof str !== "string" ? str : str.replaceAll(".", "\\.");
+export const unescape = str=>typeof str !== "string" ? str : str.replaceAll("\\.", ".");
 export const split = str=>(str.match(/(?:\\.|[^.])+/g) || []).map(unescape);
 
 export const bite = (str, direction, position)=>{

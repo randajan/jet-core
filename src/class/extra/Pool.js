@@ -107,7 +107,7 @@ class Pool extends Array {
 
 export default jet.define("Pool", Pool, {
     copy:x=>(new Pool(...x)).autoFilter(x._autoFilter).autoSort(x._autoSort),
-    keys:x=>x.keys(),
-    vals:x=>x.values(),
-    entries:x=>x.entries(),
+    keys:x=>[...x.keys()],
+    vals:x=>[...x.values()],
+    entries:x=>[...x.entries()],
 });

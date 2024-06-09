@@ -43,7 +43,7 @@ class RunPool extends Pool {
 
 export default jet.define("RunPool", RunPool, {
     copy:x=>(new RunPool(...x)).autoFilter(x._autoFilter).autoSort(x._autoSort),
-    keys:x=>x.keys(),
-    vals:x=>x.values(),
-    entries:x=>x.entries(),
+    keys:x=>[...x.keys()],
+    vals:x=>[...x.values()],
+    entries:x=>[...x.entries()],
 });
