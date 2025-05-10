@@ -6,7 +6,8 @@ export class Primitive {
     static isIterable = false;
 
     constructor(def, name, opt) {
-        const { self, create, isFull, copy, rnd, vals } = opt;
+        const { self, create, isFull, copy, rnd } = opt;
+        const { isIterable } = this.constructor;
 
         solids(this, {
             name,
@@ -15,8 +16,8 @@ export class Primitive {
             create:create || ((...a)=>new self(...a)),
             copy:copy || (any=>any),
             rnd:rnd || create,
-            isFull:isFull || (any=>_.isFull(any, vals)),
-            isIterable:this.constructor.isIterable
+            isFull:isFull || (any=>_.isFull(any, isIterable)),
+            isIterable
         });
 
         this.is = this.is.bind(this);
@@ -43,12 +44,10 @@ export class Primitive {
         return this.to(exe(any, ...args), ...args);
     }
 
-    only(...a) { return _.factory(this.name, 0, ...a); }
-    full(...a) { return _.factory(this.name, 1, ...a); }
-    tap(...a) { return _.factory(this.name, 2, ...a); }
-    pull(...a) { return _.factory(this.name, 3, ...a); }
-
-    getRnd (any, min, max, sqr) { return _.getRnd(vals(any), min, max, sqr); }
+    full(...a) { return _.factory(this, 0, ...a); }
+    only(...a) { return _.factory(this, 1, ...a); }
+    tap(...a) { return _.factory(this, 2, ...a); }
+    pull(...a) { return _.factory(this, 3, ...a); }
 
     extend(extender={}) {
         const { name } = this;

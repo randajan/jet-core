@@ -1,4 +1,4 @@
-import { jet } from "../../defs";
+import Ł, { jet } from "../../defs";
 
 const filter = (obj, callback) => {
     const r = {};
@@ -16,7 +16,7 @@ jet.define("obj", {
 }).defineTo({
     fn: obj => _ => obj,
     sym: obj => Symbol(jet.json.to(obj)),
-    bool: obj => jet.isFull.Object(obj),
+    bool: obj => Ł.obj.isFull(obj),
     num: obj => Object.values(obj),
     arr: obj => Object.values(obj),
     str: obj => (obj.toString && obj.toString !== Object.prototype.toString) ? obj.toString() : jet.json.to(obj),

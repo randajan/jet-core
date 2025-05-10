@@ -4,6 +4,8 @@ import * as pile from "./extra/pile.js";
 import * as dot from "./extra/dot.js";
 import { solids } from "@randajan/props";
 import { Definition } from "../class/self/Definition.js";
+import { json } from "./extra/json.js";
+import { enumFactory } from "./extra/enum.js";
 
 solids(jet, {
     is:(name, any, strict=true)=>{
@@ -16,14 +18,9 @@ solids(jet, {
         return any.constructor === name && (!strict || any instanceof name);
     },
     isFull:any=>{ const def = getDefByInst(any, false); return def ? def.type.isFull(any) : _.isFull(any); },
-    isIterable:(any, strict=true)=>getDefByInst(any, strict)?.type.isIterable,
+    isIterable:(any, strict=true)=>getDefByInst(any, strict)?.type.isIterable || false,
     isRunnable:any=>typeof any === "function",
-    full:(...a)=>_.factory(null, 1, ...a),
-    only:(name, ...a)=>_.factory(name, 0, ...a),
-    tap:(name, ...a)=>_.factory(name, 2, ...a),
-    pull:(name, ...a)=>_.factory(name, 3, ...a),
-    create:(name, ...a)=>_.touch(name, "create", true, ...a),
-    rnd:(name, ...a)=>_.touch(name, "rnd", true, ...a),
+    full:(...a)=>_.factory(null, 0, ...a),
     keys:(any, throwError=false)=>_.touchBy(any, "keys", throwError) || [],
     vals:(any, throwError=false)=>_.touchBy(any, "vals", throwError) || [],
     entries:(any, throwError=false)=>_.touchBy(any, "entries", throwError) || [],
@@ -36,6 +33,8 @@ solids(jet, {
         else if (typeof any !== "string") { return; }
         return _.getRnd(any, min, max, sqr);
     },
+    json,
+    enumFactory,
     ...pile,
     dot,
     define:(name, definition)=>Definition.create(name, definition).type

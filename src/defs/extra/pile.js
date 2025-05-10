@@ -166,20 +166,5 @@ export const run = (any, ...args)=>{
     return res;
 }
 
-export const enumFactory = (enums, {before, after, def}={})=>(raw, ...args)=>{
-    const input = before ? before(raw, ...args) : raw;
-    const output = enums.includes(input) ? input : def;
-    
-    return after ? after(output, ...args) : output;
-}
 
-export const json = {
-    from: (json, throwErr=false)=>{
-        if (jet.isIterable(json)) { return json; }
-        try { return JSON.parse(Ł.str.to(json)); } catch(e) { if (throwErr === true) { throw e } }
-    },
-    to: (obj, prettyPrint=false)=>{
-        const spacing = Ł.num.only(prettyPrint === true ? 2 : prettyPrint);
-        return JSON.stringify(jet.isIterable(obj) ? obj : {}, null, spacing);
-    }
-}
+

@@ -1,6 +1,6 @@
 import { solids } from "@randajan/props";
 import { Primitive } from "./Primitive";
-
+import * as _ from "../../defs/methods";
 
 
 export class Iterable extends Primitive {
@@ -20,5 +20,9 @@ export class Iterable extends Primitive {
             rem:rem || ((x, k) => delete x[k])
         });
         
+    }
+
+    getRnd(any, min, max, sqr) {
+        return _.getRnd(this.vals(any), min, max, sqr);
     }
 }

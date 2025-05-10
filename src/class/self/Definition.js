@@ -1,4 +1,3 @@
-import { solid } from "@randajan/props";
 import { fail, getDefByName, register, warn } from "../../defs/base";
 import * as _ from "../../defs/methods";
 import { Iterable } from "./Iterable";
