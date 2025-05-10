@@ -1,4 +1,4 @@
-import { fail, getDefByName, getDefByInst } from "./base.js";
+import Ł, { fail, getDefByName, getDefByInst } from "./base.js";
 
 const _magic = ["only", "full", "tap", "pull", "is", "to", "copy", "rnd"];
 
@@ -20,19 +20,19 @@ const _touch = (type, op, err, ...args)=>{
     if (err) { fail(`undefined operation '${op}' - unavailable for this type`, type.name); }
 }
 export const touch = (name, op, err, ...args)=>{
-    const type = getDefByName(name);
-    if (type) { return _touch(type, op, err, ...args); }
+    const def = getDefByName(name);
+    if (def) { return _touch(def.type, op, err, ...args); }
     if (err) { fail(`unable execute '${op}' - type unknown`, name); }
 }
 export const touchBy = (any, op, err, ...args)=>{
-    const type = getDefByInst(any, false);
-    if (type) { return _touch(type, op, err, any, ...args); }
+    const def = getDefByInst(any, false);
+    if (def) { return _touch(def.type, op, err, any, ...args); }
     if (err) { fail(`unable execute '${op}' - missing type of '${any}'`); }
 }
 
 //0 = only, 1 = full, 2 = tap, 3 = pull
 export const factory = (name, mm, ...args)=>{
-    const type = getDefByName(name);
+    const type = getDefByName(name)?.type;
     const n = isInstance(name);
 
     if (n && mm > 0) { fail(`unable execute '${_magic[mm]}' - unavailable for plain constructors`); }
@@ -41,7 +41,7 @@ export const factory = (name, mm, ...args)=>{
 
     for (const a of args) {
         if (!n) {
-            const at = getDefByInst(a);
+            const at = getDefByInst(a)?.type;
             if ((!name || (at && at.name === name)) && (mm !== 1 || (at && at.isFull(a) || (!at && isFull(a))))) {
                 return mm === 3 ? at.copy(a) : a;
             }
@@ -55,5 +55,5 @@ export const getRnd = (arr, min, max, sqr)=>{ //get random element from array or
     if (!arr) { return; }
     arr = Array.from(arr);
     const l = arr.length;
-    return arr[Math.floor(Number.jet.rnd(Number.jet.frame(min||0, 0, l), Number.jet.frame(max||l, 0, l), sqr))];
+    return arr[Math.floor(Ł.num.rnd(Ł.num.frame(min||0, 0, l), Ł.num.frame(max||l, 0, l), sqr))];
 };

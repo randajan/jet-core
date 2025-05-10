@@ -77,7 +77,7 @@ export const each = (any, fce, options={})=>{
     const stopProm = (!options.paralelAwait || !options.stopable) ? undefined : new Promise(res=>{ root.onStop(res); });
 
     const exe = async (ctx, skipDeep=false)=>{
-        const de = ctx.type.entries; //TODO entries will be defined everytime
+        const de = ctx.type.entries;
         if (!de || (!deep && !ctx.isRoot)) { await fce(ctx.value, ctx); }
         else if (dprun && !skipDeep) { await deep(ctx.value, ctx, (...a)=>{ exe(ctx.update(...a), true) }); }
         else { await _each(ctx, exe, options, stopProm); }
@@ -118,7 +118,7 @@ export const map = (any, fce, options={})=>{
         if (!ctx) { return; }
         if (!ctx.result) { set(ctx.parent, ctx.key, ctx.result = ctx.type.create()); }
 
-        if (!options.strictArray && ctx.type.name === "Array") { ctx.result.push(val); }
+        if (!options.strictArray && ctx.type?.name === "arr") { ctx.result.push(val); }
         else { ctx.type.set(ctx.result, key, val); }
     }
 

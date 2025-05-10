@@ -1,4 +1,4 @@
-import { jet }from "../../defs";
+import Ł, { jet } from "../../defs";
 import Pool from "./Pool";
 
 class RunPool extends Pool {
@@ -6,7 +6,7 @@ class RunPool extends Pool {
         const _p = {with:[]};
         super(...items);
         this.autoFilter(jet.isRunnable);
-        Object.defineProperty(this, "_with", { get:_=>_p.with, set:v=>_p.with=Array.jet.to(v)});
+        Object.defineProperty(this, "_with", { get:_=>_p.with, set:v=>_p.with=Ł.arr.to(v)});
     }
 
     with(...args) {

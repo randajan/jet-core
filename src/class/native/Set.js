@@ -1,6 +1,6 @@
 import { jet } from "../../defs";
 
-jet.define("Set", {
+jet.define("set", {
     self: Set,
     copy: x => new Set(x),
     keys: x => [...x.keys()],
@@ -11,8 +11,8 @@ jet.define("Set", {
     rem: (x, k) => x.delete(k),
 }).defineTo({
     "*": set => Array.from(set),
-    Function: set => _ => set,
-    Boolean: set => !!set.size,
-    Object: set => jet.merge(set),
-    Promise: async set => set,
+    fn: set => _ => set,
+    bool: set => !!set.size,
+    obj: set => jet.merge(set),
+    prom: async set => set,
 })

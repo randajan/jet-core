@@ -1,6 +1,6 @@
-import { jet } from "../../defs";
+import Ł, { jet } from "../../defs";
 
-jet.define("Array", {
+jet.define("arr", {
     self: Array,
     create: Array,
     copy: x => Array.from(x),
@@ -8,25 +8,25 @@ jet.define("Array", {
     vals: x => [...x.values()],
     entries: x => [...x.entries()],
 }).defineTo({
-    Function: arr => _ => arr,
-    Boolean: arr => !!arr.length,
-    Number: arr => arr.length,
-    String: (arr, comma) => jet.melt(arr, comma),
-    Object: arr => Object.assign({}, arr),
-    Promise: async arr => arr,
-    Error: (arr, comma) => jet.melt(arr, comma != null ? comma : " "),
-    RegExp: (arr, comma) => jet.melt(arr, comma != null ? comma : "|")
+    fn: arr => _ => arr,
+    bool: arr => !!arr.length,
+    num: arr => arr.length,
+    str: (arr, comma) => jet.melt(arr, comma),
+    obj: arr => Object.assign({}, arr),
+    prom: async arr => arr,
+    err: (arr, comma) => jet.melt(arr, comma != null ? comma : " "),
+    rgx: (arr, comma) => jet.melt(arr, comma != null ? comma : "|")
 }).extend({
     swap: (arr, to, from) => {//swap position of two items in array
         [arr[to], arr[from]] = [arr[from], arr[to]];
         return arr;
     },
     shuffle: (arr) => {//shuffle whole array
-        for (let i = arr.length - 1; i > 0; i--) { Array.jet.swap(arr, Math.floor(Math.random() * (i + 1)), i); }
+        for (let i = arr.length - 1; i > 0; i--) { Ł.arr.swap(arr, Math.floor(Math.random() * (i + 1)), i); }
         return arr;
     },
     clean: (arr, rekey, handler) => {
-        handler = Function.jet.tap(handler, v => v != null);
+        handler = Ł.fn.tap(handler, v => v != null);
         return rekey !== false ? arr.filter(handler) : arr.map(v => handler(v) ? v : undefined);
     },
     compare: (a, b, sameIndex = false) => {

@@ -3,20 +3,20 @@ import * as _ from "./methods.js";
 import * as pile from "./extra/pile.js";
 import * as dot from "./extra/dot.js";
 import { solids } from "@randajan/props";
-import { TypeInterface } from "../class/self/TypeInterface.js";
+import { Definition } from "../class/self/Definition.js";
 
 solids(jet, {
     is:(name, any, strict=true)=>{
-        const type = getDefByName(name);
-        if (type) { return type.is(any, strict); }
+        const def = getDefByName(name);
+        if (def) { return def.type.is(any, strict); }
 
         const nt = typeof name;
         if (nt === "string") { return typeof any === name; }
         if (any == null || (nt !== "function" && nt !== "object")) { return false; }
         return any.constructor === name && (!strict || any instanceof name);
     },
-    isFull:any=>{ const type = getDefByInst(any, false); return type ? type.isFull(any) : _.isFull(any); },
-    isMapable:(any, strict=true)=>getDefByInst(any, strict)?.isMapable,
+    isFull:any=>{ const def = getDefByInst(any, false); return def ? def.type.isFull(any) : _.isFull(any); },
+    isIterable:(any, strict=true)=>getDefByInst(any, strict)?.type.isIterable,
     isRunnable:any=>typeof any === "function",
     full:(...a)=>_.factory(null, 1, ...a),
     only:(name, ...a)=>_.factory(name, 0, ...a),
@@ -31,14 +31,14 @@ solids(jet, {
     set:(any, key, val, throwError=false)=>_.touchBy(any, "set", throwError, key, val),
     rem:(any, key, throwError=true)=>_.touchBy(any, "rem", throwError, key),
     getRnd:(any, min, max, sqr)=>{
-        const type = getDefByInst(any);
-        if (type && type.isMapable) { any = type.vals(any); }
+        const def = getDefByInst(any);
+        if (def?.type.isIterable) { any = def.type.vals(any); }
         else if (typeof any !== "string") { return; }
         return _.getRnd(any, min, max, sqr);
     },
     ...pile,
     dot,
-    define:(name, definition)=>new TypeInterface(name, definition)
+    define:(name, definition)=>Definition.create(name, definition).type
 });
 
 export default types;

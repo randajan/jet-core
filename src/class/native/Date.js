@@ -1,9 +1,9 @@
-import { jet }from "../../defs";
+import Ł, { jet } from "../../defs";
 
-jet.define("Date", {
+jet.define("date", {
     self:Date,
     create:x=>!x ? new Date() : new Date(x),
-    rnd:(from, to)=>new Date(Number.jet.rnd((new Date(from)).getTime(), to ? (new Date(to)).getTime() : Date.now()*2))
+    rnd:(from, to)=>new Date(Ł.num.rnd((new Date(from)).getTime(), to ? (new Date(to)).getTime() : Date.now()*2))
 }).defineTo({
-    Function:date=>_=>date
+    fn:date=>_=>date
 })

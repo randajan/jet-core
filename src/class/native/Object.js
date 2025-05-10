@@ -6,7 +6,7 @@ const filter = (obj, callback) => {
     return r;
 }
 
-jet.define("Object", {
+jet.define("obj", {
     self: Object,
     create: Object,
     copy: x => Object.defineProperties({}, Object.getOwnPropertyDescriptors(x)),
@@ -14,15 +14,15 @@ jet.define("Object", {
     vals: x => Object.values(x),
     entries: x => Object.entries(x),
 }).defineTo({
-    Function: obj => _ => obj,
-    Symbol: obj => Symbol(jet.json.to(obj)),
-    Boolean: obj => jet.isFull.Object(obj),
-    Number: obj => Object.values(obj),
-    Array: obj => Object.values(obj),
-    String: obj => (obj.toString && obj.toString !== Object.prototype.toString) ? obj.toString() : jet.json.to(obj),
-    Promise: async obj => obj,
-    Error: obj => jet.json.to(obj),
-    RegExp: (obj, comma) => jet.melt(obj, comma != null ? comma : "|")
+    fn: obj => _ => obj,
+    sym: obj => Symbol(jet.json.to(obj)),
+    bool: obj => jet.isFull.Object(obj),
+    num: obj => Object.values(obj),
+    arr: obj => Object.values(obj),
+    str: obj => (obj.toString && obj.toString !== Object.prototype.toString) ? obj.toString() : jet.json.to(obj),
+    prom: async obj => obj,
+    err: obj => jet.json.to(obj),
+    rgx: (obj, comma) => jet.melt(obj, comma != null ? comma : "|")
 }).extend({
     filter,
     exclude: (obj, mask = []) => filter(obj, (v, k) => !mask.includes(k)),

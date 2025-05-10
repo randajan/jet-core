@@ -1,4 +1,4 @@
-import { jet, getDefByInst } from "../base.js";
+import Ł, { jet, getDefByInst } from "../base.js";
 import * as dot from "./dot.js";
 
 
@@ -10,14 +10,14 @@ const each = (any, fce, deep, init)=>{
 
     const exe = (ctx, skipDeep=false)=>{
         const { parent, path, type } = ctx;
-        const de = type.isMapable ? type.entries : undefined;
+        const de = type?.entries;
 
         if (!de || (!deep && parent)) { fce(ctx); }
         else if (dprun && !skipDeep) { deep(ctx, _=>{ exe(ctx, true); }); }
         else {
             for (let [key, val] of de(ctx.val)) {
                 exe({
-                    parent:ctx, val, key, stop, type:getDefByInst(val),
+                    parent:ctx, val, key, stop, type:getDefByInst(val)?.type,
                     path:dot.glue(path, dot.escape(String(key)))
                 });
                 if (!isPending) { break; }
@@ -27,7 +27,7 @@ const each = (any, fce, deep, init)=>{
         return ctx.result;
     }
 
-    const ctx = { val:any, stop, type:getDefByInst(any) };
+    const ctx = { val:any, stop, type:getDefByInst(any)?.type };
     if (init) { init(ctx); }
     return exe(ctx, true);
 };
@@ -56,11 +56,11 @@ export const digOut = (any, path, def)=>{
 export const digIn = (any, path, val, force=true)=>{
 
     const step = (next, parent, key, isEnd)=>{
-        let type = getDefByInst(parent);
-        if (!type?.isMapable) {
+        let type = getDefByInst(parent)?.type;
+        if (!type?.isIterable) {
             if (!force) { return parent; }
-            parent = String.jet.isNumeric(key) ? [] : {};
-            type = getDefByInst(parent);
+            parent = Ł.str.isNumeric(key) ? [] : {};
+            type = getDefByInst(parent)?.type;
         }
         const v = isEnd ? val : next(type.get(parent, key, false));
         if (v != null) { type.set(parent, key, v, false); return parent; }
@@ -85,7 +85,7 @@ export const deflate = (any, includeMapable=false)=>{
 export const inflate = (flat, includeMapable=true)=>{
     const r = {};
     for (const e of Object.keys(flat).sort()) {
-        if (!includeMapable && jet.isMapable(flat[e])) { continue; }
+        if (!includeMapable && jet.isIterable(flat[e])) { continue; }
         digIn(r, "to."+e, flat[e], true);
     }
     return r.to;
@@ -140,7 +140,7 @@ export const copy = (any, deep=false, copyUnmapable=false)=>{
         next();
     }, ctx=>{
         const { val, type } = ctx;
-        ctx.result = type.isMapable ? type.create() : type.copy(val);
+        ctx.result = type.isIterable ? type.create() : type.copy(val);
     });
 }
 
@@ -148,9 +148,9 @@ export const melt = (any, comma, trait)=>{
     if (any == null) { return ""; }
     if (typeof any === "string") { return any; }
     
-    let j = "", c = String.jet.to(comma);
-    if (!jet.isMapable(any)) { return String.jet.to(any, c); }
-    if (!jet.isRunnable(trait)) { trait = String.jet.to; }
+    let j = "", c = Ł.str.to(comma);
+    if (!jet.isIterable(any)) { return Ł.str.to(any, c); }
+    if (!jet.isRunnable(trait)) { trait = Ł.str.to; }
     each(any, ({ val })=>{
         val = trait(val, c);
         if (val) { j += (j?c:"")+val; }
@@ -160,7 +160,7 @@ export const melt = (any, comma, trait)=>{
 
 export const run = (any, ...args)=>{
     if (jet.isRunnable(any)) { return any(...args); }
-    if (!jet.isMapable(any)) { return undefined; }
+    if (!jet.isIterable(any)) { return undefined; }
     const res = [];
     each(any, ({val})=>{ res.push(jet.isRunnable(val) ? val(...args) : undefined); }, true);
     return res;
@@ -175,11 +175,11 @@ export const enumFactory = (enums, {before, after, def}={})=>(raw, ...args)=>{
 
 export const json = {
     from: (json, throwErr=false)=>{
-        if (jet.isMapable(json)) { return json; }
-        try { return JSON.parse(String.jet.to(json)); } catch(e) { if (throwErr === true) { throw e } }
+        if (jet.isIterable(json)) { return json; }
+        try { return JSON.parse(Ł.str.to(json)); } catch(e) { if (throwErr === true) { throw e } }
     },
     to: (obj, prettyPrint=false)=>{
-        const spacing = Number.jet.only(prettyPrint === true ? 2 : prettyPrint);
-        return JSON.stringify(jet.isMapable(obj) ? obj : {}, null, spacing);
+        const spacing = Ł.num.only(prettyPrint === true ? 2 : prettyPrint);
+        return JSON.stringify(jet.isIterable(obj) ? obj : {}, null, spacing);
     }
 }

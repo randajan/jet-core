@@ -1,12 +1,12 @@
 import { jet } from "../../defs";
 
-jet.define("RegExp", {
+jet.define("rgx", {
     self: RegExp,
     create: RegExp,
     copy: x => RegExp(x.source),
 }).defineTo({
-    Function: regex => _ => regex,
-    String: regex => regex.source
+    fn: regex => _ => regex,
+    str: regex => regex.source
 }).extend({
     lib: {
         line: /[^\n\r]+/g,

@@ -1,5 +1,5 @@
 import { getDefByInst } from "../defs/base.js";
-import { jet }from "../";
+import Ł, { jet }from "../";
 
 const enumerable = true;
 
@@ -14,7 +14,7 @@ export const initContext = (value, {root, stopable, init})=>{
         pending:{enumerable, get:_=>!brk},
         path:{enumerable, get:_=>path != null ? path : (path = jet.dot.toString(root)) },
         fullpath:{enumerable, get:_=>ctx.path },
-        type:{enumerable, get:_=>type || (type = getDefByInst(value))}
+        type:{enumerable, get:_=>type || (type = getDefByInst(value)?.type)}
     });
 
     ctx.result = init;
@@ -49,7 +49,7 @@ export const createContext = (parent, key, value)=>{
         stop:{enumerable, value:parent.stop},
         path:{enumerable, get:_=>parent.fullpath},
         fullpath:{enumerable, get:_=>fullpath || (fullpath = jet.dot.glue(ctx.path, jet.dot.escape(key))) },
-        type:{enumerable, get:_=>type || (type = getDefByInst(value))},
+        type:{enumerable, get:_=>type || (type = getDefByInst(value)?.type)},
         update:{enumerable, value:(...a)=>{
             if (a.length > 0) { ctx.value = a[0]; }
             if (a.length > 1) { ctx.key = a[1]; }
@@ -63,7 +63,7 @@ export const createContext = (parent, key, value)=>{
 export const fight = (a, b)=>{
     if (a == b) { return; }
     if (a == null) { return true; } else if (b == null) { return false; }
-    if (typeof a === "string" || typeof b === "string") { return a === String.jet.fight(a, b); }
+    if (typeof a === "string" || typeof b === "string") { return a === Ł.str.fight(a, b); }
     if (isNaN(a)) { return true; } else if (isNaN(b)) { return false; }
     return a < b;
 }

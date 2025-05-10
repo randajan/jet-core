@@ -1,4 +1,4 @@
-import { jet }from "../../defs";
+import Ł, { jet } from "../../defs";
 import { solid, virtual, safe } from "@randajan/props";
 
 
@@ -36,7 +36,7 @@ class Ticker {
         }
 
         safe(this, _p, "state", (t, f)=>{
-            t = Boolean.jet.to(t);
+            t = Ł.bool.to(t);
             if (t === f) { return f; }
             if (t) { start(); }
             else { clearTimeout(_p.intervalId); }
@@ -44,7 +44,7 @@ class Ticker {
         });
 
         safe(this, _p, "interval", (t, f)=>{
-            t = Math.max(0, Number.jet.to(t));
+            t = Math.max(0, Ł.num.to(t));
             if (t === f) { return f; }
             if (!_p.state) { return t; }
             clearTimeout(_p.intervalId);

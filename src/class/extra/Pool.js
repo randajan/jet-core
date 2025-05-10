@@ -1,4 +1,4 @@
-import { jet }from "../../defs";
+import Ł, { jet } from "../../defs";
 
 class Pool extends Array {
 
@@ -101,7 +101,7 @@ class Pool extends Array {
     }
 
     toString(separator=" ") {
-        return jet.melt(this, String.jet.to(separator, this));
+        return jet.melt(this, Ł.str.to(separator, this));
     }
 }
 

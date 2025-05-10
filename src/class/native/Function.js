@@ -1,12 +1,12 @@
 import { jet } from "../../defs";
 
-jet.define("Function", {
+jet.define("fn", {
     self: Function,
     create: Function,
     copy: x => Object.defineProperties(({ [x.name]: (...a) => x(...a) })[x.name], Object.getOwnPropertyDescriptors(x)),
 }).defineTo({
     "*": (fce, ...args) => fce(...args),
-    Promise: async (fce, ...args) => await fce(...args),
+    prom: async (fce, ...args) => await fce(...args),
 }).extend({
     benchmark: (fces, inputs, iterations = 100) => {
         const results = [];
