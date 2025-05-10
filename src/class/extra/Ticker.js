@@ -1,6 +1,6 @@
-import jet from "../../defs";
+import { jet }from "../../defs";
+import { solid, virtual, safe } from "@randajan/props";
 
-const { virtual, solid, safe } = jet.prop;
 
 class Ticker {
 
@@ -69,4 +69,4 @@ class Ticker {
 
 }
 
-export default jet.define("Ticker", Ticker);
+export default jet.define("Ticker", { self:Ticker });

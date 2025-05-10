@@ -1,9 +1,9 @@
-import jet from "../../defs";
+import { jet }from "../../defs";
 
-jet.define("Error", Error, {
+jet.define("Error", {
+    self:Error,
     create:Error,
     rnd:(...a)=>new Error(jet.rnd.String(...a)),
-    to:{
-        Function:err=>_=>err
-    }
-});
+}).defineTo({
+    Function:err=>_=>err
+})

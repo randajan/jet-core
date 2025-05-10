@@ -8,21 +8,24 @@
   "module": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./eachSync": "./dist/each/eachSync.js",
-    "./eachAsync": "./dist/each/eachAsync.js",
+    "./promise": "./dist/class/extra/Promise.js",
     "./plex": "./dist/class/extra/Plex.js",
     "./pool": "./dist/class/extra/Pool.js",
     "./runpool": "./dist/class/extra/RunPool.js",
-    "./ticker": "./dist/class/extra/Ticker.js"
+    "./ticker": "./dist/class/extra/Ticker.js",
+    "./eachSync": "./dist/each/eachSync.js",
+    "./eachAsync": "./dist/each/eachAsync.js"
   },
   "scripts": {
     "start": "set NODE_ENV=dev&& node ./index.js",
     "build": "set NODE_ENV=prod&& node ./index.js"
   },
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@randajan/props": "^0.1.4"
+  },
   "devDependencies": {
-    "@randajan/simple-lib": "^2.3.1",
+    "@randajan/simple-lib": "^3.0.2",
     "chokidar": "^3.5.3",
     "esbuild": "^0.14.27",
     "esbuild-plugin-import-glob": "^0.1.1",

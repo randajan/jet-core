@@ -1,6 +1,5 @@
-import jet, { throwError, getDefByName, getDefByInst } from "./base.js";
+import { fail, getDefByName, getDefByInst } from "./base.js";
 
-const enumerable = true;
 const _magic = ["only", "full", "tap", "pull", "is", "to", "copy", "rnd"];
 
 export const isInstance = any=>{
@@ -9,21 +8,6 @@ export const isInstance = any=>{
 }
 export const isInstanceOf = (constructor, any)=>any instanceof constructor; //is instance comparing
 
-export const is = (name, any, strict=true)=>{
-    if (!name) { return false; }
-    const def = getDefByName(name);
-    if (def) {
-        if (any == null) { return false; }
-        if (strict && any.__proto__ !== def.prototype) { return false; }
-        if (!strict && !(any instanceof def.constructor)) { return false; }
-        return !def.is || def.is(any);
-    }
-    const nt = typeof name;
-    if (nt === "string") { return typeof any === name; }
-    if (any == null || (nt !== "function" && nt !== "object")) { return false; }
-    return strict ? any.constructor === name : any instanceof name;
-}
-
 export const isFull = (any, vals)=>{
     if (!vals) { return (any === false || any === 0 || !!any); }
     for (let v of vals(any)) { if (v != null) { return true; }}
@@ -31,29 +15,29 @@ export const isFull = (any, vals)=>{
 }
 
 
-const _touch = (def, op, err, ...args)=>{
-    if (def[op]) { return def[op](...args); }
-    if (err) { throwError(`undefined operation '${op}' - unavailable for this type`, def.name); }
+const _touch = (type, op, err, ...args)=>{
+    if (type[op]) { return type[op](...args); }
+    if (err) { fail(`undefined operation '${op}' - unavailable for this type`, type.name); }
 }
 export const touch = (name, op, err, ...args)=>{
-    const def = getDefByName(name);
-    if (def) { return _touch(def, op, err, ...args); }
-    if (err) { throwError(`unable execute '${op}' - type unknown`, name); }
+    const type = getDefByName(name);
+    if (type) { return _touch(type, op, err, ...args); }
+    if (err) { fail(`unable execute '${op}' - type unknown`, name); }
 }
 export const touchBy = (any, op, err, ...args)=>{
-    const def = getDefByInst(any, false);
-    if (def) { return _touch(def, op, err, any, ...args); }
-    if (err) { throwError(`unable execute '${op}' - missing type of '${any}'`); }
+    const type = getDefByInst(any, false);
+    if (type) { return _touch(type, op, err, any, ...args); }
+    if (err) { fail(`unable execute '${op}' - missing type of '${any}'`); }
 }
 
 //0 = only, 1 = full, 2 = tap, 3 = pull
 export const factory = (name, mm, ...args)=>{
-    const def = getDefByName(name);
+    const type = getDefByName(name);
     const n = isInstance(name);
 
-    if (n && mm > 0) { throwError(`unable execute '${_magic[mm]}' - unavailable for plain constructors`); }
-    if (name && !n && !def) { throwError(`unable execute '${_magic[mm]}' - type unknown`, name); }
-    if (!name && mm !== 1) { throwError(`unable execute '${_magic[mm]}' - type missing`); }
+    if (n && mm > 0) { fail(`unable execute '${_magic[mm]}' - unavailable for plain constructors`); }
+    if (name && !n && !type) { fail(`unable execute '${_magic[mm]}' - type unknown`, name); }
+    if (!name && mm !== 1) { fail(`unable execute '${_magic[mm]}' - type missing`); }
 
     for (const a of args) {
         if (!n) {
@@ -64,57 +48,12 @@ export const factory = (name, mm, ...args)=>{
         }
         else if (isInstanceOf(name, a)) { return a; }
     }
-    if (mm > 1) { return def.create(); }
+    if (mm > 1) { return type.create(); }
 }
 
-export const to = (name, any, ...args)=>{
-    const def = getDefByName(name);
-    if (!def) { throwError(`unable execute 'to' - type unknown`, name); }
-    const at = getDefByInst(any, false);
-    if (!at) { return def.create(); }
-    if (def.name === at.name) { return any; }
-    const exe = at.to[name] || at.to["*"]; 
-    return exe ? to(name, exe(any, ...args), ...args) : def.create(any);
-}
-
-export const defineTo = (from, to, exe)=>{
-    const tt = typeof to;
-    const def = getDefByName(from);
-    if (!def) { throwError(`unable define 'to' - type unknown`, from); }
-    const conv = def.to;
-    if (tt === "function") { conv["*"] = to; }
-    else if (tt === "object" && Array.isArray(to)) { for (let i in to) { conv[to[i]] = exe; } }
-    else if (tt === "object") { for (let i in to) { conv[i] = to[i]; } }
-    else { conv[to] = exe; }
-}
-
-export const getRND = (arr, min, max, sqr)=>{ //get random element from array or string
+export const getRnd = (arr, min, max, sqr)=>{ //get random element from array or string
     if (!arr) { return; }
     arr = Array.from(arr);
     const l = arr.length;
     return arr[Math.floor(Number.jet.rnd(Number.jet.frame(min||0, 0, l), Number.jet.frame(max||l, 0, l), sqr))];
 };
-
-
-export const extend = (def, extender, isNative=false)=>{
-    const { name, constructor } = def;
-
-    for (const key in extender) {
-        const value = extender[key];
-        Object.defineProperty(constructor.jet, key, {enumerable, value});
-
-        if (isNative && jet[key]) { Object.defineProperty(jet[key], name, {enumerable, value}); }
-    }
-
-    return true;
-}
-
-export const defineExtend = (name, extender={})=>{
-    const def = getDefByName(name);
-    if (!def) { throwError(`unable define 'extend' - type unknown`, name); }
-    if (typeof extender !== "object") { throwError(`unable define 'extend' - require object`, name); }
-
-    if (!def.constructor.jet) { Object.defineProperty(def.constructor, "jet", {value:{}, writable:true }); }
-
-    return extend(def, extender, false);
-}

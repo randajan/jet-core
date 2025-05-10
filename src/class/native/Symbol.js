@@ -1,12 +1,12 @@
-import jet from "../../defs";
+import { jet } from "../../defs";
 
-const to = sym=>String(sym).slice(7, -1);
+const to = sym => String(sym).slice(7, -1);
 
-jet.define("Symbol", Symbol, {
-    create:Symbol,
-    copy:x=>Symbol(to(x)),
-    rnd:(...a)=>Symbol(jet.rnd.String(...a)),
-    to:{
-        Function:sym=>_=>sym
-    }
-});
+jet.define("Symbol", {
+    self: Symbol,
+    create: Symbol,
+    copy: x => Symbol(to(x)),
+    rnd: (...a) => Symbol(jet.rnd.String(...a)),
+}).defineTo({
+    Function: sym => _ => sym
+})

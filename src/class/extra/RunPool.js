@@ -1,4 +1,4 @@
-import jet from "../../defs";
+import { jet }from "../../defs";
 import Pool from "./Pool";
 
 class RunPool extends Pool {
@@ -41,7 +41,8 @@ class RunPool extends Pool {
     }
 }
 
-export default jet.define("RunPool", RunPool, {
+export default jet.define("RunPool", {
+    self:RunPool,
     copy:x=>(new RunPool(...x)).autoFilter(x._autoFilter).autoSort(x._autoSort),
     keys:x=>[...x.keys()],
     vals:x=>[...x.values()],

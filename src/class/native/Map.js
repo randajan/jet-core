@@ -1,6 +1,7 @@
-import jet from "../../defs";
+import { jet }from "../../defs";
 
-jet.define("Map", Map, {
+jet.define("Map", {
+    self:Map,
     copy:x=>new Map(x),
     keys:x=>[...x.keys()],
     vals:x=>[...x.values()],
@@ -8,7 +9,6 @@ jet.define("Map", Map, {
     get:(x,k)=>x.get(k),
     set:(x,k,v)=>x.set(k,v),
     rem:(x,k)=>x.delete(k),
-    to:{
-        Function:map=>_=>map
-    }
-});
+}).defineTo({
+    Function:map=>_=>map
+})

@@ -1,10 +1,10 @@
-import jet from "../../defs";
+import { jet }from "../../defs";
 
-jet.define("Boolean", Boolean, {
+jet.define("Boolean", {
+    self:Boolean,
     create:Boolean,
-    rnd:(trueRatio=.5)=>Math.random() < trueRatio,
-    to:{
-        Function:bol=>_=>bol
-    }
+    rnd:(trueRatio=.5)=>Math.random() < trueRatio
+}).defineTo({
+    Function:bol=>_=>bol
 });
 

@@ -1,4 +1,4 @@
-import jet, { getDefByInst } from "../base.js";
+import { jet, getDefByInst } from "../base.js";
 import * as dot from "./dot.js";
 
 
@@ -9,15 +9,15 @@ const each = (any, fce, deep, init)=>{
     const dprun = jet.isRunnable(deep);
 
     const exe = (ctx, skipDeep=false)=>{
-        const { parent, path, def } = ctx;
-        const de = def?.entries;
+        const { parent, path, type } = ctx;
+        const de = type.isMapable ? type.entries : undefined;
 
         if (!de || (!deep && parent)) { fce(ctx); }
         else if (dprun && !skipDeep) { deep(ctx, _=>{ exe(ctx, true); }); }
         else {
             for (let [key, val] of de(ctx.val)) {
                 exe({
-                    parent:ctx, val, key, stop, def:getDefByInst(val),
+                    parent:ctx, val, key, stop, type:getDefByInst(val),
                     path:dot.glue(path, dot.escape(String(key)))
                 });
                 if (!isPending) { break; }
@@ -27,7 +27,7 @@ const each = (any, fce, deep, init)=>{
         return ctx.result;
     }
 
-    const ctx = { val:any, stop, def:getDefByInst(any) };
+    const ctx = { val:any, stop, type:getDefByInst(any) };
     if (init) { init(ctx); }
     return exe(ctx, true);
 };
@@ -56,16 +56,16 @@ export const digOut = (any, path, def)=>{
 export const digIn = (any, path, val, force=true)=>{
 
     const step = (next, parent, key, isEnd)=>{
-        let df = getDefByInst(parent);
-        if (!df || !df.entries) {
+        let type = getDefByInst(parent);
+        if (!type?.isMapable) {
             if (!force) { return parent; }
             parent = String.jet.isNumeric(key) ? [] : {};
-            df = getDefByInst(parent);
+            type = getDefByInst(parent);
         }
-        const v = isEnd ? val : next(df.get(parent, key, false));
-        if (v != null) { df.set(parent, key, v, false); return parent; }
-        df.rem(parent, key);
-        if (df.isFull(parent)) { return parent; }
+        const v = isEnd ? val : next(type.get(parent, key, false));
+        if (v != null) { type.set(parent, key, v, false); return parent; }
+        type.rem(parent, key);
+        if (type.isFull(parent)) { return parent; }
     };
 
     return dig(any, path, step);
@@ -95,8 +95,8 @@ export const inflate = (flat, includeMapable=true)=>{
     const flat = deflate(to, true);
 
     const add = ({ val, path })=>{ to = digIn(to, path, val); }
-    const acumulate = ({ val, path, def }, next)=>{
-        if (!flat[path]) { add(flat[path] = def.create(), path); }
+    const acumulate = ({ val, path, type }, next)=>{
+        if (!flat[path]) { add(flat[path] = type.create(), path); }
         if (Array.isArray(val) && Array.isArray(flat[path])) { flat[path].push(...val); }
         else { next(val); }
     }
@@ -131,16 +131,16 @@ export const compare = (a, b, diffList=false)=>{
 
 export const copy = (any, deep=false, copyUnmapable=false)=>{
     return each(any, ctx=>{
-        const { parent, val, key, def } = ctx;
+        const { parent, val, key, type } = ctx;
         if (!parent) { return; }
-        parent.def.set(parent.result, key, ctx.result = copyUnmapable ? def.copy(val) : val);
+        parent.type.set(parent.result, key, ctx.result = copyUnmapable ? type.copy(val) : val);
     }, !deep ? false : (ctx, next)=>{
-        const { parent, key, def } = ctx;
-        parent.def.set(parent.result, key, ctx.result = def.create());
+        const { parent, key, type } = ctx;
+        parent.type.set(parent.result, key, ctx.result = type.create());
         next();
     }, ctx=>{
-        const { val, def } = ctx;
-        ctx.result = def.entries ? def.create() : def.copy(val);
+        const { val, type } = ctx;
+        ctx.result = type.isMapable ? type.create() : type.copy(val);
     });
 }
 

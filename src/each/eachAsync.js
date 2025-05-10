@@ -1,4 +1,4 @@
-import jet from "../";
+import { jet }from "../";
 import { createContext, fight, formatOrderBy, initContext } from "./each";
 
 //options:
@@ -42,7 +42,7 @@ const _refine = async (entries, { filter, orderBy })=>{
 }
 
 const _eachSerial = async (parent, exe, options)=>{
-    const entries = parent.def.entries(parent.value);
+    const entries = parent.type.entries(parent.value);
     const refined = !parent.isRoot ? entries : await _refine(entries, options);
 
     for (let [key, val] of refined) {
@@ -53,7 +53,7 @@ const _eachSerial = async (parent, exe, options)=>{
 }
 
 const _eachParalel = async (parent, exe, options, stopProm)=>{
-    const entries = parent.def.entries(parent.value);
+    const entries = parent.type.entries(parent.value);
     const refined = !parent.isRoot ? entries : await _refine(entries, options);
 
     const result = Promise.all(refined.map(async ([key, val])=>{
@@ -77,7 +77,7 @@ export const each = (any, fce, options={})=>{
     const stopProm = (!options.paralelAwait || !options.stopable) ? undefined : new Promise(res=>{ root.onStop(res); });
 
     const exe = async (ctx, skipDeep=false)=>{
-        const de = ctx.def?.entries;
+        const de = ctx.type.entries; //TODO entries will be defined everytime
         if (!de || (!deep && !ctx.isRoot)) { await fce(ctx.value, ctx); }
         else if (dprun && !skipDeep) { await deep(ctx.value, ctx, (...a)=>{ exe(ctx.update(...a), true) }); }
         else { await _each(ctx, exe, options, stopProm); }
@@ -116,10 +116,10 @@ export const map = (any, fce, options={})=>{
 
     const set = (ctx, key, val)=>{
         if (!ctx) { return; }
-        if (!ctx.result) { set(ctx.parent, ctx.key, ctx.result = ctx.def.create()); }
+        if (!ctx.result) { set(ctx.parent, ctx.key, ctx.result = ctx.type.create()); }
 
-        if (!options.strictArray && ctx.def.name === "Array") { ctx.result.push(val); }
-        else { ctx.def.set(ctx.result, key, val); }
+        if (!options.strictArray && ctx.type.name === "Array") { ctx.result.push(val); }
+        else { ctx.type.set(ctx.result, key, val); }
     }
 
     return each(any, async (val, ctx)=>{

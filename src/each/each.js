@@ -1,10 +1,10 @@
 import { getDefByInst } from "../defs/base.js";
-import jet from "../";
+import { jet }from "../";
 
 const enumerable = true;
 
 export const initContext = (value, {root, stopable, init})=>{
-    let path, def, brk, onStop;
+    let path, type, brk, onStop;
 
     const ctx = Object.defineProperties({}, {
         isRoot:{enumerable, value:true},
@@ -14,7 +14,7 @@ export const initContext = (value, {root, stopable, init})=>{
         pending:{enumerable, get:_=>!brk},
         path:{enumerable, get:_=>path != null ? path : (path = jet.dot.toString(root)) },
         fullpath:{enumerable, get:_=>ctx.path },
-        def:{enumerable, get:_=>def || (def = getDefByInst(value))}
+        type:{enumerable, get:_=>type || (type = getDefByInst(value))}
     });
 
     ctx.result = init;
@@ -36,20 +36,20 @@ export const initContext = (value, {root, stopable, init})=>{
 
 
 export const createContext = (parent, key, value)=>{
-    let def, fullpath;
+    let type, fullpath;
 
     const ctx = Object.defineProperties({}, {
         isRoot:{enumerable, value:false},
         root:{value:parent.root},
         parent:{value:parent},
         key:{enumerable, get:_=>key, set:k=>{ key = k; fullpath = undefined; }},
-        value:{enumerable, get:_=>value, set:v=>{ value = v; def = undefined; }},
+        value:{enumerable, get:_=>value, set:v=>{ value = v; type = undefined; }},
         depth:{enumerable, value:parent.depth+1},
         pending:{enumerable, get:_=>parent.pending},
         stop:{enumerable, value:parent.stop},
         path:{enumerable, get:_=>parent.fullpath},
         fullpath:{enumerable, get:_=>fullpath || (fullpath = jet.dot.glue(ctx.path, jet.dot.escape(key))) },
-        def:{enumerable, get:_=>def || (def = getDefByInst(value))},
+        type:{enumerable, get:_=>type || (type = getDefByInst(value))},
         update:{enumerable, value:(...a)=>{
             if (a.length > 0) { ctx.value = a[0]; }
             if (a.length > 1) { ctx.key = a[1]; }

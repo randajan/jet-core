@@ -1,4 +1,4 @@
-import jet from "../";
+import { jet }from "../";
 import { createContext, fight, formatOrderBy, initContext } from "./each";
 
 //options:
@@ -41,7 +41,7 @@ const _refine = (entries, { filter, orderBy })=>{
 }
 
 const _eachSerial = (parent, exe, options)=>{
-    const entries = parent.def.entries(parent.value);
+    const entries = parent.type.entries(parent.value);
     const refined = !parent.isRoot ? entries : _refine(entries, options);
 
     for (let [key, val] of refined) {
@@ -61,7 +61,7 @@ export const each = (any, fce, options={})=>{
     const _each = _eachSerial;
 
     const exe = (ctx, skipDeep=false)=>{
-        const de = ctx.def?.entries;
+        const de = ctx.type?.entries; //TODO entries will be defined everytime
         if (!de || (!deep && !ctx.isRoot)) { fce(ctx.value, ctx); }
         else if (dprun && !skipDeep) { deep(ctx.value, ctx, (...a)=>{ exe(ctx.update(...a), true) }); }
         else { _each(ctx, exe, options); }
@@ -100,10 +100,10 @@ export const map = (any, fce, options={})=>{
 
     const set = (ctx, key, val)=>{
         if (!ctx) { return; }
-        if (!ctx.result) { set(ctx.parent, ctx.key, ctx.result = ctx.def.create()); }
+        if (!ctx.result) { set(ctx.parent, ctx.key, ctx.result = ctx.type.create()); }
 
-        if (!options.strictArray && ctx.def.name === "Array") { ctx.result.push(val); }
-        else { ctx.def.set(ctx.result, key, val); }
+        if (!options.strictArray && ctx.type.name === "Array") { ctx.result.push(val); }
+        else { ctx.type.set(ctx.result, key, val); }
     }
 
     return each(any, (val, ctx)=>{

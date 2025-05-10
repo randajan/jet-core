@@ -1,4 +1,4 @@
-import jet from "../base";
+import { jet }from "../base";
 
 const isBlank = str=>str == null || str === "";
 const noBlank = str=>isBlank(str) ? "" : str;
