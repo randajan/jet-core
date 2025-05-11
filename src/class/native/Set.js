@@ -1,18 +1,28 @@
-import { jet } from "../../defs";
+import { anyToFn } from "@randajan/function-parser";
+import { define } from "../../defs/tools";
 
-jet.define("set", {
+export const _set = define("set", {
     self: Set,
+    primitive:"arr",
     copy: x => new Set(x),
     keys: x => [...x.keys()],
-    vals: x => [...x.values()],
+    values: x => [...x.values()],
     entries: x => [...x.entries()],
     get: (x, k) => x.has(k) ? k : undefined,
     set: (x, k, v) => x.add(v) ? v : undefined,
     rem: (x, k) => x.delete(k),
 }).defineTo({
-    "*": set => Array.from(set),
-    fn: set => _ => set,
+    "*": set => [...set],
+    //arr,
     bool: set => !!set.size,
-    obj: set => jet.merge(set),
+    //date,
+    //err,
+    //fn,
+    map: set => new Map(set.entries()),
+    num: set => set.size,
+    obj: set => Object.fromEntries(set.entries()),
     prom: async set => set,
+    //set,
+    str: set => String(set),
+    sym: set => Symbol(set),
 })

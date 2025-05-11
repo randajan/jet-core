@@ -1,32 +1,40 @@
-import Ł, { jet } from "../../defs";
+import { anyToFn } from "@randajan/function-parser";
+import { define, isRunnable } from "../../defs/tools";
+import { _fn } from "./Function";
 
-jet.define("arr", {
+export const _arr = define("arr", {
     self: Array,
     create: Array,
+    primitive:"obj",
     copy: x => Array.from(x),
     keys: x => [...x.keys()],
-    vals: x => [...x.values()],
+    values: x => [...x.values()],
     entries: x => [...x.entries()],
 }).defineTo({
-    fn: arr => _ => arr,
+    "*": arr => Object.fromEntries(arr.entries()),
     bool: arr => !!arr.length,
+    //date,
+    err: (arr, comma) => arr.join(comma ?? " "),
+    fn: anyToFn,
+    map: arr => new Map(arr.entries()),
     num: arr => arr.length,
-    str: (arr, comma) => jet.melt(arr, comma),
-    obj: arr => Object.assign({}, arr),
+    //obj,
     prom: async arr => arr,
-    err: (arr, comma) => jet.melt(arr, comma != null ? comma : " "),
-    rgx: (arr, comma) => jet.melt(arr, comma != null ? comma : "|")
+    rgx: (arr, comma) => arr.join(comma ?? "|"),
+    set: arr => new Set(arr),
+    str: (arr, comma) => arr.join(comma),
+    sym: (arr, comma) => Symbol(arr.join(comma))
 }).extend({
     swap: (arr, to, from) => {//swap position of two items in array
         [arr[to], arr[from]] = [arr[from], arr[to]];
         return arr;
     },
     shuffle: (arr) => {//shuffle whole array
-        for (let i = arr.length - 1; i > 0; i--) { Ł.arr.swap(arr, Math.floor(Math.random() * (i + 1)), i); }
+        for (let i = arr.length - 1; i > 0; i--) {_arr.swap(arr, Math.floor(Math.random() * (i + 1)), i); }
         return arr;
     },
     clean: (arr, rekey, handler) => {
-        handler = Ł.fn.tap(handler, v => v != null);
+        handler = _fn.tap(handler, v => v != null);
         return rekey !== false ? arr.filter(handler) : arr.map(v => handler(v) ? v : undefined);
     },
     compare: (a, b, sameIndex = false) => {
@@ -47,7 +55,7 @@ jet.define("arr", {
         return !m.size;
     },
     sliceMap: (arr, size, callback) => {
-        if (!jet.isRunnable(callback)) { callback = _ => _; }
+        if (!isRunnable(callback)) { callback = _ => _; }
         size = Math.max(1, size) || 1;
         const r = [];
         if (!Array.isArray(arr)) { return r; }

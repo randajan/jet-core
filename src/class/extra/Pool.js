@@ -1,6 +1,7 @@
-import Ł, { jet } from "../../defs";
+import { define, isRunnable } from "../../defs/tools";
+import { _str } from "../native/String";
 
-class Pool extends Array {
+export class Pool extends Array {
 
     static pass(from, to, start, length=1) {
         if (!Array.isArray(from)) { throw "Pool.pass 'from' require array"; }
@@ -12,13 +13,15 @@ class Pool extends Array {
         super(...items);
         const _p = {};
 
+        //safe(this, _p, "_autoFilter", )
+
         Object.defineProperties(this, {
             _autoFilter:{ get:_=>_p.autoFilter, set:fce=>{
-                if (!jet.isRunnable(fce)) { delete _p.autoFilter; }
+                if (!isRunnable(fce)) { delete _p.autoFilter; }
                 else { this.filter(_p.autoFilter = fce); }
             }},
             _autoSort:{ get:_=>_p.autoSort, set:fce=>{
-                if (!jet.isRunnable(fce)) { delete _p.autoSort; }
+                if (!isRunnable(fce)) { delete _p.autoSort; }
                 else { this.sort(_p.autoSort = fce); }
             }}
         });
@@ -101,14 +104,14 @@ class Pool extends Array {
     }
 
     toString(separator=" ") {
-        return jet.melt(this, Ł.str.to(separator, this));
+        return jet.melt(this, _str.to(separator, this));
     }
 }
 
-export default jet.define("Pool", {
+export default define("Pool", {
     self:Pool,
     copy:x=>(new Pool(...x)).autoFilter(x._autoFilter).autoSort(x._autoSort),
     keys:x=>[...x.keys()],
-    vals:x=>[...x.values()],
+    values:x=>[...x.values()],
     entries:x=>[...x.entries()],
 });

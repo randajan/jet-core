@@ -1,12 +1,14 @@
-import { jet } from "../../defs";
+import { fnToStr } from "@randajan/function-parser";
+import { define } from "../../defs/tools";
 
-jet.define("fn", {
+export const _fn = define("fn", {
     self: Function,
     create: Function,
     copy: x => Object.defineProperties(({ [x.name]: (...a) => x(...a) })[x.name], Object.getOwnPropertyDescriptors(x)),
 }).defineTo({
     "*": (fce, ...args) => fce(...args),
     prom: async (fce, ...args) => await fce(...args),
+    str:fnToStr
 }).extend({
     benchmark: (fces, inputs, iterations = 100) => {
         const results = [];

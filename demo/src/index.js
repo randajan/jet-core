@@ -1,11 +1,9 @@
-import types, { jet } from "../../dist/esm/index.mjs";
-import Pool from "../../dist/esm/class/extra/Pool.mjs";
-import { map, list, find } from "../../dist/esm/each/eachAsync.mjs";
+import * as _jet from "../../dist/esm/index.mjs";
+//import { Pool } from "../../dist/esm/class/extra/Pool.mjs";
 
 import example from "./example.json";
 
-window.jet = jet;
-window.Ł = types;
+window.jet = _jet.jet;
+window._jet = _jet;
+//window.Pool = Pool;
 
-
-window.eachAsync = list;

@@ -1,20 +1,16 @@
 {
-  "name": "@randajan/jet-core",
+  "name": "@randajan/jet",
   "version": "5.0.2",
   "description": "Ecosystem of types and related usefull tools.",
-  "repository": "randajan/jet-core",
+  "repository": "randajan/jet",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "exports": {
-    ".": "./dist/index.js",
-    "./promise": "./dist/class/extra/Promise.js",
-    "./plex": "./dist/class/extra/Plex.js",
-    "./pool": "./dist/class/extra/Pool.js",
-    "./runpool": "./dist/class/extra/RunPool.js",
-    "./ticker": "./dist/class/extra/Ticker.js",
-    "./eachSync": "./dist/each/eachSync.js",
-    "./eachAsync": "./dist/each/eachAsync.js"
+    ".": {
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
   },
   "scripts": {
     "start": "set NODE_ENV=dev&& node ./index.js",
@@ -22,10 +18,11 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@randajan/function-parser": "^0.1.2",
     "@randajan/props": "^0.1.4"
   },
   "devDependencies": {
-    "@randajan/simple-lib": "^3.0.2",
+    "@randajan/simple-lib": "^3.1.0",
     "chokidar": "^3.5.3",
     "esbuild": "^0.14.27",
     "esbuild-plugin-import-glob": "^0.1.1",
@@ -42,9 +39,9 @@
     "types",
     "tool"
   ],
-  "homepage": "https://github.com/randajan/jet-core",
+  "homepage": "https://github.com/randajan/jet",
   "bugs": {
-    "url": "https://github.com/randajan/jet-core/issues"
+    "url": "https://github.com/randajan/jet/issues"
   },
   "author": {
     "name": "Jan Randa",

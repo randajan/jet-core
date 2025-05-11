@@ -1,9 +1,22 @@
-import Ł, { jet } from "../../defs";
+import { anyToFn } from "@randajan/function-parser";
+import { define } from "../../defs/tools";
+import { _num } from "./Number";
 
-jet.define("date", {
+export const _date = define("date", {
     self:Date,
     create:x=>!x ? new Date() : new Date(x),
-    rnd:(from, to)=>new Date(Ł.num.rnd((new Date(from)).getTime(), to ? (new Date(to)).getTime() : Date.now()*2))
+    rnd:(from, to)=>new Date(_num.rnd((new Date(from)).getTime(), to ? (new Date(to)).getTime() : Date.now()*2))
 }).defineTo({
-    fn:date=>_=>date
+    arr: dt => [dt],
+    //bool,
+    //date,
+    //err,
+    fn: anyToFn,
+    //map,
+    num: dt => dt.getTime(),
+    //obj,
+    prom: async dt => dt,
+    set: dt => new Set([dt]),
+    str: dt => dt.toLocaleString(),
+    sym: dt => Symbol(dt.toLocaleString()),
 })

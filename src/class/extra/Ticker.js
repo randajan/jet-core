@@ -1,8 +1,10 @@
-import Ł, { jet } from "../../defs";
+import { define, isRunnable } from "../../defs/tools";
 import { solid, virtual, safe } from "@randajan/props";
+import { _bool } from "../native/Boolean";
+import { _num } from "../native/Number";
 
 
-class Ticker {
+export class Ticker {
 
     static create(cfg={}) {
         return new Ticker(cfg);
@@ -10,10 +12,10 @@ class Ticker {
 
     constructor({ onTick, onInit, onStart, onStop, interval }) {
 
-        onInit = jet.isRunnable(onInit) ? onInit : _=>{};
-        onTick = jet.isRunnable(onTick) ? onTick : _=>{};
-        onStart = jet.isRunnable(onStart) ? onStart : _=>{};
-        onStop = jet.isRunnable(onStop) ? onStop : _=>{};
+        onInit = isRunnable(onInit) ? onInit : _=>{};
+        onTick = isRunnable(onTick) ? onTick : _=>{};
+        onStart = isRunnable(onStart) ? onStart : _=>{};
+        onStop = isRunnable(onStop) ? onStop : _=>{};
 
         const _p = {
             state:false,
@@ -36,7 +38,7 @@ class Ticker {
         }
 
         safe(this, _p, "state", (t, f)=>{
-            t = Ł.bool.to(t);
+            t = _bool.to(t);
             if (t === f) { return f; }
             if (t) { start(); }
             else { clearTimeout(_p.intervalId); }
@@ -44,7 +46,7 @@ class Ticker {
         });
 
         safe(this, _p, "interval", (t, f)=>{
-            t = Math.max(0, Ł.num.to(t));
+            t = Math.max(0, _num.to(t));
             if (t === f) { return f; }
             if (!_p.state) { return t; }
             clearTimeout(_p.intervalId);
@@ -69,4 +71,4 @@ class Ticker {
 
 }
 
-export default jet.define("Ticker", { self:Ticker });
+export default define("Ticker", { self:Ticker });

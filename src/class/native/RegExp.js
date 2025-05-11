@@ -1,12 +1,26 @@
-import { jet } from "../../defs";
+import { anyToFn } from "@randajan/function-parser";
+import { define } from "../../defs/tools";
 
-jet.define("rgx", {
+export const _rgx = define("rgx", {
     self: RegExp,
     create: RegExp,
+    primitive:"str",
     copy: x => RegExp(x.source),
 }).defineTo({
-    fn: regex => _ => regex,
-    str: regex => regex.source
+    "*": rgx => rgx.source,
+    arr:rgx=>[rgx],
+    //bool,
+    //date,
+    //err,
+    fn: anyToFn,
+    //map,
+    //num,
+    //obj,
+    prom: async rgx => rgx,
+    //rgx,
+    set:rgx=>new Set([rgx]),
+    //str,
+    sym: rgx => Symbol(rgx.source),
 }).extend({
     lib: {
         line: /[^\n\r]+/g,

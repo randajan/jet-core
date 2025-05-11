@@ -1,69 +1,48 @@
 import { solids } from "@randajan/props";
-import { getDefByInst, fail } from "../../defs/base";
-import * as _ from "../../defs/methods";
+import { getDefByInst, fail, factory, getTypeByInst } from "../../defs/statics";
+import { Unknown } from "./Unknown";
 
-export class Primitive {
+export class Primitive extends Unknown {
     static isIterable = false;
 
     constructor(def, name, opt) {
-        const { self, create, isFull, copy, rnd } = opt;
-        const { isIterable } = this.constructor;
+        super(def, name);
+
+        const { self, create, primitive, isFull, copy, rnd } = opt;
 
         solids(this, {
-            name,
-            def,
             self,
             create:create || ((...a)=>new self(...a)),
+            primitive,
             copy:copy || (any=>any),
             rnd:rnd || create,
-            isFull:isFull || (any=>_.isFull(any, isIterable)),
-            isIterable
+            isFull:isFull || this.isFull.bind(this)
         });
-
-        this.is = this.is.bind(this);
-        this.to = this.to.bind(this);
-        this.defineTo = this.defineTo.bind(def);
-
     }
 
     is(any, strict=true) {
         const { self } = this; //rebinded
         if (any == null) { return false; }
         if (any.constructor !== self && !(any instanceof self)) { return false; }
-        const def = getDefByInst(any, strict);
-        return !def ? false : def.type === this;
+        return this === getTypeByInst(any, strict);
     }
     
     to(any, ...args) {
-        const { name, create } = this;
+        const { name, primitive } = this;
         const def = getDefByInst(any, false);
-        if (!def) { return create(); }
         if (def.type === this) { return any; }
-        const exe = def.to.get(name) || def.to.get("*");
-        if (!exe) { return create(); }
+        const exe = def.to.get(name) || def.to.get(primitive) || def.to.get("*");
+        if (!exe) { fail(`unable create from '${def.type.name}'`, name); }
         return this.to(exe(any, ...args), ...args);
     }
-
-    full(...a) { return _.factory(this, 0, ...a); }
-    only(...a) { return _.factory(this, 1, ...a); }
-    tap(...a) { return _.factory(this, 2, ...a); }
-    pull(...a) { return _.factory(this, 3, ...a); }
-
-    extend(extender={}) {
-        const { name } = this;
-        if (typeof extender !== "object") { fail(`extender must be typeof object`, name); }
-        solids(this, extender);
-        return this;
+    
+    orNull(any, ...args) {
+        if (any != null) { return this.to(any, ...args); }
     }
 
-    defineTo(to, exe) {
-        //this is rebinded in constructor to def
-        const tt = typeof to;
-        if (tt === "function") { this.to.set("*", to); }
-        else if (Array.isArray(to)) { for (let i in to) { this.to.set(to[i], exe); } }
-        else if (tt === "object") { for (let i in to) { this.to.set(i, to[i]); } }
-        else { this.to.set(to, exe); }
+    full(...a) { return factory(this, 0, ...a); }
+    only(...a) { return factory(this, 1, ...a); }
+    tap(...a) { return factory(this, 2, ...a); }
+    pull(...a) { return factory(this, 3, ...a); }
 
-        return this.type;
-    }
 }

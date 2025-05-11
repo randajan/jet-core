@@ -11,14 +11,37 @@ slib(
         lib:{
             entries:[
                 "index.js",
-                "class/extra/Promise.js",
-                "class/extra/Ticker.js",
-                "class/extra/RunPool.js",
-                "class/extra/Pool.js",
-                "class/extra/Plex.js",
-                "each/eachAsync.js",
-                "each/eachSync.js",
-            ]
-        }
+                // "class/extra/Promise.js",
+                // // "class/extra/Ticker.js",
+                // // "class/extra/RunPool.js",
+                // // "class/extra/Pool.js",
+                // // "class/extra/Plex.js",
+            ],
+            // standalone:{
+            //     entries:{"jet":"index.js"},
+            //     external:[]
+            // }
+        },
+        
     }
-)
+);
+
+
+/*
+    "./plex": {
+      "import": "./dist/esm/extra/Plex.mjs",
+      "require": "./dist/cjs/extra/Plex.cjs"
+    },
+    "./pool": {
+      "import": "./dist/esm/extra/Pool.mjs",
+      "require": "./dist/cjs/extra/Pool.cjs"
+    },
+    "./runpool": {
+      "import": "./dist/esm/extra/RunPool.mjs",
+      "require": "./dist/cjs/extra/RunPool.cjs"
+    },
+    "./ticker": {
+      "import": "./dist/esm/extra/Ticker.mjs",
+      "require": "./dist/cjs/extra/Ticker.cjs"
+    }
+*/

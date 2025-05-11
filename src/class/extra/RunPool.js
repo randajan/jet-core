@@ -1,12 +1,13 @@
-import Ł, { jet } from "../../defs";
-import Pool from "./Pool";
+import { define, isRunnable } from "../../defs/tools";
+import { Pool } from "./Pool";
+import { _arr } from "../native/Array";
 
-class RunPool extends Pool {
+export class RunPool extends Pool {
     constructor(...items) {
         const _p = {with:[]};
         super(...items);
-        this.autoFilter(jet.isRunnable);
-        Object.defineProperty(this, "_with", { get:_=>_p.with, set:v=>_p.with=Ł.arr.to(v)});
+        this.autoFilter(isRunnable);
+        Object.defineProperty(this, "_with", { get:_=>_p.with, set:v=>_p.with=_arr.to(v)});
     }
 
     with(...args) {
@@ -41,10 +42,10 @@ class RunPool extends Pool {
     }
 }
 
-export default jet.define("RunPool", {
+export default define("RunPool", {
     self:RunPool,
     copy:x=>(new RunPool(...x)).autoFilter(x._autoFilter).autoSort(x._autoSort),
     keys:x=>[...x.keys()],
-    vals:x=>[...x.values()],
+    values:x=>[...x.values()],
     entries:x=>[...x.entries()],
 });
