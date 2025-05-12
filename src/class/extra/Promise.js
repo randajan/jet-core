@@ -1,6 +1,6 @@
 import { define } from "../../defs/tools";
 
-import { _fn } from "./Function";
+import { _fn } from "../native/Function";
 
 export default define("prom", {
     self:Promise, 

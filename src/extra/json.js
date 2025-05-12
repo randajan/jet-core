@@ -1,10 +1,9 @@
-import { solids } from "@randajan/props";
-
 import { isIterable } from "../defs/tools";
 import { _num } from "../class/native/Number";
 import { _str } from "../class/native/String";
+import { solids } from "../defs/solid";
 
-export const json = solids({}, {
+export const json = solids({
     from: (json, throwErr = false) => {
         if (isIterable(json)) { return json; }
         try { return JSON.parse(_str.to(json)); }

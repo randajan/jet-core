@@ -1,5 +1,7 @@
-import { solids } from "@randajan/props";
+import { solids } from "../../defs/solid";
 import { Plex } from "./Plex";
+
+
 
 export class Unknown extends Plex {
     static isIterable = false;

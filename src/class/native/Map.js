@@ -20,7 +20,6 @@ export const _map = define("map", {
     //map,
     num: map => map.size,
     //obj,
-    prom: async map => map,
     set: map => new Set(map.values()),
     //str,
     //sym,

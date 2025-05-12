@@ -11,16 +11,18 @@ slib(
         lib:{
             entries:[
                 "index.js",
-                // "class/extra/Promise.js",
+                "sync.js",
                 // // "class/extra/Ticker.js",
                 // // "class/extra/RunPool.js",
                 // // "class/extra/Pool.js",
                 // // "class/extra/Plex.js",
             ],
-            // standalone:{
-            //     entries:{"jet":"index.js"},
-            //     external:[]
-            // }
+            standalone:{
+                entries:{"jetSync":"sync.js", "jetAsync":"index.js"},
+                bundle:[
+                  "@randajan/function-parser"
+                ],
+            }
         },
         
     }

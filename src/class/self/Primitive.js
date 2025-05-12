@@ -1,4 +1,4 @@
-import { solids } from "@randajan/props";
+import { solids } from "../../defs/solid";
 import { getDefByInst, fail, factory, getTypeByInst } from "../../defs/statics";
 import { Unknown } from "./Unknown";
 

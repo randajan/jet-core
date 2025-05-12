@@ -1,31 +1,31 @@
-import { jet } from "./defs";
 
-import { _getRnd, getRnd } from "./extra/rnd.js";
-import { createEnum } from "./extra/enum.js";
-import { json } from "./extra/json.js";
-import { run } from "./extra/run.js";
+import "./class/extra/Promise";
+import { _arr } from "./class/native/Array";
+import { _bool } from "./class/native/Boolean";
+import { _date } from "./class/native/Date";
+import { _err } from "./class/native/Error";
+import { _fn } from "./class/native/Function";
+import { _map } from "./class/native/Map";
+import { _num } from "./class/native/Number";
+import { _obj } from "./class/native/Object";
+import { _rgx } from "./class/native/RegExp";
+import { _set } from "./class/native/Set";
+import { _str } from "./class/native/String";
+import { _sym } from "./class/native/Symbol";
 
-import { Plex } from "./class/self/Plex.js";
-import { Iterable } from "./class/self/Iterable.js";
+const pass = async v=>v;
 
-import { _str } from "./class/native/String.js";
-import { _num } from "./class/native/Number.js";
-import "./class/native/*";
+_arr.defineTo("prom", pass);
+_bool.defineTo("prom", pass);
+_date.defineTo("prom", pass);
+_err.defineTo("prom", async err =>{ throw err; });
+_fn.defineTo("prom", async (fn, ...args) => await fn(...args));
+_map.defineTo("prom", pass);
+_num.defineTo("prom", pass);
+_obj.defineTo("prom", pass);
+_rgx.defineTo("prom", pass);
+_set.defineTo("prom", pass);
+_str.defineTo("prom", pass);
+_sym.defineTo("prom", pass);
 
-
-//must be here to prevent loop
-Iterable.prototype.getRnd = function (any, min, max, sqr) {
-    return _getRnd(this.values(any), min, max, sqr);
-}
-
-export default jet;
-export {
-    jet,
-    run,
-    getRnd,
-    createEnum,
-    json,
-    Plex,
-}
-
-export * from "./defs/tools.js";
+export * from "./sync";

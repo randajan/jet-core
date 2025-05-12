@@ -18,7 +18,6 @@ export const _sym = define("sym", {
     //map,
     //num,
     //obj,
-    prom: async sym => sym,
     set: sym => new Set([sym]),
     //str,
     //sym,

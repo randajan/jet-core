@@ -14,7 +14,6 @@ export const _bool = define("bool", {
     //map,
     num: bol => +bol,
     //obj,
-    prom: async bol => bol,
     set: bol => new Set([bol]),
     str: bol => String(bol),
     sym: bol => Symbol(bol),

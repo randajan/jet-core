@@ -25,7 +25,6 @@ export const _obj = define("obj", {
     map: obj => new Map(Object.entries(obj)),
     num: obj => Object.values(obj),
     //obj,
-    prom: async obj => obj,
     rgx: (obj, comma) => Array.from(Object.values(obj)).join(comma ?? "|"),
     set: obj => new Set(Object.values(obj)),
     str: obj => json.to(obj),

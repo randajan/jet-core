@@ -19,7 +19,6 @@ export const _arr = define("arr", {
     map: arr => new Map(arr.entries()),
     num: arr => arr.length,
     //obj,
-    prom: async arr => arr,
     rgx: (arr, comma) => arr.join(comma ?? "|"),
     set: arr => new Set(arr),
     str: (arr, comma) => arr.join(comma),

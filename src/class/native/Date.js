@@ -15,7 +15,6 @@ export const _date = define("date", {
     //map,
     num: dt => dt.getTime(),
     //obj,
-    prom: async dt => dt,
     set: dt => new Set([dt]),
     str: dt => dt.toLocaleString(),
     sym: dt => Symbol(dt.toLocaleString()),

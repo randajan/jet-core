@@ -16,7 +16,6 @@ export const _rgx = define("rgx", {
     //map,
     //num,
     //obj,
-    prom: async rgx => rgx,
     //rgx,
     set:rgx=>new Set([rgx]),
     //str,

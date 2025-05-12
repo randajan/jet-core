@@ -7,7 +7,6 @@ export const _fn = define("fn", {
     copy: x => Object.defineProperties(({ [x.name]: (...a) => x(...a) })[x.name], Object.getOwnPropertyDescriptors(x)),
 }).defineTo({
     "*": (fce, ...args) => fce(...args),
-    prom: async (fce, ...args) => await fce(...args),
     str:fnToStr
 }).extend({
     benchmark: (fces, inputs, iterations = 100) => {

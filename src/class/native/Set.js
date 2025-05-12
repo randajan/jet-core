@@ -1,4 +1,3 @@
-import { anyToFn } from "@randajan/function-parser";
 import { define } from "../../defs/tools";
 
 export const _set = define("set", {
@@ -21,7 +20,6 @@ export const _set = define("set", {
     map: set => new Map(set.entries()),
     num: set => set.size,
     obj: set => Object.fromEntries(set.entries()),
-    prom: async set => set,
     //set,
     str: set => String(set),
     sym: set => Symbol(set),

@@ -1,5 +1,4 @@
 
-import { solid } from "@randajan/props";
 import { define } from "../../defs/tools";
 import { _str } from "./String";
 import { warn } from "../../defs/statics";
@@ -44,7 +43,6 @@ export const _num = define("num", {
     //map,
     //num,
     //obj,
-    prom: async num => num,
     set: num => new Set([num]),
     str: num => String(num),
     sym: num => Symbol(num)
@@ -72,7 +70,8 @@ export const _num = define("num", {
     fromRatio: (num, min, max) => { const m = max - min; return num * m + min; },
     zoomIn: (...nums) => {
         const zoom = Math.pow(10, Math.max(...nums.map(num => _num.len(num, false))));
-        return solid(nums.map(num => Math.round(num * zoom)), "zoom", zoom);
+        const res = nums.map(num => Math.round(num * zoom));
+        return Object.defineProperty(res, "zoom", { value:zoom });
     },
     zoomOut: (...nums) => nums.map(num => num / nums.zoom),
     diffusion: (num, min, max, diffusion) => {

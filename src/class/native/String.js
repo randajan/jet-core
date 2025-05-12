@@ -59,7 +59,6 @@ export const _str = define("str", {
         return Number(match[0].replaceAll(" ", "").replace(",", ".")) || 0;
     },
     obj: str => json.from(str),
-    prom: async str => str,
     //set,
     //str,
     sym: str=>Symbol(str),

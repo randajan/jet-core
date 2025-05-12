@@ -17,7 +17,6 @@ export const _err = define("err", {
     //map,
     //num,
     //obj,
-    prom: async err =>{ throw err; },
     set: err => new Set([err]),
     //str,
     sym: err => Symbol(err.message),

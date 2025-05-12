@@ -1,4 +1,5 @@
-import { solids } from "@randajan/props";
+
+import { solids } from "../../defs/solid";
 import { Primitive } from "./Primitive";
 
 
@@ -9,6 +10,12 @@ export class Iterable extends Primitive {
         const { keys, values, entries, get, set, rem } = opt;
 
         super(def, name, opt);
+        
+        const enumerable = true;
+        Object.defineProperties(this, {
+            keys:{ enumerable, value:keys },
+            values:{ enumerable, value:values },
+        });
 
         solids(this, {
             keys,
