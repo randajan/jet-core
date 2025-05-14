@@ -21,7 +21,7 @@ export class Unknown extends Plex {
         });
     }
 
-    is(any, strict=true) { return false; }
+    is(any) { return false; }
     to(any, ...args) {}
     orNull(any, ...args) {}
 

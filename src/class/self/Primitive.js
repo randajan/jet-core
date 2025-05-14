@@ -20,11 +20,11 @@ export class Primitive extends Unknown {
         });
     }
 
-    is(any, strict=true) {
+    is(any) {
         const { self } = this; //rebinded
         if (any == null) { return false; }
         if (any.constructor !== self && !(any instanceof self)) { return false; }
-        return this === getTypeByInst(any, strict);
+        return this === getTypeByInst(any);
     }
     
     to(any, ...args) {

@@ -1,8 +1,8 @@
 import { Definition } from "../class/self/Definition";
 import { factory, getTypeByInst, touchBy } from "./statics";
 
-export const isFull = (any, strict = true) => getTypeByInst(any, strict).isFull(any);
-export const isIterable = (any, strict = true) => getTypeByInst(any, strict).isIterable;
+export const isFull = any => getTypeByInst(any).isFull(any);
+export const isIterable = any => getTypeByInst(any).isIterable;
 export const isRunnable = any => typeof any === "function";
 export const full = (...a) => factory(null, 0, ...a);
 export const keys = (any, throwError = false) => touchBy(any, "keys", throwError) || [];

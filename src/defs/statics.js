@@ -20,8 +20,9 @@ const getByInst = (any, def)=>{
 }
 
 const _undefined = new Undefined();
-const findByProto = (any, proto)=>{
-    const list = byPrototype.get(proto);
+export const getDefByInst = any=>{
+    if (any == null) { return _undefined; }
+    const list = byPrototype.get(any.__proto__);
     if (!list || !list.length) { return _undefined; }
     if (list.length === 1) { 
         const r = getByInst(any, list[0]);
@@ -35,16 +36,7 @@ const findByProto = (any, proto)=>{
     return _undefined;
 }
 
-export const getDefByInst = (any, strict=true)=>{
-    if (any == null) { return _undefined; }
-    if (strict) { return findByProto(any, any.__proto__); }
-    let r, p = any;
-    do { r = findByProto(any, p = p.__proto__); }
-    while (p && r === undefined);
-    return r || _undefined;
-}
-
-export const getTypeByInst = (any, strict=true)=>getDefByInst(any, strict).type;
+export const getTypeByInst = any=>getDefByInst(any).type;
 
 export const register = (def)=>{
     const { name, self } = def.type;
