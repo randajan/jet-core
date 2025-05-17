@@ -1,10 +1,12 @@
 import { anyToFn } from "@randajan/function-parser";
-import { define } from "../../defs/tools";
+import { Definition } from "../self/Definition";
 
-export const _bool = define("bool", {
+export const _bool = Definition.createType("bool", {
     self:Boolean,
     create:Boolean,
-    rnd:(trueRatio=.5)=>Math.random() < trueRatio
+    isFilled:_=>true,
+    copy:bol=>bol,
+    rand:(trueRatio=.5)=>Math.random() < trueRatio
 }).defineTo({
     arr: bol => [bol],
     //bool,

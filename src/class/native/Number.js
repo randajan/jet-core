@@ -1,34 +1,16 @@
-
-import { define } from "../../defs/tools";
-import { _str } from "./String";
-import { warn } from "../../defs/statics";
 import { anyToFn } from "@randajan/function-parser";
+import { Definition } from "../self/Definition";
+import { strongRandom } from "../../defs/crypt";
+import { _str } from "./String";
 
-let _nocryptoflag = false;
-const strongRandom = () => {
-    if (!_nocryptoflag) {
-        if (typeof crypto !== "undefined") {
-            if (crypto.getRandomValues) {
-                const a = new Uint32Array(1);
-                crypto.getRandomValues(a);
-                return a[0] / 2**32;
-            }
-            if (crypto.randomBytes) {
-                return crypto.randomBytes(4).readUInt32LE() / 2**32;
-            }
-        } else {
-            _nocryptoflag = true;
-            warn("missing crypto module = weaker random generator");
-        }
-    }
 
-    return Math.random(); // fallback
-};
 
-export const _num = define("num", {
+export const _num = Definition.createType("num", {
     self: Number,
     create: Number,
-    rnd: (min, max, sqr) => {
+    isFilled: x => !!x,
+    copy: num => num,
+    rand: (min, max, sqr) => {
         let r = strongRandom();
         sqr = sqr === true ? 2 : sqr === false ? -2 : _num.is(sqr) ? sqr : 0;
         if (sqr) { r = Math.pow(r, sqr < 0 ? -sqr : 1 / sqr); }
@@ -38,7 +20,7 @@ export const _num = define("num", {
     arr: (num, comma) => comma != null ? [num] : Array(num),
     bool: num => !!num,
     date: num => new Date(num),
-    err: bol=>new Error(String(bol)),
+    err: bol => new Error(String(bol)),
     fn: anyToFn,
     //map,
     //num,
@@ -46,7 +28,7 @@ export const _num = define("num", {
     set: num => new Set([num]),
     str: num => String(num),
     sym: num => Symbol(num)
-}).extend({
+}).addTools({
     x: (num1, symbol, num2) => {
         const s = symbol, nums = _num.zoomIn(num1, num2), [n, m] = nums;
         if (s === "/") { return n / m; }
@@ -71,12 +53,12 @@ export const _num = define("num", {
     zoomIn: (...nums) => {
         const zoom = Math.pow(10, Math.max(...nums.map(num => _num.len(num, false))));
         const res = nums.map(num => Math.round(num * zoom));
-        return Object.defineProperty(res, "zoom", { value:zoom });
+        return Object.defineProperty(res, "zoom", { value: zoom });
     },
     zoomOut: (...nums) => nums.map(num => num / nums.zoom),
     diffusion: (num, min, max, diffusion) => {
         const d = num * diffusion;
-        return _num.rnd(Math.max(min, num - d), Math.min(max, num + d));
+        return _num.rand(Math.max(min, num - d), Math.min(max, num + d));
     },
     snap: (num, step, min, max, ceil, frame = true) => {
         var v = num, s = step, n = min, m = max, ni = (n != null), mi = (m != null), c = ceil;
@@ -94,10 +76,10 @@ export const _num = define("num", {
 });
 
 
-define("nan", {
-    self:Number,
-    create:_=>NaN,
-    is:isNaN
+_num.extend("nan", {
+    self: Number,
+    create: _ => NaN,
+    is: isNaN
 }).defineTo(
-    _=>undefined
+    _ => undefined
 )

@@ -1,11 +1,13 @@
 import { anyToFn } from "@randajan/function-parser";
-import { define } from "../../defs/tools";
+import { Definition } from "../self/Definition";
 import { _num } from "./Number";
 
-export const _date = define("date", {
+export const _date = Definition.createType("date", {
     self:Date,
     create:x=>!x ? new Date() : new Date(x),
-    rnd:(from, to)=>new Date(_num.rnd((new Date(from)).getTime(), to ? (new Date(to)).getTime() : Date.now()*2))
+    copy:dt=>new Date(dt),
+    isFilled:dt=>!isNaN(dt.getTime()),
+    rand:(from, to)=>new Date(_num.rand((new Date(from)).getTime(), to ? (new Date(to)).getTime() : Date.now()*2))
 }).defineTo({
     arr: dt => [dt],
     //bool,

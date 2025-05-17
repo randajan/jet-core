@@ -1,12 +1,11 @@
 import { anyToFn } from "@randajan/function-parser";
-import { define } from "../../defs/tools";
+import { Definition } from "../self/Definition";
 import { _str } from "./String";
 
-export const _err = define("err", {
+export const _err = Definition.createType("err", {
     self:Error,
     create:Error,
-    primitive:"str",
-    rnd:(...a)=>new Error(_str.rnd(...a)),
+    rand:(...a)=>new Error(_str.rand(...a)),
 }).defineTo({
     "*": err=>err.message,
     arr: err => [err],

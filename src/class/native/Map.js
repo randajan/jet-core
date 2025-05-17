@@ -1,15 +1,15 @@
-import { define } from "../../defs/tools";
+import { _obj } from "./Object";
 
-export const _map = define("map", {
+export const _map = _obj.extend("map", {
     self:Map,
-    primitive:"obj",
+    isFilled:x=>!!x.size,
     copy:x=>new Map(x),
     keys:x=>[...x.keys()],
     values:x=>[...x.values()],
     entries:x=>[...x.entries()],
     get:(x,k)=>x.get(k),
     set:(x,k,v)=>x.set(k,v),
-    rem:(x,k)=>x.delete(k),
+    del:(x,k)=>x.del(k),
 }).defineTo({
     "*":map=>Object.fromEntries(map.entries()),
     arr: map => [...map.values()],

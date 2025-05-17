@@ -1,4 +1,4 @@
-import { Undefined } from "../class/self/Undefined";
+import { NoDefinition } from "../class/self/NoDefinition";
 
 const byName = new Map();
 const byPrototype = new Map();
@@ -19,7 +19,7 @@ const getByInst = (any, def)=>{
     if (def.is(any)) { return def; }
 }
 
-const _undefined = new Undefined();
+const _undefined = new NoDefinition();
 export const getDefByInst = any=>{
     if (any == null) { return _undefined; }
     const list = byPrototype.get(any.__proto__);
@@ -57,13 +57,18 @@ export const touchBy = (any, op, throwError, ...args)=>{
     if (!type.isIterable) { fail(`undefined operation '${op}' - unavailable for this type`, type.name); }
 }
 
-//0 = full, 1 = only, 2 = tap, 3 = pull
+//0 = filled, 1 = only, 2 = ensure, 3 = ensureCopy
 export const factory = (type, mm, ...args)=>{
     for (const a of args) {
-        const t = getTypeByInst(a);
-        if (type && type !== t) { continue; }
-        if (mm === 0 && !t.isFull(a)) { continue; }
-        return (t.copy && mm === 3) ? t.copy(a) : a;
+        const d = getDefByInst(a);
+        if (type && type !== d.type) { continue; }
+        if (mm === 0 && !d.isFilled(a)) { continue; }
+        return (mm === 3) ? d.copy(a) : a;
     }
     if (type && mm > 1) { return type.create(); }
+}
+
+export const isFilled = any=>(any === false || any === 0 || !!any);
+export const isFulls = values=>{
+    for (let v of values) { if (isFilled(v)) { return true; }}
 }

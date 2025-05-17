@@ -1,15 +1,15 @@
-import { define } from "../../defs/tools";
+import { _arr } from "./Array";
 
-export const _set = define("set", {
+export const _set = _arr.extend("set", {
     self: Set,
-    primitive:"arr",
+    isFilled: x=>!!x.size,
     copy: x => new Set(x),
     keys: x => [...x.keys()],
     values: x => [...x.values()],
     entries: x => [...x.entries()],
     get: (x, k) => x.has(k) ? k : undefined,
     set: (x, k, v) => x.add(v) ? v : undefined,
-    rem: (x, k) => x.delete(k),
+    del: (x, k) => x.del(k),
 }).defineTo({
     "*": set => [...set],
     //arr,

@@ -1,48 +1,59 @@
 import { solids } from "../../defs/solid";
 import { getDefByInst, fail, factory, getTypeByInst } from "../../defs/statics";
-import { Unknown } from "./Unknown";
+import { NoType } from "./NoType";
 
-export class Primitive extends Unknown {
+export class Primitive extends NoType {
     static isIterable = false;
 
     constructor(def, name, opt) {
         super(def, name);
 
-        const { self, create, primitive, isFull, copy, rnd } = opt;
+        const { self, fallback } = opt;
 
-        solids(this, {
-            self,
-            create:create || ((...a)=>new self(...a)),
-            primitive,
-            copy:copy || (any=>any),
-            rnd:rnd || create,
-            isFull:isFull || this.isFull.bind(this)
-        });
+        solids(this, { self, fallback });
     }
 
-    is(any) {
-        const { self } = this; //rebinded
+    create(...a) { return this.create(...a); }
+    rand(...a) { return this.rand(...a); }
+
+    is(any) { //rebinded def
+        const { self } = this.type; 
         if (any == null) { return false; }
         if (any.constructor !== self && !(any instanceof self)) { return false; }
-        return this === getTypeByInst(any);
+        return this.type === getTypeByInst(any);
+    }
+
+    isFilled(any) { //rebinded def
+        const { type:{ is }, isFilled } = this;
+        return is(any) && !!isFilled(any);
+    }
+
+    isBlank(any) { //rebinded def
+        const { type:{ is }, isFilled } = this;
+        return is(any) && !isFilled(any);
     }
     
-    to(any, ...args) {
-        const { name, primitive } = this;
+    to(any, ...args) { //rebinded def
+        const { type:{ name, to }, parent} = this;
         const def = getDefByInst(any, false);
-        if (def.type === this) { return any; }
-        const exe = def.to.get(name) || def.to.get(primitive) || def.to.get("*");
+        if (def === this) { return any; }
+        const exe = def.to.get(name) || def.to.get("*") || def.to.get(parent.name);
         if (!exe) { fail(`unable create from '${def.type.name}'`, name); }
-        return this.to(exe(any, ...args), ...args);
+        return to(exe(any, ...args), ...args);
     }
     
-    orNull(any, ...args) {
-        if (any != null) { return this.to(any, ...args); }
+    orNull(any, ...args) { //rebinded def
+        if (any != null) { return this.type.to(any, ...args); }
     }
 
-    full(...a) { return factory(this, 0, ...a); }
-    only(...a) { return factory(this, 1, ...a); }
-    tap(...a) { return factory(this, 2, ...a); }
-    pull(...a) { return factory(this, 3, ...a); }
+    copy(any) { //rebinded def
+        const { name, is } = this.type;
+        if (is(any)) { return this.copy(any); }
+        fail(`copy failed - type mismatch`, name);
+    }
 
+    filled(...a) { return factory(this, 0, ...a); }
+    only(...a) { return factory(this, 1, ...a); }
+    ensure(...a) { return factory(this, 2, ...a); }
+    ensureCopy(...a) { return factory(this, 3, ...a); }
 }

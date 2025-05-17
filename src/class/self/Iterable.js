@@ -7,7 +7,7 @@ export class Iterable extends Primitive {
     static isIterable = true;
 
     constructor(def, name, opt) {
-        const { keys, values, entries, get, set, rem } = opt;
+        const { keys, values, entries, get, set, del } = opt;
 
         super(def, name, opt);
         
@@ -23,7 +23,7 @@ export class Iterable extends Primitive {
             entries,
             get:get || ((x, k) => x[k]),
             set:set || ((x, k, v) => x[k] = v),
-            rem:rem || ((x, k) => delete x[k])
+            del:del || ((x, k) => delete x[k])
         });
         
     }

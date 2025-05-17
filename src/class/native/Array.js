@@ -1,11 +1,12 @@
 import { anyToFn } from "@randajan/function-parser";
-import { define, isRunnable } from "../../defs/tools";
+import { isRunnable } from "../../defs/tools";
 import { _fn } from "./Function";
+import { _obj } from "./Object";
 
-export const _arr = define("arr", {
+export const _arr = _obj.extend("arr", {
     self: Array,
     create: Array,
-    primitive:"obj",
+    isFilled: x =>!!x?.length,
     copy: x => Array.from(x),
     keys: x => [...x.keys()],
     values: x => [...x.values()],
@@ -23,7 +24,7 @@ export const _arr = define("arr", {
     set: arr => new Set(arr),
     str: (arr, comma) => arr.join(comma),
     sym: (arr, comma) => Symbol(arr.join(comma))
-}).extend({
+}).addTools({
     swap: (arr, to, from) => {//swap position of two items in array
         [arr[to], arr[from]] = [arr[from], arr[to]];
         return arr;
@@ -33,7 +34,7 @@ export const _arr = define("arr", {
         return arr;
     },
     clean: (arr, rekey, handler) => {
-        handler = _fn.tap(handler, v => v != null);
+        handler = _fn.ensure(handler, v => v != null);
         return rekey !== false ? arr.filter(handler) : arr.map(v => handler(v) ? v : undefined);
     },
     compare: (a, b, sameIndex = false) => {

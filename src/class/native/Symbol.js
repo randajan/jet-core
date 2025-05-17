@@ -1,15 +1,15 @@
-import { define } from "../../defs/tools";
 import { _str } from "./String";
 
+const to = sym => String(sym).slice(7, -1);
 
-export const _sym = define("sym", {
+export const _sym = _str.extend("sym", {
     self: Symbol,
     create: Symbol,
-    primitive:"str",
+    isFilled:_=>true,
     copy: x => Symbol(to(x)),
-    rnd: (...a) => Symbol(_str.rnd(...a)),
+    rand: (...a) => Symbol(_str.rand(...a)),
 }).defineTo({
-    "*":sym => String(sym).slice(7, -1),
+    "*":to,
     arr: sym => [sym],
     //bool,
     //date,

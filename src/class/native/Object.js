@@ -1,7 +1,8 @@
 import { anyToFn } from "@randajan/function-parser";
-import { define } from "../../defs/tools";
-
+import { Definition } from "../self/Definition";
 import { json } from "../../extra/json";
+import { isFilled } from "../../defs/statics";
+
 
 const filter = (obj, callback) => {
     const r = {};
@@ -9,7 +10,7 @@ const filter = (obj, callback) => {
     return r;
 }
 
-export const _obj = define("obj", {
+export const _obj = Definition.createType("obj", {
     self: Object,
     create: Object,
     copy: x => Object.defineProperties({}, Object.getOwnPropertyDescriptors(x)),
@@ -18,7 +19,7 @@ export const _obj = define("obj", {
     entries: x => Object.entries(x),
 }).defineTo({
     arr: obj => Object.entries(obj),
-    bool: obj => _obj.isFull(obj),
+    bool: obj => isFilled(obj),
     //date,
     err: obj => json.to(obj),
     fn: anyToFn,
@@ -29,7 +30,7 @@ export const _obj = define("obj", {
     set: obj => new Set(Object.values(obj)),
     str: obj => json.to(obj),
     sym: obj => Symbol(json.to(obj)),
-}).extend({
+}).addTools({
     filter,
     exclude: (obj, mask = []) => filter(obj, (v, k) => !mask.includes(k)),
     extract: (obj, mask = []) => filter(obj, (v, k) => mask.includes(k)),
