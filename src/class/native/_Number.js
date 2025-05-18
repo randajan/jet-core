@@ -1,8 +1,7 @@
 import { anyToFn } from "@randajan/function-parser";
+import { numRnd } from "../../defs/crypt";
+import { _str } from "./_String";
 import { Definition } from "../self/Definition";
-import { strongRandom } from "../../defs/crypt";
-import { _str } from "./String";
-
 
 
 export const _num = Definition.createType("num", {
@@ -11,23 +10,15 @@ export const _num = Definition.createType("num", {
     isFilled: x => !!x,
     copy: num => num,
     rand: (min, max, sqr) => {
-        let r = strongRandom();
+        let r = numRnd();
         sqr = sqr === true ? 2 : sqr === false ? -2 : _num.is(sqr) ? sqr : 0;
         if (sqr) { r = Math.pow(r, sqr < 0 ? -sqr : 1 / sqr); }
         return _num.fromRatio(r, min || 0, max || min || 1);
-    }
+    },
 }).defineTo({
-    arr: (num, comma) => comma != null ? [num] : Array(num),
-    bool: num => !!num,
-    date: num => new Date(num),
-    err: bol => new Error(String(bol)),
+    arr: num => [num],
+    str: num=>String(num),
     fn: anyToFn,
-    //map,
-    //num,
-    //obj,
-    set: num => new Set([num]),
-    str: num => String(num),
-    sym: num => Symbol(num)
 }).addTools({
     x: (num1, symbol, num2) => {
         const s = symbol, nums = _num.zoomIn(num1, num2), [n, m] = nums;
@@ -76,10 +67,8 @@ export const _num = Definition.createType("num", {
 });
 
 
-_num.extend("nan", {
+Definition.createType("nan", {
     self: Number,
     create: _ => NaN,
     is: isNaN
-}).defineTo(
-    _ => undefined
-)
+});

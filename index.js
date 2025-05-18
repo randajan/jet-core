@@ -12,10 +12,6 @@ slib(
             entries:[
                 "index.js",
                 "sync.js",
-                // // "class/extra/Ticker.js",
-                // // "class/extra/RunPool.js",
-                // // "class/extra/Pool.js",
-                // // "class/extra/Plex.js",
             ],
             standalone:{
                 entries:{"jetSync":"sync.js", "jetAsync":"index.js"},

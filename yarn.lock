@@ -287,10 +287,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@randajan/function-parser@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@randajan/function-parser/-/function-parser-0.1.2.tgz#97734159e8560cd7c0db52c097bd4767df6e7343"
-  integrity sha512-IxbhVQ0bRFHEuxornC8rtTiFGV5y/5yie7wRESQntsHA0QlwF9LuTwcy5IKqjdHDBRw578dEfY1DOS7+3V45GQ==
+"@randajan/function-parser@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@randajan/function-parser/-/function-parser-0.1.3.tgz#a3cd3241e545ad04262a5ba83620c4eb1d1236e5"
+  integrity sha512-k/h/ZJfdBxeD2FYI0fyKh9ap86FVswfPMWuzYiulctCR0f6z6jYq3BujfLWblZJxn4RluFjWCSARiyJu+zg8IQ==
   dependencies:
     "@randajan/simple-lib" "^2.3.2"
 

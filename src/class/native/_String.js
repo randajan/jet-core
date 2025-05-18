@@ -1,11 +1,9 @@
 import { anyToFn } from "@randajan/function-parser";
 import { Definition } from "../self/Definition";
+import { bolRnd } from "../../defs/crypt";
 import { _getRand } from "../../extra/rand";
-import { _bool } from "./Boolean";
-import { _num } from "./Number";
-import { json } from "../../extra/json";
-import { regexLib } from "../../defs/regex";
-
+import { _num } from "./_Number";
+import { rgxLib } from "../../defs/regex";
 
 
 const boolPats = /^(0*|f|(no?t?)|off|false|undefined|null|NaN)$/i;
@@ -44,27 +42,25 @@ export const _str = Definition.createType("str", {
     rand: (min, max, sqr) => { //HOW TO GENERATE GREAT RANDOM STRING???
         const c = ["bcdfghjklmnpqrstvwxz", "aeiouy"], p = c[0].length / (c[0].length + c[1].length);
         const l = _num.rand(Math.max(min, 2), max, sqr);
-        let s = _bool.rand(p), r = "";
+        let s = bolRnd(p), r = "";
         while (r.length < l) { r += _getRand(c[+(s = !s)]); }
         return r;
     },
 }).defineTo({
-    arr: (str, comma) => str ? str.split(comma) : [],
-    bool: str => !boolPats.test(str.trim()),
-    //date, //TODO
-    err: str=>new Error(str),
-    fn: anyToFn,
-    //map,
-    num: (str, strict) => {
+    arr: (str, comma) => comma == null ? [str] : str.split(comma),
+    bol: str => !boolPats.test(str.trim()),
+    num: str =>(str, strict) => {
         if (!str) { return 0; } else if (strict) { return Number(str); }
-        const match = String(str).replace(/\u00A0/g, ' ').match(regexLib.number);
+        const match = String(str).replace(/\u00A0/g, ' ').match(rgxLib.number);
         if (!match || !match[0]) { return 0; }
         return Number(match[0].replaceAll(" ", "").replace(",", ".")) || 0;
     },
-    obj: str => json.from(str),
-    //set,
-    //str,
-    sym: str=>Symbol(str),
+    fn: anyToFn,
+    obj: str =>{
+        const obj = JSON.parse(str);
+        if (typeof obj !== "object") { throw Error(`"${str}" is not valid JSON object`); }
+        return obj;
+    },
 }).addTools({
     isNumeric: str => !isNaN(Number(str)),
     capitalize: str => str.charAt(0).toUpperCase() + str.slice(1),

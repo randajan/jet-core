@@ -1,9 +1,10 @@
 import { anyToFn } from "@randajan/function-parser";
 import { isRunnable } from "../../defs/tools";
-import { _fn } from "./Function";
-import { _obj } from "./Object";
+import { _fn } from "./_Function";
+import { numRnd } from "../../defs/crypt";
+import { Definition } from "../self/Definition";
 
-export const _arr = _obj.extend("arr", {
+export const _arr = Definition.createType("arr", {
     self: Array,
     create: Array,
     isFilled: x =>!!x?.length,
@@ -12,25 +13,18 @@ export const _arr = _obj.extend("arr", {
     values: x => [...x.values()],
     entries: x => [...x.entries()],
 }).defineTo({
-    "*": arr => Object.fromEntries(arr.entries()),
-    bool: arr => !!arr.length,
-    //date,
-    err: (arr, comma) => arr.join(comma ?? " "),
+    bol: arr => !!arr.length,
     fn: anyToFn,
-    map: arr => new Map(arr.entries()),
-    num: arr => arr.length,
-    //obj,
-    rgx: (arr, comma) => arr.join(comma ?? "|"),
-    set: arr => new Set(arr),
-    str: (arr, comma) => arr.join(comma),
-    sym: (arr, comma) => Symbol(arr.join(comma))
+    rgx: (arr, comma) => new RegExp(arr.join(comma ?? "|")), //TODO
+    err: (arr, comma) => arr.join(comma ?? " "),
+    str: (arr, comma) => arr.join(comma ?? ""),
 }).addTools({
     swap: (arr, to, from) => {//swap position of two items in array
         [arr[to], arr[from]] = [arr[from], arr[to]];
         return arr;
     },
     shuffle: (arr) => {//shuffle whole array
-        for (let i = arr.length - 1; i > 0; i--) {_arr.swap(arr, Math.floor(Math.random() * (i + 1)), i); }
+        for (let i = arr.length - 1; i > 0; i--) {_arr.swap(arr, Math.floor(numRnd() * (i + 1)), i); }
         return arr;
     },
     clean: (arr, rekey, handler) => {

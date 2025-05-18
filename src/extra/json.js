@@ -1,6 +1,5 @@
 import { isIterable } from "../defs/tools";
-import { _num } from "../class/native/Number";
-import { _str } from "../class/native/String";
+import { _str } from "../class/native/_String";
 import { solids } from "../defs/solid";
 
 export const json = solids({
@@ -10,7 +9,9 @@ export const json = solids({
         catch (e) { if (throwErr === true) { throw e } }
     },
     to: (obj, prettyPrint = false) => {
-        const spacing = _num.only(prettyPrint === true ? 2 : prettyPrint);
+
+        const spacing = typeof prettyPrint === "number" ? prettyPrint : prettyPrint === true ? 2 : 0;
+
         return JSON.stringify(isIterable(obj) ? obj : {}, null, spacing);
     }
 });

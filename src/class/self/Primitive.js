@@ -1,5 +1,5 @@
 import { solids } from "../../defs/solid";
-import { getDefByInst, fail, factory, getTypeByInst } from "../../defs/statics";
+import { getDefByInst, fail, factory, getTypeByInst, warn } from "../../defs/statics";
 import { NoType } from "./NoType";
 
 export class Primitive extends NoType {
@@ -37,9 +37,11 @@ export class Primitive extends NoType {
         const { type:{ name, to }, parent} = this;
         const def = getDefByInst(any, false);
         if (def === this) { return any; }
-        const exe = def.to.get(name) || def.to.get("*") || def.to.get(parent.name);
-        if (!exe) { fail(`unable create from '${def.type.name}'`, name); }
-        return to(exe(any, ...args), ...args);
+        warn(`converting to ${name}`, def.name);
+        const exe = def.to.get(name) || def.to.get("*") || def.to.get(parent?.name);
+        if (!exe) { fail(`unable convert to '${name}'`, def.name); }
+        try { return to(exe(any, ...args), ...args); }
+        catch(err) { fail(`unable convert to '${name}'`, def.name, err); }
     }
     
     orNull(any, ...args) { //rebinded def

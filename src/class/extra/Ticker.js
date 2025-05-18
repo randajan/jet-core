@@ -1,6 +1,6 @@
 import { define, isRunnable } from "../../defs/tools";
 import { solid, virtual, safe } from "@randajan/props";
-import { _bool } from "../native/Boolean";
+import { _bol } from "../native/Boolean";
 import { _num } from "../native/Number";
 
 
@@ -38,7 +38,7 @@ export class Ticker {
         }
 
         safe(this, _p, "state", (t, f)=>{
-            t = _bool.to(t);
+            t = _bol.to(t);
             if (t === f) { return f; }
             if (t) { start(); }
             else { clearTimeout(_p.intervalId); }

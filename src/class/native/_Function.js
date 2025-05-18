@@ -1,13 +1,14 @@
 import { fnToStr } from "@randajan/function-parser";
 import { Definition } from "../self/Definition";
 
+
 export const _fn = Definition.createType("fn", {
     self: Function,
     create: Function,
     copy: x => Object.defineProperties(({ [x.name]: (...a) => x(...a) })[x.name], Object.getOwnPropertyDescriptors(x)),
 }).defineTo({
-    "*": (fce, ...args) => fce(...args),
-    str:fnToStr
+    "*":fn=>fn(),
+    str:fnToStr,
 }).addTools({
     benchmark: (fces, inputs, iterations = 100) => {
         const results = [];

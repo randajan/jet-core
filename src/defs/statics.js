@@ -4,7 +4,7 @@ const byName = new Map();
 const byPrototype = new Map();
 
 const _msg = (msg, name)=>`jet${name ? ` type '${name}'` : ""} ${msg}`;
-export const fail = (msg, name)=>{ throw _msg(msg, name); }
+export const fail = (msg, name, cause)=>{ throw new Error(_msg(msg, name), { cause }); }
 export const warn = (msg, name)=>{ console.warn(_msg(msg, name)); }
 
 export const getDefByName = (name, throwError=false)=>{
@@ -69,6 +69,7 @@ export const factory = (type, mm, ...args)=>{
 }
 
 export const isFilled = any=>(any === false || any === 0 || !!any);
-export const isFulls = values=>{
-    for (let v of values) { if (isFilled(v)) { return true; }}
+export const isFilleds = obj=>{
+    for (let i in obj) { if (isFilled(obj[i])) { return true; }}
+    return false;
 }

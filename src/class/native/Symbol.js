@@ -1,24 +1,15 @@
-import { _str } from "./String";
+import { _str } from "./_String";
 
-const to = sym => String(sym).slice(7, -1);
+const stringify = sym => String(sym).slice(7, -1);
 
 export const _sym = _str.extend("sym", {
     self: Symbol,
     create: Symbol,
     isFilled:_=>true,
-    copy: x => Symbol(to(x)),
+    copy: x => Symbol(stringify(x)),
     rand: (...a) => Symbol(_str.rand(...a)),
+    from:sym=>stringify(sym),
+    to:str=>Symbol(str)
 }).defineTo({
-    "*":to,
     arr: sym => [sym],
-    //bool,
-    //date,
-    //err,
-    //fn
-    //map,
-    //num,
-    //obj,
-    set: sym => new Set([sym]),
-    //str,
-    //sym,
 })

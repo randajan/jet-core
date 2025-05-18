@@ -1,4 +1,4 @@
-import { _arr } from "./Array";
+import { _arr } from "./_Array";
 
 export const _set = _arr.extend("set", {
     self: Set,
@@ -10,17 +10,8 @@ export const _set = _arr.extend("set", {
     get: (x, k) => x.has(k) ? k : undefined,
     set: (x, k, v) => x.add(v) ? v : undefined,
     del: (x, k) => x.del(k),
+    from: set=>[...set],
+    to: arr=>new Set(arr)
 }).defineTo({
-    "*": set => [...set],
-    //arr,
-    bool: set => !!set.size,
-    //date,
-    //err,
-    //fn,
-    map: set => new Map(set.entries()),
-    num: set => set.size,
-    obj: set => Object.fromEntries(set.entries()),
-    //set,
-    str: set => String(set),
-    sym: set => Symbol(set),
-})
+    bol:map=>!!map.size
+});

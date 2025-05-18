@@ -5,7 +5,7 @@ export class NoDefinition {
         this.type = new NoType();
 
         this.to = new Map([
-            ["*", any=>({...any})],
+            ["obj", any=>({...any})],
             ["str", any=>any == null ? "" : String(any)],
         ]);
     }

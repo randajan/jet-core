@@ -1,23 +1,18 @@
 import { anyToFn } from "@randajan/function-parser";
-import { Definition } from "../self/Definition";
+import { bolRnd } from "../../defs/crypt";
+import { _num } from "./_Number";
 
-export const _bool = Definition.createType("bool", {
+export const _bol = _num.extend("bol", {
     self:Boolean,
     create:Boolean,
     isFilled:_=>true,
     copy:bol=>bol,
-    rand:(trueRatio=.5)=>Math.random() < trueRatio
+    rand:bolRnd,
+    from:bol=>+bol,
+    to:num=>!!num,
 }).defineTo({
     arr: bol => [bol],
-    //bool,
-    //date,
-    err: bol=>new Error(String(bol)),
     fn: anyToFn,
-    //map,
-    num: bol => +bol,
-    //obj,
-    set: bol => new Set([bol]),
     str: bol => String(bol),
-    sym: bol => Symbol(bol),
 });
 

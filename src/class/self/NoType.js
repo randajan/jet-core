@@ -24,7 +24,7 @@ export class NoType extends FnProxy {
             isBlank:this.isBlank.bind(def),
             orNull:this.orNull.bind(def),
             defineTo:this.defineTo.bind(def),
-            extend:this.defineTo.bind(def)
+            extend:this.extend.bind(def)
         });
     }
 

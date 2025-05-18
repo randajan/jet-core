@@ -8,8 +8,8 @@ import { run } from "./extra/run.js";
 import { FnProxy } from "./class/self/FnProxy.js";
 import { Iterable } from "./class/self/Iterable.js";
 
-import { _str } from "./class/native/String.js";
-import { _num } from "./class/native/Number.js";
+import { _str } from "./class/native/_String.js";
+import { _num } from "./class/native/_Number.js";
 import "./class/native/*";
 import { melt } from "./extra/melt.js";
 

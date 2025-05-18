@@ -1,4 +1,4 @@
-export const regexLib = {
+export const rgxLib = {
     line: /[^\n\r]+/g,
     number: /-?(\d+(\s+\d+)*)*[,.]?\d+/,
     word: /[^\s\n\r]+/g,
@@ -7,4 +7,18 @@ export const regexLib = {
     ip: /((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))/i,
     domain: /([a-z0-9]+\.)+(cz|de|sk|au|com|eu|info|org|[a-z]+)/i,
     hexadecimal: /[0-9a-fA-F]{6,6}/,
+    regex:/^\/((?:\\.|[^\\/])+)\/([a-z]*)$/i,
+    regexEsc:/[.*+?^${}()|[\]\\]/g
+}
+
+
+export function rgx2str(re) {
+  const pattern = re.source.replace(/\//g, '\\/');
+  return `/${pattern}/${re.flags}`;
+}
+
+export function str2rgx(str) {
+  const m = str.match(rgxLib.regex);
+  if (m) { return new RegExp(m[1], m[2]); }
+  return new RegExp( str.replace(rgxLib.regexEsc, '\\$&'));
 }

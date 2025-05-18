@@ -18,6 +18,8 @@ const createGenerator = ()=>{
     return _ => Math.random();
 };
 
-export const strongRandom = () => {
+export const numRnd = () => {
     return (_cryptonit || (_cryptonit = createGenerator()))()
 }
+
+export const bolRnd = (ratio=.5)=>numRnd() >= ratio;
