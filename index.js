@@ -16,7 +16,8 @@ slib(
             standalone:{
                 entries:{"jetSync":"sync.js", "jetAsync":"index.js"},
                 bundle:[
-                  "@randajan/function-parser"
+                  "@randajan/function-parser",
+                  "@randajan/regex-parser"
                 ],
             }
         },

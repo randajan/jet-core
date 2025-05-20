@@ -287,12 +287,18 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@randajan/function-parser@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@randajan/function-parser/-/function-parser-0.1.3.tgz#a3cd3241e545ad04262a5ba83620c4eb1d1236e5"
-  integrity sha512-k/h/ZJfdBxeD2FYI0fyKh9ap86FVswfPMWuzYiulctCR0f6z6jYq3BujfLWblZJxn4RluFjWCSARiyJu+zg8IQ==
+"@randajan/function-parser@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@randajan/function-parser/-/function-parser-0.2.0.tgz#40b88651117e2cbc1e7eaa7274ec73294fe313fb"
+  integrity sha512-hooJAYwg8Sb8vDDLdxYccQ522hDteo63IAZ+TGWZsG+J+7USEbBE5DqrdPLvXyisLCdniu7tJ3+R1THpc+vOQg==
   dependencies:
+    "@randajan/regex-parser" "^0.0.2"
     "@randajan/simple-lib" "^2.3.2"
+
+"@randajan/regex-parser@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@randajan/regex-parser/-/regex-parser-0.0.2.tgz#e76e668930dc0e685285ae03357c96350d2cae3e"
+  integrity sha512-kyHlwMVUixp0IyshY4/FZeqgJzO+z4m1todwzGO91Db9QXheaf7b/u3v1eXAisCGnTdY1WPlHa+PtMg24VjJQw==
 
 "@randajan/simple-lib@^2.3.2":
   version "2.4.0"

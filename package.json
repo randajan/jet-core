@@ -18,7 +18,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@randajan/function-parser": "^0.1.3"
+    "@randajan/function-parser": "^0.2.0",
+    "@randajan/regex-parser": "^0.0.2"
   },
   "devDependencies": {
     "@randajan/simple-lib": "^3.2.0",
