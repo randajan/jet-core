@@ -1,4 +1,4 @@
-import { _arr } from "./_Array";
+import { _arr } from "./Array";
 
 export const _set = _arr.extend("set", {
     self: Set,
@@ -12,6 +12,17 @@ export const _set = _arr.extend("set", {
     del: (x, k) => x.del(k),
     from: set=>[...set],
     to: arr=>new Set(arr)
-}).defineTo({
-    bol:map=>!!map.size
-});
+}).defineFrom({
+    //arr:,
+    //bol:,
+    //dt:,
+    //err:,
+    //fn:,
+    //map:,
+    //num:,
+    //obj:,
+    //rgx:,
+    //set:,
+    //str:,
+    //sym:
+})

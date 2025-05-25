@@ -1,4 +1,4 @@
-import { _str } from "../class/native/_String";
+import { _str } from "../class/native/String";
 import { getTypeByInst } from "../defs/statics";
 import { isRunnable } from "../sync";
 

@@ -24,6 +24,7 @@ export class NoType extends FnProxy {
             isBlank:this.isBlank.bind(def),
             orNull:this.orNull.bind(def),
             defineTo:this.defineTo.bind(def),
+            defineFrom:this.defineFrom.bind(def),
             extend:this.extend.bind(def)
         });
     }
@@ -47,6 +48,16 @@ export class NoType extends FnProxy {
         else if (Array.isArray(to)) { for (let i in to) { this.to.set(to[i], exe); } }
         else if (tt === "object") { for (let i in to) { this.to.set(i, to[i]); } }
         else { this.to.set(to, exe); }
+
+        return this.type;
+    }
+
+    defineFrom(from, exe) {
+        const tf = typeof from;
+        if (tf === "function") { this.from.set("*", from); }
+        else if (Array.isArray(to)) { for (let f of from) { this.from.set(f, exe); } }
+        else if (tf === "object") { for (let i in from) { this.from.set(i, from[i]); } }
+        else { this.from.set(from, exe); }
 
         return this.type;
     }

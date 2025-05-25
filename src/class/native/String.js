@@ -2,7 +2,7 @@ import { anyToFn } from "@randajan/function-parser";
 import { Definition } from "../self/Definition";
 import { bolRnd } from "../../defs/crypt";
 import { _getRand } from "../../extra/rand";
-import { _num } from "./_Number";
+import { _num } from "./Number";
 import { rgxLib } from "../../defs/regex";
 
 
@@ -47,7 +47,7 @@ export const _str = Definition.createType("str", {
         return r;
     },
 }).defineTo({
-    arr: (str, comma) => comma == null ? [str] : str.split(comma),
+    arr: (str, comma) => comma == null ? [str] : str.split(comma), 
     bol: str => !boolPats.test(str.trim()),
     num: str =>(str, strict) => {
         if (!str) { return 0; } else if (strict) { return Number(str); }
@@ -61,6 +61,19 @@ export const _str = Definition.createType("str", {
         if (typeof obj !== "object") { throw Error(`"${str}" is not valid JSON object`); }
         return obj;
     },
+}).defineFrom({
+    //arr:, //str: (arr, comma) => arr.join(comma ?? ""),
+    //bol:, //str: bol => String(bol)
+    //dt:, //    str: dt => dt.toLocaleString(),
+    //err:,
+    //fn:, //str:fnToStr,
+    //map:,
+    //num:, //num => String(num),
+    //obj:, //obj => JSON.stringify(obj),
+    //rgx:,
+    //set:,
+    //str:,
+    //sym:
 }).addTools({
     isNumeric: str => !isNaN(Number(str)),
     capitalize: str => str.charAt(0).toUpperCase() + str.slice(1),

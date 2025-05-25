@@ -1,7 +1,9 @@
 import { anyToFn } from "@randajan/function-parser";
 import { numRnd } from "../../defs/crypt";
-import { _str } from "./_String";
+import { _str } from "./String";
 import { Definition } from "../self/Definition";
+import { strToNum, symToStr } from "../../defs/convert";
+
 
 
 export const _num = Definition.createType("num", {
@@ -15,10 +17,18 @@ export const _num = Definition.createType("num", {
         if (sqr) { r = Math.pow(r, sqr < 0 ? -sqr : 1 / sqr); }
         return _num.fromRatio(r, min || 0, max || min || 1);
     },
-}).defineTo({
-    arr: num => [num],
-    str: num=>String(num),
-    fn: anyToFn,
+}).defineFrom({
+    //arr,
+    //fn,
+    //obj,
+    str:strToNum,
+    bol: v => +v,
+    dt: v => v.getTime(),
+    //err,
+    //map,
+    //rgx,
+    //set,
+    sym:v => strToNum(symToStr(v))
 }).addTools({
     x: (num1, symbol, num2) => {
         const s = symbol, nums = _num.zoomIn(num1, num2), [n, m] = nums;

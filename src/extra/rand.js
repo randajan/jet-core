@@ -1,7 +1,7 @@
 import { getTypeByInst } from "../defs/statics";
 
-import { _num } from "../class/native/_Number";
-import { _str } from "../class/native/_String";
+import { _num } from "../class/native/Number";
+import { _str } from "../class/native/String";
 
 
 export const _getRand = (arr, min, max, sqr)=>{ //get random element from array or string

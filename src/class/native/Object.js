@@ -1,6 +1,6 @@
 import { anyToFn } from "@randajan/function-parser";
 import { Definition } from "../self/Definition";
-import { isFilleds } from "../../defs/statics";
+import { errToObj, strToObj, symToStr } from "../../defs/convert";
 
 
 const filter = (obj, callback) => {
@@ -17,9 +17,19 @@ export const _obj = Definition.createType("obj", {
     keys: x => Object.keys(x),
     values: x => Object.values(x),
     entries: x => Object.entries(x),
-}).defineTo({
-    fn: anyToFn,
-    str: obj => JSON.stringify(obj),
+}).defineFrom({
+    //arr,
+    //fn,
+    //num,
+    //obj,
+    str:strToObj,
+    //bol,
+    //dt,
+    err:errToObj,
+    map:v=>Object.fromEntries(v.entries()),
+    //rgx,
+    //set,
+    sym:v=>strToObj(symToStr(v))
 }).addTools({
     filter,
     exclude: (obj, mask = []) => filter(obj, (v, k) => !mask.includes(k)),

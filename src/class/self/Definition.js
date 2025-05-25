@@ -28,6 +28,7 @@ export class Definition {
         this.rand = rand || this.create;
         this.is = is || (_=>true);
         this.copy = copy || (_=>fail("copy method not defined", name));
+        this.from = new Map(); //conversion table
         this.to = new Map();
         this.isFilled = isFilled || (!entries ? _.isFilled : any=>_.isFilleds(values(any)));
         this.type = entries ? new Iterable(this, name, opt) : new Primitive(this, name, opt);

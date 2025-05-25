@@ -1,5 +1,5 @@
 import { anyToFn } from "@randajan/function-parser";
-import { _obj } from "./_Object";
+import { _obj } from "./Object";
 
 
 export const _map = _obj.extend("map", {
@@ -14,7 +14,17 @@ export const _map = _obj.extend("map", {
     del:(x,k)=>x.del(k),
     from:map=>Object.fromEntries(map.entries()),
     to:obj=>new Map(Object.entries(obj))
-}).defineTo({
-    fn:anyToFn,
-    bol:map=>!!map.size
+}).defineFrom({
+    //arr:,
+    //bol:,
+    //dt:,
+    //err:,
+    //fn:,
+    //map:,
+    //num:,
+    //obj:,
+    //rgx:,
+    //set:,
+    //str:,
+    //sym:
 });

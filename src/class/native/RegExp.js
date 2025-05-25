@@ -1,5 +1,5 @@
 import { anyToFn } from "@randajan/function-parser";
-import { _str } from "./_String";
+import { _str } from "./String";
 import { rgxLib } from "../../defs/regex";
 import { rgxToStr, strToRgx } from "@randajan/regex-parser";
 
@@ -10,9 +10,19 @@ export const _rgx = _str.extend("rgx", {
     copy: x => RegExp(x.source),
     from:rgx=>rgxToStr(rgx),
     to:str=>strToRgx(str)
-}).defineTo({
-    arr:rgx=>[rgx],
-    fn: anyToFn,
+}).defineFrom({
+    //arr:, //rgx: (arr, comma) => new RegExp(arr.join(comma ?? "|")), //TODO
+    //bol:,
+    //dt:,
+    //err:,
+    //fn:,
+    //map:,
+    //num:,
+    //obj:,
+    //rgx:,
+    //set:,
+    //str:,
+    //sym:
 }).addTools({
     lib: rgxLib
 })

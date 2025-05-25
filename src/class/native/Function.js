@@ -1,4 +1,4 @@
-import { fnToStr } from "@randajan/function-parser";
+import { anyToFn, fnToStr } from "@randajan/function-parser";
 import { Definition } from "../self/Definition";
 
 
@@ -6,9 +6,19 @@ export const _fn = Definition.createType("fn", {
     self: Function,
     create: Function,
     copy: x => Object.defineProperties(({ [x.name]: (...a) => x(...a) })[x.name], Object.getOwnPropertyDescriptors(x)),
-}).defineTo({
-    "*":fn=>fn(),
-    str:fnToStr,
+}).defineFrom({
+    arr:anyToFn,
+    bol:anyToFn,
+    dt:anyToFn,
+    err:anyToFn,
+    //fn:,
+    map:anyToFn,
+    num:anyToFn,
+    obj:anyToFn,
+    rgx:anyToFn,
+    set:anyToFn,
+    str:anyToFn,
+    sym:anyToFn
 }).addTools({
     benchmark: (fces, inputs, iterations = 100) => {
         const results = [];

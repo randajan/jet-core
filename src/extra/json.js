@@ -1,5 +1,5 @@
 import { isIterable } from "../defs/tools";
-import { _str } from "../class/native/_String";
+import { _str } from "../class/native/String";
 import { solids } from "../defs/solid";
 
 export const json = solids({

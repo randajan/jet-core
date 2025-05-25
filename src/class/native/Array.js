@@ -1,8 +1,10 @@
 import { anyToFn } from "@randajan/function-parser";
 import { isRunnable } from "../../defs/tools";
-import { _fn } from "./_Function";
+import { _fn } from "./Function";
 import { numRnd } from "../../defs/crypt";
 import { Definition } from "../self/Definition";
+import { symToStr } from "../../defs/convert";
+import { rgxToStr } from "@randajan/regex-parser";
 
 export const _arr = Definition.createType("arr", {
     self: Array,
@@ -12,13 +14,21 @@ export const _arr = Definition.createType("arr", {
     keys: x => [...x.keys()],
     values: x => [...x.values()],
     entries: x => [...x.entries()],
-}).defineTo({
-    bol: arr => !!arr.length,
-    fn: anyToFn,
-    rgx: (arr, comma) => new RegExp(arr.join(comma ?? "|")), //TODO
-    err: (arr, comma) => arr.join(comma ?? " "),
-    str: (arr, comma) => arr.join(comma ?? ""),
+}).defineFrom({
+    //arr,
+    //bol,
+    //dt,
+    //err,
+    //fn,
+    //map,
+    //num,
+    //obj,
+    rgx:(v, c)=>rgxToStr(v).split(c),
+    set:v=>[...v],
+    str:(v, c)=>v.split(c),
+    sym:(v, c)=>symToStr(v).split(c)
 }).addTools({
+    wrap: (any) =>Array.isArray(any) ? any : [any],
     swap: (arr, to, from) => {//swap position of two items in array
         [arr[to], arr[from]] = [arr[from], arr[to]];
         return arr;

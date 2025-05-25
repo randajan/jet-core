@@ -1,18 +1,29 @@
 import { anyToFn } from "@randajan/function-parser";
 import { bolRnd } from "../../defs/crypt";
-import { _num } from "./_Number";
+import { Definition } from "../self/Definition";
+import { strToBol, symToStr } from "../../defs/convert";
+import { isFilleds } from "../../defs/statics";
 
-export const _bol = _num.extend("bol", {
+
+
+export const _bol = Definition.createType("bol", {
     self:Boolean,
     create:Boolean,
     isFilled:_=>true,
     copy:bol=>bol,
     rand:bolRnd,
-    from:bol=>+bol,
-    to:num=>!!num,
-}).defineTo({
-    arr: bol => [bol],
-    fn: anyToFn,
-    str: bol => String(bol),
-});
+}).defineFrom({
+    arr:v=>!!v.length, //    bol: arr => !!arr.length,
+    //bol:,
+    dt:v=>!!v.getTime(),
+    err:v=>true,
+    fn:v=>true,
+    map:v=>isFilleds(v.values()),
+    num:v=>!!v,
+    obj:v=>isFilleds(v),
+    rgx:v=>true,
+    set:v=>!!v.size,
+    str:strToBol,
+    sym:v=>strToBol(symToStr(v))
+})
 
